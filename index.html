@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#030B1A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="MZInvestment"/>
+<title>MZInvestment</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:Calibri,sans-serif;font-weight:700}
+body{background:#030B1A;color:#E8F4FF;font-size:16px}
+.page{display:none;min-height:100vh;flex-direction:column}
+.page.on{display:flex}
+button,input{font-family:inherit;font-weight:700}
+button{cursor:pointer}input{outline:none;box-sizing:border-box}
+#pg-splash{align-items:center;justify-content:center;text-align:center;background:#030B1A}
+.sp-name{font-size:34px;font-weight:900;letter-spacing:4px;margin:12px 0 4px}
+.sp-name span{color:#00D4FF}
+.sp-sub{font-size:11px;color:#3A6090;letter-spacing:8px;margin-bottom:32px}
+.sp-track{width:200px;height:4px;background:#0D2040;border-radius:10px;overflow:hidden;margin:0 auto 8px}
+.sp-bar{height:100%;background:linear-gradient(90deg,#004080,#00D4FF);border-radius:10px;width:0%}
+.sp-pct{color:#3A6090;font-size:13px}
+#pg-login,#pg-register{align-items:center;justify-content:center;padding:16px;background:#030B1A}
+.acard{background:#071828;border:1px solid #0D2A4A;border-radius:24px;padding:24px;width:100%;max-width:400px}
+.abrand{font-size:22px;font-weight:900;text-align:center;margin-bottom:4px}
+.abrand span{color:#00D4FF}
+.atag{color:#3A6090;font-size:12px;text-align:center;margin-bottom:20px}
+.fld{margin-bottom:14px}
+.fld label{color:#5070A0;font-size:13px;display:block;margin-bottom:5px}
+.fld input{width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:11px 13px;color:#C8D8F0;font-size:15px}
+.ph-row{display:flex;gap:8px}
+.ph-flag{background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:11px 10px;color:#C8D8F0;font-size:13px;white-space:nowrap}
+.btn-p{width:100%;padding:13px;background:linear-gradient(135deg,#0050B0,#00D4FF);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;margin-top:8px}
+.btn-p:disabled{opacity:0.6}
+.alink{text-align:center;margin-top:12px;font-size:14px;color:#5070A0}
+.alink span{color:#00D4FF;cursor:pointer}
+.err{background:#2d0a0a;border:1px solid #E74C3C;border-radius:10px;padding:10px;color:#FF6B6B;font-size:13px;margin-bottom:8px;display:none}
+#pg-main{background:#030B1A;padding-bottom:70px}
+.hdr{background:linear-gradient(135deg,#071828,#0D2040);padding:16px;border-bottom:1px solid #0D2A4A}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.greeting{font-size:17px;font-weight:900}
+.btn-out{background:transparent;border:1px solid #1E3060;border-radius:8px;color:#5070A0;font-size:11px;padding:4px 10px}
+.bal-card{background:#0D2040;border-radius:14px;padding:14px;text-align:center}
+.bal-lbl{color:#7090C0;font-size:12px;margin-bottom:4px}
+.bal-num{font-size:26px;font-weight:900}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#040E1C;border-top:1px solid #0D2A4A;display:flex;padding:8px 0 10px;z-index:100}
+.ni{flex:1;text-align:center;cursor:pointer;color:#3A5070}
+.ni.on{color:#00D4FF}
+.ni-ic{font-size:22px}
+.ni-lb{font-size:9px;margin-top:2px;text-transform:uppercase}
+.ni-dot{width:4px;height:4px;background:#00D4FF;border-radius:50%;margin:2px auto 0;display:none}
+.ni.on .ni-dot{display:block}
+.tab{display:none;padding:16px}
+.tab.on{display:block}
+.card{background:#071828;border:1px solid #0D2A4A;border-radius:14px;padding:14px;margin-bottom:12px}
+.ctit{color:#00D4FF;font-size:15px;font-weight:900;margin-bottom:10px}
+.irow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #0D2040;font-size:15px}
+.irow:last-child{border-bottom:none}
+.ilbl{color:#7090C0}
+.ival{font-weight:900}
+.alert{background:#0D1A30;border:1px solid #1A3A6A;border-radius:12px;padding:14px;color:#7090C0;font-size:14px;margin-bottom:16px}
+.alert span{color:#00D4FF;cursor:pointer}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vcard{border-radius:12px;overflow:hidden;cursor:pointer;position:relative;background:#071828;border:1px solid #1E3060}
+.vcard.done{opacity:0.5;cursor:default;border-color:#2ECC7144}
+.vcard img{width:100%;height:110px;object-fit:cover;display:block}
+.vbadge{position:absolute;top:8px;left:8px;background:#00D4FF;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:900;color:#001030}
+.vplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.vplay-btn{background:rgba(0,0,0,0.65);border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;padding-left:3px}
+.vdone{position:absolute;top:8px;right:8px;background:#2ECC71;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.vinfo{padding:8px 10px}
+.vtit{font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#C8D8F0}
+.vart{font-size:11px;color:#5070A0;margin-top:2px}
+.vrwd{font-size:13px;font-weight:900;margin-top:3px}
+.vip-card{background:#071828;border:2px solid #1E3060;border-radius:16px;padding:16px;margin-bottom:14px}
+.vip-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.vip-tag{border-radius:8px;padding:4px 12px;font-size:13px;font-weight:900;color:#000}
+.vip-nm{font-weight:900}
+.btn-vip{width:100%;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:900;margin-top:12px;color:#000;cursor:pointer}
+.wd-amts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.wda{background:#0D2040;border:1px solid #1E3060;border-radius:10px;padding:13px 8px;text-align:center;font-size:15px;font-weight:900;cursor:pointer;color:#E8F4FF}
+.wda.sel{background:#00D4FF;border-color:#00D4FF;color:#001030}
+.btn-wd{width:100%;padding:15px;background:linear-gradient(135deg,#0095B0,#00D4FF);border:none;border-radius:30px;color:#fff;font-size:17px;font-weight:900;margin-bottom:14px}
+.wd-banner{border:1px solid;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;font-weight:900}
+.wd-open{border-color:#2ECC71;color:#2ECC71}
+.wd-closed{border-color:#E74C3C;color:#FF6B6B}
+.fcard{background:#071828;border:1px solid #0D2A4A;border-radius:16px;padding:16px;margin-bottom:14px}
+.fhd{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.frate{margin-left:auto;color:#00D4FF;font-size:22px;font-weight:900}
+.ptrack{background:#0D2040;border-radius:10px;height:6px;overflow:hidden;margin-bottom:6px}
+.pfill{height:100%;background:linear-gradient(90deg,#004080,#00D4FF);border-radius:10px}
+.subtabs{display:flex;border-bottom:1px solid #0D2A4A;margin-bottom:16px}
+.stab{flex:1;text-align:center;padding:10px 0;font-size:14px;font-weight:700;cursor:pointer;color:#5070A0;border-bottom:2px solid transparent}
+.stab.on{color:#00D4FF;border-color:#00D4FF}
+#player{display:none;position:fixed;inset:0;background:#030B1A;z-index:500;flex-direction:column}
+#player.on{display:flex}
+.pl-hdr{padding:14px 16px;background:#071828;display:flex;align-items:center;gap:12px;border-bottom:1px solid #0D2A4A}
+.pl-back{background:transparent;border:none;color:#00D4FF;font-size:26px;font-weight:900;line-height:1}
+.pl-title{font-size:16px;font-weight:900;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-done-badge{background:#2ECC71;border-radius:20px;padding:4px 12px;color:#fff;font-size:13px;display:none}
+#player iframe{width:100%;aspect-ratio:16/9;border:none;background:#000;flex-shrink:0}
+.pl-body{padding:16px;overflow-y:auto;flex:1}
+.cd-card{background:#0D2040;border-radius:16px;padding:16px;margin-bottom:14px;text-align:center}
+.cd-num{font-size:58px;font-weight:900;font-family:monospace;line-height:1}
+.done-card{background:linear-gradient(135deg,#0D3020,#1A5030);border:2px solid #2ECC71;border-radius:16px;padding:20px;margin-bottom:14px;text-align:center;display:none}
+.btn-back{width:100%;padding:14px;background:#0D2040;border:1px solid #1E3060;border-radius:14px;color:#7090C0;font-size:16px;margin-top:4px;cursor:pointer}
+#pg-admin{background:#030B1A;padding-bottom:20px}
+.adm-hdr{background:linear-gradient(135deg,#1a0533,#2d0a5e);padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+.adm-tabs{display:flex;overflow-x:auto;gap:6px;padding:12px 16px;border-bottom:1px solid #0D2A4A}
+.atab{background:#071828;border:1px solid #1E3060;border-radius:20px;color:#5070A0;font-size:12px;font-weight:700;padding:6px 12px;white-space:nowrap;cursor:pointer}
+.atab.on{background:#2d0a5e;border-color:#9B59B6;color:#C8A0FF}
+.adm-body{padding:16px}
+.pcard{border:1px solid;border-radius:14px;padding:14px;margin-bottom:12px}
+.pcard.pending{border-color:#FFD70044}
+.pcard.approved{border-color:#2ECC7144}
+.pcard.rejected{border-color:#E74C3C44}
+.btn-app{background:#1A6B3A;border:1px solid #2ECC71;border-radius:8px;color:#2ECC71;font-size:12px;padding:6px 10px}
+.btn-rej{background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:6px 10px}
+.btn-app-f{flex:1;padding:10px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:900}
+.btn-rej-f{flex:1;padding:10px;background:linear-gradient(135deg,#7d0000,#E74C3C);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:900}
+.ucard{background:#071828;border:1px solid #0D2A4A;border-radius:14px;padding:14px;margin-bottom:12px}
+.tx-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #0D2040}
+#confirm{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8000;display:none;align-items:center;justify-content:center;padding:24px}
+#confirm.on{display:flex}
+.ccard{background:#071828;border:1px solid #1E3060;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center}
+.cmsg{color:#E8F4FF;font-size:15px;font-weight:700;margin-bottom:18px;line-height:1.6;white-space:pre-line}
+.cbtns{display:flex;gap:10px}
+.cbno{flex:1;padding:12px;background:#0D2040;border:1px solid #1E3060;border-radius:12px;color:#7090C0;font-size:14px;font-weight:700}
+.cbyes{flex:1;padding:12px;background:linear-gradient(135deg,#0050B0,#00D4FF);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:900}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:30px;color:#fff;font-size:14px;font-weight:900;z-index:9999;white-space:nowrap;display:none}
+#toast.s{background:#1A6B3A}
+#toast.e{background:#C0392B}
+.strow{display:flex;gap:8px;margin-bottom:16px}
+.stcard{flex:1;background:#071828;border:1px solid #0D2A4A;border-radius:12px;padding:10px 8px;text-align:center}
+.stv{color:#00D4FF;font-size:14px;font-weight:900}
+.stl{color:#5070A0;font-size:10px;margin-top:3px;line-height:1.3}
+.hmenu{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.hmitem{text-align:center;cursor:pointer}
+.hmicon{width:52px;height:52px;background:#0D2040;border:1px solid #1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 6px}
+.hmlbl{color:#7090C0;font-size:12px;line-height:1.3;font-weight:900}
+.dep-num-box{background:#0D2040;border-radius:12px;padding:14px;text-align:center;margin-bottom:12px}
+.dep-num{color:#E8F4FF;font-size:22px;font-weight:900;letter-spacing:3px;font-family:monospace}
+.btn-wa{display:block;text-align:center;text-decoration:none;padding:14px;background:linear-gradient(135deg,#128C7E,#25D366);border-radius:14px;color:#fff;font-size:15px;font-weight:900;margin:8px 0}
+.back-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.back-btn{background:none;border:none;color:#00D4FF;font-size:26px;cursor:pointer;font-weight:900;line-height:1}
+.back-title{font-size:17px;font-weight:900}
+.flocked{background:linear-gradient(135deg,#1a0a00,#2d1500);border:2px solid #FF8C00;border-radius:16px;padding:20px;text-align:center;margin-bottom:16px}
+.empty{color:#5070A0;text-align:center;padding:24px;font-size:14px}
+.profile-hdr{background:linear-gradient(135deg,#071828,#0D2040);padding:18px 16px 22px;margin:-16px -16px 16px}
+.av-wrap{width:52px;height:52px;background:#1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid #00D4FF44;overflow:hidden;position:relative;flex-shrink:0}
+.av-edit{position:absolute;bottom:0;right:0;background:#00D4FF;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px}
+.inv-code{font-size:26px;font-weight:900;color:#00D4FF;letter-spacing:5px;font-family:monospace;text-align:center;margin:8px 0}
+.rank-card{background:#071828;border:1px solid #0D2A4A;border-radius:14px;padding:14px;margin-bottom:10px}
+.rank-card.me{border-color:#00D4FF44}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="pg-splash" class="page on">
+  <svg width="80" height="80" viewBox="0 0 100 100" fill="none" style="margin-bottom:14px">
+    <circle cx="50" cy="50" r="48" fill="#071828" stroke="#00D4FF" stroke-width="2"/>
+    <circle cx="50" cy="50" r="36" fill="#0D2040" opacity="0.8"/>
+    <text x="50" y="47" text-anchor="middle" fill="#E8F4FF" font-size="15" font-weight="900" font-family="Calibri">MZ</text>
+    <text x="50" y="62" text-anchor="middle" fill="#00D4FF" font-size="10" font-weight="700" font-family="Calibri">INVEST</text>
+  </svg>
+  <div class="sp-name">MZ<span>INVESTMENT</span></div>
+  <div class="sp-sub">MOÇAMBIQUE</div>
+  <div class="sp-track"><div class="sp-bar" id="sp-bar"></div></div>
+  <div class="sp-pct" id="sp-pct">0%</div>
+</div>
+
+<!-- LOGIN -->
+<div id="pg-login" class="page">
+  <div class="acard">
+    <div style="text-align:center;margin-bottom:4px"><svg width="48" height="48" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" fill="#071828" stroke="#00D4FF" stroke-width="2"/><text x="50" y="47" text-anchor="middle" fill="#E8F4FF" font-size="15" font-weight="900" font-family="Calibri">MZ</text><text x="50" y="62" text-anchor="middle" fill="#00D4FF" font-size="10" font-weight="700" font-family="Calibri">INVEST</text></svg></div>
+    <div class="abrand">MZ<span>INVESTMENT</span></div>
+    <div class="atag">Plataforma de Investimento · Moçambique</div>
+    <div class="fld"><label>📱 Número de celular</label>
+      <div class="ph-row"><span class="ph-flag">🇲🇿 +258</span><input type="tel" id="l-phone" maxlength="9" placeholder="84 000 0000"/></div></div>
+    <div class="fld"><label>🔐 PIN</label><input type="password" id="l-pin" maxlength="4" placeholder="••••"/></div>
+    <div class="err" id="l-err"></div>
+    <button class="btn-p" id="l-btn" onclick="doLogin()">Entrar →</button>
+    <div class="alink">Não tens conta? <span onclick="pg('pg-register')">Regista-te aqui</span></div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div id="pg-register" class="page">
+  <div class="acard">
+    <div style="text-align:center;margin-bottom:4px"><svg width="48" height="48" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" fill="#071828" stroke="#00D4FF" stroke-width="2"/><text x="50" y="47" text-anchor="middle" fill="#E8F4FF" font-size="15" font-weight="900" font-family="Calibri">MZ</text><text x="50" y="62" text-anchor="middle" fill="#00D4FF" font-size="10" font-weight="700" font-family="Calibri">INVEST</text></svg></div>
+    <div class="abrand">MZ<span>INVESTMENT</span></div>
+    <div class="atag">Criar nova conta</div>
+    <div class="fld"><label>👤 Nome completo</label><input type="text" id="r-name" placeholder="Ex: João Silva"/></div>
+    <div class="fld"><label>📱 Número de celular</label>
+      <div class="ph-row"><span class="ph-flag">🇲🇿 +258</span><input type="tel" id="r-phone" maxlength="9" placeholder="84 000 0000"/></div></div>
+    <div class="fld"><label>🔐 PIN (4 dígitos)</label><input type="password" id="r-pin" maxlength="4" placeholder="••••"/></div>
+    <div class="fld"><label>🔐 Confirmar PIN</label><input type="password" id="r-pin2" maxlength="4" placeholder="••••"/></div>
+    <div class="fld"><label>🔗 Código de convite (opcional)</label><input type="text" id="r-ref" placeholder="Ex: MZ123456" style="text-transform:uppercase"/></div>
+    <div class="err" id="r-err"></div>
+    <button class="btn-p" id="r-btn" onclick="doRegister()">Criar Conta →</button>
+    <div class="alink">Já tens conta? <span onclick="pg('pg-login')">Entrar aqui</span></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="pg-main" class="page">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div><div class="greeting" id="greeting">Olá 👋</div><div id="vip-sm" style="font-size:12px;margin-top:2px"></div></div>
+      <button class="btn-out" onclick="logout()">Sair</button>
+    </div>
+    <div class="bal-card"><div class="bal-lbl">Saldo (MZN)</div><div class="bal-num" id="hdr-bal">0</div></div>
+  </div>
+
+  <div id="t-home" class="tab on">
+    <div class="strow" id="home-stats"></div>
+    <div class="alert" id="no-vip" style="display:none">⚠️ Activa um VIP para ganhar. <span onclick="goTab('t-vips','n-vips')">Activar →</span></div>
+    <div class="card" onclick="goTab('t-fund','n-none')" style="cursor:pointer;display:flex;align-items:center;gap:12px">
+      <div style="font-size:30px">📈</div>
+      <div><div style="font-size:14px;font-weight:900">Fundo de Investimento</div><div style="color:#7090C0;font-size:13px">Retornos até 180%</div></div>
+      <div style="color:#00D4FF;margin-left:auto;font-size:20px">›</div>
+    </div>
+    <div class="hmenu" id="home-menu"></div>
+  </div>
+
+  <div id="t-videos" class="tab">
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-size:17px;font-weight:900;text-align:center;margin-bottom:8px">Lista de tarefas</div>
+      <div id="wday-warn" style="display:none;background:#2d1500;border:1px solid #FF8C00;border-radius:10px;padding:10px;color:#FF8C00;font-size:14px;font-weight:900;text-align:center;margin-bottom:8px">🔒 Tarefas disponíveis apenas Seg–Sex</div>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;text-align:center;padding:14px;background:#0D2040;border-radius:12px"><div style="font-size:34px;font-weight:900" id="t-rem">0</div><div style="color:#7090C0;font-size:13px;margin-top:4px">Restantes</div></div>
+        <div style="flex:1;text-align:center;padding:14px;background:#0D2040;border-radius:12px"><div style="font-size:34px;font-weight:900" id="t-done">0</div><div style="color:#7090C0;font-size:13px;margin-top:4px">Concluídas</div></div>
+      </div>
+    </div>
+    <div class="alert" id="no-vip2" style="display:none">Activa um VIP para desbloquear as tarefas!</div>
+    <div class="vgrid" id="vgrid"></div>
+  </div>
+
+  <div id="t-vips" class="tab">
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">💎 Níveis VIP</div>
+    <div id="vip-list"></div>
+  </div>
+
+  <div id="t-wallet" class="tab">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-size:17px;font-weight:900">Retirada</div>
+      <div style="color:#00D4FF;font-size:14px;cursor:pointer" onclick="showWdHist()">Histórico</div>
+    </div>
+    <div style="background:#0D2040;border-radius:14px;padding:13px 16px;display:flex;justify-content:space-between;margin-bottom:18px;font-size:15px"><span>e-Mola</span><span id="w-phone">—</span></div>
+    <div style="text-align:center;margin-bottom:14px"><div style="color:#7090C0;font-size:13px">Saldo disponível</div><div style="color:#00D4FF;font-size:36px;font-weight:900" id="w-bal">0 MZN</div></div>
+    <div class="wd-banner" id="wd-banner">🔒 A verificar...</div>
+    <div style="font-size:15px;font-weight:900;margin-bottom:12px">Valor da retirada MZN</div>
+    <div class="wd-amts" id="wd-amts"></div>
+    <button class="btn-wd" onclick="submitWd()">🐇 Solicitar Retirada</button>
+    <div class="card" style="border-color:#FFD70044"><div style="color:#FFD700;font-size:15px;font-weight:900;margin-bottom:8px">⚠️ Taxa de Levantamento</div><div style="color:#C8D8F0;font-size:14px;line-height:2">• Taxa: <strong style="color:#FF6B6B">10%</strong><br>• Ex: 1.000 MT → recebes <strong style="color:#2ECC71">900 MT</strong></div></div>
+    <div class="card"><div style="color:#7090C0;font-size:14px;line-height:2">📌 <strong style="color:#C8D8F0">Regras:</strong><br>• 1 levantamento/dia · Seg–Sex 10h–18h<br>• Mín: 100 MT · Máx: 10.000 MT</div></div>
+  </div>
+
+  <div id="t-profile" class="tab">
+    <div class="profile-hdr">
+      <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:22px;cursor:pointer" onclick="goTab('t-notifs','n-none');renderNotifs()">🔔<span id="notif-dot" style="display:none;width:8px;height:8px;background:#E74C3C;border-radius:50%;display:inline-block;vertical-align:middle;margin-left:3px"></span></div>
+        <div style="color:#00D4FF;font-size:14px;cursor:pointer" onclick="goTab('t-wallet','n-wallet')">💳 Minha carteira</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div class="av-wrap" onclick="document.getElementById('av-file').click()"><span id="av-icon">👤</span><img id="av-img" style="display:none;width:100%;height:100%;object-fit:cover"/><div class="av-edit">✏️</div></div>
+        <input type="file" id="av-file" accept="image/*" style="display:none" onchange="handlePhoto(event)"/>
+        <div><div style="font-weight:900;font-size:15px" id="p-phone">—</div><div id="p-vip-tag"></div></div>
+      </div>
+      <div style="background:#0D2040;border-radius:12px;padding:14px;text-align:center"><div style="font-size:22px;font-weight:900" id="p-bal">0</div><div style="color:#7090C0;font-size:13px;margin-top:2px">Saldo (MZN)</div></div>
+    </div>
+    <div class="strow" id="p-stats"></div>
+    <div class="hmenu" id="p-menu"></div>
+  </div>
+
+  <div id="t-deposit" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-vips','n-vips')">‹</button><div class="back-title">💳 Depósito</div></div>
+    <div id="dep-vip-box"></div>
+    <div class="card"><div class="ctit">📋 Transfere para:</div>
+      <div class="dep-num-box"><div style="color:#7090C0;font-size:12px;margin-bottom:6px">e-Mola</div><div class="dep-num">86 437 8323</div><div style="color:#00D4FF;font-size:14px;margin-top:4px">João Aguiar</div></div>
+      <div style="color:#7090C0;font-size:14px;line-height:2">1️⃣ Transfere via e-Mola<br>2️⃣ Envia comprovativo via WhatsApp<br>3️⃣ Aguarda aprovação</div>
+    </div>
+    <a class="btn-wa" id="dep-wa-btn" href="https://wa.me/258864378323?text=Ol%C3%A1%20MZInvestment%2C%20fiz%20um%20dep%C3%B3sito%20e%20quero%20enviar%20o%20comprovativo." target="_blank" rel="noopener noreferrer" onclick="window.open(this.href,'_blank');return false;">💬 Enviar Comprovativo via WhatsApp</a>
+    <button class="btn-p" onclick="submitDep()">📤 Confirmar Pedido</button>
+  </div>
+
+  <div id="t-fund" class="tab">
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">📈 Fundo de Investimento</div>
+    <div class="subtabs"><div class="stab on" id="ft-browse" onclick="switchFT('browse')">Planos</div><div class="stab" id="ft-invest" onclick="switchFT('invest')">Investir</div><div class="stab" id="ft-mine" onclick="switchFT('mine')">Os meus</div></div>
+    <div id="f-browse"></div><div id="f-invest" style="display:none"></div><div id="f-mine" style="display:none"></div>
+  </div>
+
+  <div id="t-notifs" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-profile','n-profile')">‹</button><div class="back-title">🔔 Notificações</div><button style="margin-left:auto;background:transparent;border:1px solid #1E3060;border-radius:8px;color:#5070A0;font-size:12px;padding:4px 10px" onclick="markRead()">Marcar lido</button></div>
+    <div id="notif-list"></div>
+  </div>
+
+  <div id="t-pinfo" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-profile','n-profile')">‹</button><div class="back-title">Informações Pessoais</div></div>
+    <div class="card"><div id="pinfo-rows"></div></div>
+    <div class="card"><div class="ctit">🔐 Alterar PIN</div>
+      <div class="fld"><label>PIN actual</label><input type="password" id="pin-old" maxlength="4" placeholder="••••"/></div>
+      <div class="fld"><label>Novo PIN</label><input type="password" id="pin-new" maxlength="4" placeholder="••••"/></div>
+      <div class="fld"><label>Confirmar novo PIN</label><input type="password" id="pin-new2" maxlength="4" placeholder="••••"/></div>
+      <button class="btn-p" onclick="changePin()">Alterar PIN</button>
+    </div>
+  </div>
+
+  <div id="t-invite" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-home','n-home')">‹</button><div class="back-title">👥 Convidar Amigos</div></div>
+    <div class="card" style="text-align:center;background:linear-gradient(135deg,#071828,#0D2040);border-color:#00D4FF33">
+      <div style="font-size:44px;margin-bottom:8px">🔗</div>
+      <div style="color:#7090C0;font-size:13px;margin-bottom:6px">O teu código de convite</div>
+      <div class="inv-code" id="inv-code">—</div>
+      <div class="card" style="margin:10px 0"><div style="color:#7090C0;font-size:13px;margin-bottom:4px">🔗 Link da plataforma</div><div style="color:#00D4FF;font-size:12px;word-break:break-all;font-family:monospace" id="inv-link">—</div></div>
+      <div class="card" style="margin:10px 0;text-align:left">
+        <div style="color:#FFD700;font-size:14px;font-weight:900;margin-bottom:10px">💰 Bónus por indicação</div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #0D2040;font-size:13px"><span style="color:#7090C0">1ª indicação com VIP</span><span style="color:#2ECC71;font-weight:900">+50 MT</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #0D2040;font-size:13px"><span style="color:#7090C0">2ª indicação com VIP</span><span style="color:#2ECC71;font-weight:900">+75 MT</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #0D2040;font-size:13px"><span style="color:#7090C0">3ª indicação com VIP</span><span style="color:#2ECC71;font-weight:900">+100 MT</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #0D2040;font-size:13px"><span style="color:#7090C0">4ª indicação com VIP</span><span style="color:#2ECC71;font-weight:900">+150 MT</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:#7090C0">5ª indicação com VIP</span><span style="color:#2ECC71;font-weight:900">+200 MT 🔓 Fundo</span></div>
+      </div>
+      <div style="color:#7090C0;font-size:14px;margin-bottom:10px;line-height:1.8">Com <strong style="color:#FFD700">5 amigos</strong> com VIP activo desbloqueas o Fundo!</div>
+      <div style="color:#7090C0;font-size:13px" id="inv-prog-txt">0/5</div>
+      <div style="background:#1a2a40;border-radius:10px;height:8px;overflow:hidden;margin:8px 0"><div style="height:100%;background:linear-gradient(90deg,#004080,#00D4FF);border-radius:10px" id="inv-prog"></div></div>
+      <a class="btn-wa" id="inv-wa" href="#" target="_blank">💬 Partilhar via WhatsApp</a>
+      <button class="btn-p" onclick="copyCode()">📋 Copiar Código</button>
+    </div>
+  </div>
+
+  <div id="t-team" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-home','n-home')">‹</button><div class="back-title">📈 Relatório da Equipa</div></div>
+    <div class="card"><div class="ctit">A tua equipa</div><div id="team-lbl" style="color:#7090C0;font-size:14px;margin-bottom:10px">0/5</div><div style="background:#0D2040;border-radius:10px;height:10px;overflow:hidden;margin-bottom:12px"><div style="height:100%;background:linear-gradient(90deg,#004080,#00D4FF);border-radius:10px" id="team-prog"></div></div><div id="team-msg"></div></div>
+    <div id="team-list"></div>
+  </div>
+
+  <div id="t-ranking" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-home','n-home')">‹</button><div class="back-title">🏆 Ranking</div></div>
+    <div class="card" style="text-align:center;margin-bottom:14px"><div style="font-size:36px;margin-bottom:4px">🏆</div><div style="color:#FFD700;font-size:15px;font-weight:900">Top Membros MZInvestment</div></div>
+    <div id="ranking-list"></div>
+  </div>
+
+  <div id="t-wdhist" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-wallet','n-wallet')">‹</button><div class="back-title">Histórico de retiradas</div></div>
+    <div id="wd-hist"></div>
+  </div>
+
+  <div id="t-suporte" class="tab">
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">💬 Suporte</div>
+    <div class="card" style="text-align:center"><div style="font-size:44px;margin-bottom:8px">📲</div><div style="font-size:15px;font-weight:900;margin-bottom:4px">Baixar a App MZInvestment</div>
+      <div style="display:flex;gap:10px;margin:12px 0">
+        <button style="flex:1;padding:12px 8px;background:#0D2040;border:1px solid #00D4FF55;border-radius:12px;color:#fff;font-size:14px;font-weight:900" onclick="alert('Android:\\n1. Abre no Chrome\\n2. Menu ⋮ → Adicionar ao ecrã inicial\\n3. Toca Adicionar ✅')">🤖 Android</button>
+        <button style="flex:1;padding:12px 8px;background:#0D2040;border:1px solid #00D4FF55;border-radius:12px;color:#fff;font-size:14px;font-weight:900" onclick="alert('iPhone:\\n1. Abre no Safari\\n2. Toca 📤 → Adicionar ao ecrã inicial\\n3. Toca Adicionar ✅')">🍎 iPhone</button>
+      </div>
+    </div>
+    <div class="card"><div style="background:#0D2040;border-radius:10px;padding:14px;text-align:center;margin-bottom:12px"><div style="font-size:20px;font-weight:900;letter-spacing:3px;font-family:monospace">86 437 8323</div><div style="color:#7090C0;font-size:13px;margin-top:4px">João Aguiar · Seg–Sex · 08:00–20:00</div></div>
+      <a class="btn-wa" href="https://wa.me/258864378323?text=Ol%C3%A1%20MZInvestment%2C%20preciso%20de%20ajuda." target="_blank">💬 Falar no WhatsApp</a>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="ni on" id="n-home" onclick="goTab('t-home','n-home')"><div class="ni-ic">🏠</div><div class="ni-lb">Lar</div><div class="ni-dot"></div></div>
+    <div class="ni" id="n-videos" onclick="goTab('t-videos','n-videos')"><div class="ni-ic">📋</div><div class="ni-lb">Tarefa</div><div class="ni-dot"></div></div>
+    <div class="ni" id="n-vips" onclick="goTab('t-vips','n-vips')"><div class="ni-ic">💎</div><div class="ni-lb">VIP</div><div class="ni-dot"></div></div>
+    <div class="ni" id="n-wallet" onclick="goTab('t-wallet','n-wallet')"><div class="ni-ic">💰</div><div class="ni-lb">Lucro</div><div class="ni-dot"></div></div>
+    <div class="ni" id="n-profile" onclick="goTab('t-profile','n-profile')"><div class="ni-ic">👤</div><div class="ni-lb">Eu</div><div class="ni-dot"></div></div>
+  </nav>
+</div>
+
+<!-- VIDEO PLAYER -->
+<div id="player">
+  <div class="pl-hdr">
+    <button class="pl-back" onclick="closePlayer()">‹</button>
+    <div><div class="pl-title" id="pl-title">—</div><div style="color:#7090C0;font-size:13px" id="pl-artist">—</div></div>
+    <div class="pl-done-badge" id="pl-done">✅ Concluído</div>
+  </div>
+  <iframe id="pl-iframe" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe>
+  <div class="pl-body">
+    <div class="cd-card" id="cd-card">
+      <div style="color:#7090C0;font-size:14px;margin-bottom:8px">Tempo para concluir a tarefa</div>
+      <div class="cd-num" id="cd-num">15</div>
+      <div style="color:#5070A0;font-size:14px;margin-top:4px">segundos</div>
+      <div style="color:#2ECC71;font-size:16px;font-weight:900;margin-top:10px" id="cd-earn">+0 MT ao completar</div>
+    </div>
+    <div class="done-card" id="done-card">
+      <div style="font-size:46px;margin-bottom:8px">🎉</div>
+      <div style="color:#fff;font-size:20px;font-weight:900;margin-bottom:6px">Tarefa Concluída!</div>
+      <div style="color:#A8FFD0;font-size:16px;font-weight:700" id="done-amt">+0 MT creditados!</div>
+      <div style="color:#7090C0;font-size:13px;margin-top:8px;line-height:1.7">O vídeo continua a tocar.<br>Volta atrás para outra tarefa.</div>
+    </div>
+    <div class="card"><div class="ctit">🎵 Informações da tarefa</div>
+      <div class="irow"><span class="ilbl">🎤 Artista</span><span class="ival" id="i-artist">—</span></div>
+      <div class="irow"><span class="ilbl">🎵 Título</span><span class="ival" id="i-title">—</span></div>
+      <div class="irow"><span class="ilbl">💎 VIP</span><span class="ival" id="i-vip">—</span></div>
+      <div class="irow"><span class="ilbl">💰 Recompensa</span><span class="ival" style="color:#2ECC71" id="i-rwd">—</span></div>
+      <div class="irow"><span class="ilbl">✅ Concluídas</span><span class="ival" id="i-done">—</span></div>
+      <div class="irow" style="border:none"><span class="ilbl">⏳ Restantes</span><span class="ival" id="i-rem">—</span></div>
+    </div>
+    <button class="btn-back" onclick="closePlayer()">‹ Voltar às tarefas</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="pg-admin" class="page">
+  <div class="adm-hdr">
+    <div><div style="font-size:15px;font-weight:900">🛡️ Painel Admin</div><div style="font-size:12px;color:#9B59B6;margin-top:2px">MZInvestment · João Aguiar</div></div>
+    <div style="display:flex;gap:8px;align-items:center"><div id="adm-badge" style="background:#E74C3C;color:#fff;border-radius:50%;width:22px;height:22px;display:none;align-items:center;justify-content:center;font-size:11px;font-weight:900">0</div><button style="background:#2d0a5e;border:1px solid #9B59B6;border-radius:10px;color:#C8A0FF;font-size:12px;padding:5px 10px" onclick="logout()">Sair</button></div>
+  </div>
+  <div class="adm-tabs">
+    <div class="atab on" onclick="admTab('dashboard')">📊 Resumo</div>
+    <div class="atab" onclick="admTab('deposits')">💳 Depósitos</div>
+    <div class="atab" onclick="admTab('withdrawals')">💸 Levantar</div>
+    <div class="atab" onclick="admTab('credit')">➕ Creditar</div>
+    <div class="atab" onclick="admTab('users')">👥 Utilizadores</div>
+  </div>
+  <div class="adm-body">
+    <div id="adm-dashboard"></div>
+    <div id="adm-deposits" style="display:none"></div>
+    <div id="adm-withdrawals" style="display:none"></div>
+    <div id="adm-credit" style="display:none"></div>
+    <div id="adm-users" style="display:none"></div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div id="confirm"><div class="ccard"><div style="font-size:30px;margin-bottom:10px">⚠️</div><div class="cmsg" id="c-msg">—</div><div class="cbtns"><button class="cbno" onclick="closeConfirm()">Cancelar</button><button class="cbyes" id="c-yes">Confirmar</button></div></div></div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPA_URL="https://xltsswpobwgjuwebjlsp.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsdHNzd3BvYndnanV3ZWJqbHNwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODA5MTcwNCwiZXhwIjoyMDkzNjY3NzA0fQ.nAzDailPOQt8HXSfqvZVJboB3CMEMXb11mE_8SmIgEo";
+const ADMIN_PHONE="864378323",ADMIN_PIN="3545",SUPPORT="258864378323";
+const BASE_URL="https://mzinvestment.onrender.com";
+const WD_AMTS=[100,500,1000,2000,5000,10000];
+const MIN_FUND=500;
+let db;try{db=supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){db=null;}
+const VIPS=[{l:1,p:750,d:30,v:5,c:"#CD853F",n:"Bronze"},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata"},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro"},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina"},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante"},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi"},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda"},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite"}];
+const FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:12,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:25,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:70,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:180,icon:"💰",desc:"Máximo lucro"}];
+const VIDEOS=[
+  {id:1,t:"Blinding Lights",a:"The Weeknd",yt:"4NRXx6U8ABQ",th:"https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg"},
+  {id:2,t:"Shape of You",a:"Ed Sheeran",yt:"JGwWNGJdvx8",th:"https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg"},
+  {id:3,t:"Believer",a:"Imagine Dragons",yt:"7wtfhZwyrcc",th:"https://i.ytimg.com/vi/7wtfhZwyrcc/hqdefault.jpg"},
+  {id:4,t:"Levitating",a:"Dua Lipa",yt:"TUVcZfQe-Kw",th:"https://i.ytimg.com/vi/TUVcZfQe-Kw/hqdefault.jpg"},
+  {id:5,t:"Love Yourself",a:"Justin Bieber",yt:"oyEuk8j8imI",th:"https://i.ytimg.com/vi/oyEuk8j8imI/hqdefault.jpg"},
+  {id:6,t:"Save Your Tears",a:"The Weeknd",yt:"LIIDh-qI9oI",th:"https://i.ytimg.com/vi/LIIDh-qI9oI/hqdefault.jpg"},
+  {id:7,t:"Bad Habits",a:"Ed Sheeran",yt:"orJSJGHjBLI",th:"https://i.ytimg.com/vi/orJSJGHjBLI/hqdefault.jpg"},
+  {id:8,t:"Butter",a:"BTS",yt:"WMweEpGlu_U",th:"https://i.ytimg.com/vi/WMweEpGlu_U/hqdefault.jpg"},
+  {id:9,t:"Dynamite",a:"BTS",yt:"gdZLi9oWNZg",th:"https://i.ytimg.com/vi/gdZLi9oWNZg/hqdefault.jpg"},
+  {id:10,t:"STAY",a:"The Kid LAROI",yt:"hCuMWrfXG4E",th:"https://i.ytimg.com/vi/hCuMWrfXG4E/hqdefault.jpg"},
+  {id:11,t:"drivers license",a:"Olivia Rodrigo",yt:"ZmDBbnmKpqQ",th:"https://i.ytimg.com/vi/ZmDBbnmKpqQ/hqdefault.jpg"},
+  {id:12,t:"Easy On Me",a:"Adele",yt:"U3ASj1L6_sY",th:"https://i.ytimg.com/vi/U3ASj1L6_sY/hqdefault.jpg"},
+  {id:13,t:"As It Was",a:"Harry Styles",yt:"H5v3kku4y6Q",th:"https://i.ytimg.com/vi/H5v3kku4y6Q/hqdefault.jpg"},
+  {id:14,t:"Anti-Hero",a:"Taylor Swift",yt:"b1kbLwvqugk",th:"https://i.ytimg.com/vi/b1kbLwvqugk/hqdefault.jpg"},
+  {id:15,t:"Flowers",a:"Miley Cyrus",yt:"G7KNmW9a75Y",th:"https://i.ytimg.com/vi/G7KNmW9a75Y/hqdefault.jpg"},
+  {id:16,t:"Heat Waves",a:"Glass Animals",yt:"mRD0-GxqHVo",th:"https://i.ytimg.com/vi/mRD0-GxqHVo/hqdefault.jpg"},
+  {id:17,t:"Yaba Buluku",a:"Dj Tarico",yt:"vqoiN5KMrOs",th:"https://i.ytimg.com/vi/vqoiN5KMrOs/hqdefault.jpg"},
+  {id:18,t:"Jerusalema",a:"Master KG",yt:"HGMDMFTMNkE",th:"https://i.ytimg.com/vi/HGMDMFTMNkE/hqdefault.jpg"},
+  {id:19,t:"Cruel Summer",a:"Taylor Swift",yt:"ic8j13piAhQ",th:"https://i.ytimg.com/vi/ic8j13piAhQ/hqdefault.jpg"},
+  {id:20,t:"Calm Down",a:"Rema & Selena Gomez",yt:"WXmmgQpCbSE",th:"https://i.ytimg.com/vi/WXmmgQpCbSE/hqdefault.jpg"},
+];
+const FPOOLS=FUNDS.map(f=>({...f,cur:Math.floor(Math.random()*60+20),inv:Math.floor(Math.random()*40+15)}));
+const REF_BONUS=[0,50,75,100,150,200]; // bonus by referral number (1st=50, 2nd=75, etc)
+let U=null,done=[],wdAmt=null,depVip=null,fundPlan=null,myInv=[],earnings=[];
+const fmt=n=>Math.abs(n).toLocaleString("pt-MZ");
+const ff=n=>fmt(n)+" MT";
+const today=()=>new Date().toLocaleDateString("pt-MZ");
+const tkey=()=>{const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"}));return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();};
+const now2=()=>{const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"}));return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");};
+const isWday=()=>{const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"})).getDay();return d>=1&&d<=5;};
+const wdStat=()=>{const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"})),dy=d.getDay(),h=d.getHours(),t=String(h).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");if(dy===0||dy===6)return{ok:false,msg:"Só Seg–Sex · Hoje é fim-de-semana"};if(h<10)return{ok:false,msg:"Abre às 10:00 · Agora: "+t};if(h>=18)return{ok:false,msg:"Fechou às 18:00 · Amanhã às 10:00"};return{ok:true,msg:"Aberto · Fecha às 18:00 ("+t+")"};};
+const DB={
+  get:async p=>{
+    // Try Supabase first
+    if(db){
+      try{
+        const{data}=await db.from("users").select("*").eq("phone",p).single();
+        if(data) return data;
+      }catch(e){}
+    }
+    // Fallback: check localStorage
+    try{
+      const users=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
+      return users.find(u=>u.phone===p)||null;
+    }catch(e){return null;}
+  },
+  create:async u=>{if(!db)return null;try{const{data,error}=await db.from("users").insert([u]).select().single();if(error){console.error("DB create error:",error);return null;}return data;}catch(e){console.error("DB create exception:",e);return null;}},
+  update:async(p,d)=>{
+    // Try Supabase
+    if(db){try{await db.from("users").update(d).eq("phone",p);}catch(e){}}
+    // Always update localStorage too
+    try{
+      const users=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
+      const idx=users.findIndex(u=>u.phone===p);
+      if(idx>=0){users[idx]={...users[idx],...d};localStorage.setItem("mz-local-users",JSON.stringify(users));}
+    }catch(e){}
+  },
+  allUsers:async()=>{
+    let dbUsers=[];
+    if(db){try{const{data}=await db.from("users").select("*").order("created_at",{ascending:false});dbUsers=data||[];}catch(e){}}
+    try{
+      const localUsers=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
+      // Merge: prefer DB users, add local-only users
+      const dbPhones=new Set(dbUsers.map(u=>u.phone));
+      const onlyLocal=localUsers.filter(u=>!dbPhones.has(u.phone));
+      return [...dbUsers,...onlyLocal];
+    }catch(e){return dbUsers;}
+  },
+  txCreate:async t=>{if(!db)return null;try{const{data}=await db.from("transactions").insert([t]).select().single();return data;}catch(e){return null;}},
+  txUpdate:async(id,d)=>{if(!db)return;try{await db.from("transactions").update(d).eq("id",id);}catch(e){}},
+  txAll:async()=>{if(!db)return[];try{const{data}=await db.from("transactions").select("*").order("created_at",{ascending:false});return data||[];}catch(e){return[];}},
+};
+function toast(msg,type="s"){const t=document.getElementById("toast");t.textContent=msg;t.className=type;t.style.display="block";setTimeout(()=>t.style.display="none",3200);}
+function pg(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
+  document.getElementById(id)?.classList.add("on");
+  // Pre-fill ref code when going to register
+  if(id==="pg-register"){
+    const ref=sessionStorage.getItem("mz-ref-code");
+    if(ref){setTimeout(()=>{const el=document.getElementById("r-ref");if(el)el.value=ref.toUpperCase();},50);}
+  }
+}
+function goTab(tid,nid){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));document.getElementById(tid)?.classList.add("on");if(nid&&nid!=="n-none"){document.querySelectorAll(".ni").forEach(n=>n.classList.remove("on"));document.getElementById(nid)?.classList.add("on");}}
+function showConfirm(msg,cb){document.getElementById("c-msg").textContent=msg;document.getElementById("c-yes").onclick=()=>{document.getElementById("confirm").classList.remove("on");cb();};document.getElementById("confirm").classList.add("on");}
+function closeConfirm(){document.getElementById("confirm").classList.remove("on");}
+function mapU(u){
+  let notifs=u.notifications||[];
+  let taskHist=u.task_history||{};
+  let teamMem=u.team_members||[];
+  try{if(typeof notifs==="string")notifs=JSON.parse(notifs);}catch(e){notifs=[];}
+  try{if(typeof taskHist==="string")taskHist=JSON.parse(taskHist);}catch(e){taskHist={};}
+  try{if(typeof teamMem==="string")teamMem=JSON.parse(teamMem);}catch(e){teamMem=[];}
+  return{...u,vip:u.vip_level?VIPS[u.vip_level-1]:null,balance:parseFloat(u.balance)||0,referrals:u.referrals||0,totalEarned:parseFloat(u.total_earned)||0,refCode:u.ref_code,notifications:notifs,taskHistory:taskHist,teamMembers:teamMem};
+}
+async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!==undefined)d.balance=patch.balance;if(patch.vip!==undefined){d.vip_level=patch.vip?.l||null;if(patch.vip)d.activated_at=today();}if(patch.totalEarned!==undefined)d.total_earned=patch.totalEarned;if(patch.notifications!==undefined)d.notifications=patch.notifications;if(patch.taskHistory!==undefined)d.task_history=patch.taskHistory;if(patch.tutorialDone!==undefined)d.tutorial_done=patch.tutorialDone;if(patch.photo!==undefined)d.photo=patch.photo;if(patch.pin!==undefined)d.pin=patch.pin;if(Object.keys(d).length>0)await DB.update(U.phone,d);updateUI();}
+(function(){
+  let p=0;
+  const bar=document.getElementById("sp-bar"),pct=document.getElementById("sp-pct");
+  const iv=setInterval(()=>{
+    p+=2;
+    if(p>=100){p=100;clearInterval(iv);setTimeout(()=>pg("pg-login"),400);}
+    bar.style.width=p+"%";pct.textContent=p+"%";
+  },40);
+})();
+async function doLogin(){
+  const ph=document.getElementById("l-phone").value.trim(),pin=document.getElementById("l-pin").value.trim(),err=document.getElementById("l-err");
+  err.style.display="none";
+  if(ph===ADMIN_PHONE&&pin===ADMIN_PIN){await loadAdmin();pg("pg-admin");return;}
+  const btn=document.getElementById("l-btn");btn.disabled=true;btn.textContent="A entrar...";
+  const u=await DB.get(ph);btn.disabled=false;btn.textContent="Entrar →";
+  if(!u||u.pin!==pin){err.textContent="Número ou PIN incorrectos.";err.style.display="block";return;}
+  if(u.blocked){err.textContent="Conta bloqueada. Contacta: +258 86 437 8323";err.style.display="block";return;}
+  U=mapU(u);try{done=JSON.parse(localStorage.getItem("mzd-"+U.phone+"-"+tkey())||"[]");}catch(e){done=[];}
+  loadMain();pg("pg-main");
+}
+async function doRegister(){
+  const nm=document.getElementById("r-name").value.trim(),ph=document.getElementById("r-phone").value.trim(),pi=document.getElementById("r-pin").value.trim(),pi2=document.getElementById("r-pin2").value.trim(),ref=document.getElementById("r-ref").value.trim().toUpperCase(),err=document.getElementById("r-err");
+  err.style.display="none";
+  if(!nm){err.textContent="Insere o teu nome.";err.style.display="block";return;}
+  if(ph.length<9){err.textContent="Número inválido.";err.style.display="block";return;}
+  if(pi.length<4){err.textContent="PIN deve ter 4 dígitos.";err.style.display="block";return;}
+  if(pi!==pi2){err.textContent="PINs não coincidem.";err.style.display="block";return;}
+  const btn=document.getElementById("r-btn");btn.disabled=true;btn.textContent="A criar conta...";
+  const ex=await DB.get(ph);
+  if(ex){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+  const rc="MZ"+Math.floor(100000+Math.random()*900000);
+  const notif=[{id:1,msg:"Bem-vindo à MZInvestment! 🎉 Activa um VIP para começar a ganhar.",time:now2(),date:today(),read:false}];
+  const nu={phone:ph,pin:pi,name:nm,balance:0,referrals:0,ref_code:rc,total_earned:0,week_earned:0,month_earned:0,activated_at:today(),photo:"",lang:"pt",blocked:false,tutorial_done:false,task_history:{},notifications:notif,team_members:[]};
+  if(ref)nu.invited_by=ref;
+  const saved=await DB.create(nu);
+  if(!saved){err.textContent="Erro ao criar conta. Verifica a ligação e tenta novamente.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+  if(ref){try{const{data:ru}=await db.from("users").select("*").eq("ref_code",ref).single();if(ru){const newRefCount=(ru.referrals||0)+1;const bonus=REF_BONUS[newRefCount]||0;const newBal=(parseFloat(ru.balance)||0)+bonus;const bonusMsg=bonus>0?" Bónus de "+ff(bonus)+" creditado! 💰":"";const nn=[...(ru.notifications||[]),{id:Date.now(),msg:"👥 "+nm+" registou-se com o teu código! "+newRefCount+"/5."+bonusMsg,time:now2(),date:today(),read:false}];const patch={referrals:newRefCount,notifications:nn};if(bonus>0){patch.balance=newBal;patch.total_earned=(parseFloat(ru.total_earned)||0)+bonus;}await DB.update(ru.phone,patch);}}catch(e){}}
+  U=mapU(saved);done=[];loadMain();pg("pg-main");btn.disabled=false;btn.textContent="Criar Conta →";
+}
+function logout(){U=null;done=[];wdAmt=null;earnings=[];pg("pg-login");}
+function loadMain(){renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();}
+function updateUI(){
+  if(!U)return;
+  document.getElementById("greeting").textContent="Olá, "+U.name.split(" ")[0]+" 👋";
+  document.getElementById("hdr-bal").textContent=fmt(U.balance);
+  const vs=document.getElementById("vip-sm");vs.textContent=U.vip?"⭐ VIP "+U.vip.l+" – "+U.vip.n:"Sem VIP activo";vs.style.color=U.vip?U.vip.c:"#4A7FFF";
+  document.getElementById("w-phone").textContent=U.phone;
+  document.getElementById("w-bal").textContent=fmt(U.balance)+" MZN";
+  document.getElementById("p-phone").textContent=U.phone;
+  document.getElementById("p-bal").textContent=fmt(U.balance);
+  const pvt=document.getElementById("p-vip-tag");pvt.innerHTML=U.vip?`<div style="background:${U.vip.c};border-radius:6px;padding:2px 10px;font-size:12px;font-weight:900;color:#000;display:inline-block;margin-top:4px">T${U.vip.l}</div>`:"";
+  const ws=wdStat();const wb=document.getElementById("wd-banner");wb.textContent=(ws.ok?"✅":"🔒")+" "+ws.msg;wb.className="wd-banner "+(ws.ok?"wd-open":"wd-closed");
+  const rem=Math.max(0,(U.vip?.v||0)-done.length);document.getElementById("t-rem").textContent=rem;document.getElementById("t-done").textContent=done.length;
+  document.getElementById("wday-warn").style.display=isWday()?"none":"block";
+  document.getElementById("no-vip").style.display=U.vip?"none":"block";
+  document.getElementById("no-vip2").style.display=U.vip?"none":"block";
+  const te=earnings.filter(e=>e.a>0).reduce((s,e)=>s+e.a,0);
+  const stats=[["Ganhos hoje",fmt(te)],["Total ganho",fmt(U.totalEarned)],["Indicações",U.referrals+"/5"],["Tarefas",done.length+"/"+(U.vip?.v||0)]];
+  document.getElementById("home-stats").innerHTML=stats.map(([l,v])=>`<div class="stcard"><div class="stv">${v}</div><div class="stl">${l}</div></div>`).join("");
+  document.getElementById("p-stats").innerHTML=`<div class="stcard"><div class="stv">${U.referrals}/5</div><div class="stl">Indicações VIP</div></div><div class="stcard"><div class="stv">${done.length}/${U.vip?.v||0}</div><div class="stl">Tarefas hoje</div></div><div class="stcard"><div class="stv" style="font-size:12px">${ff(U.totalEarned)}</div><div class="stl">Total ganho</div></div><div class="stcard"><div class="stv" style="font-size:12px">${U.activatedAt||today()}</div><div class="stl">Membro desde</div></div>`;
+  const un=(U.notifications||[]).filter(n=>!n.read).length;const nd=document.getElementById("notif-dot");if(nd)nd.style.display=un>0?"inline-block":"none";
+  document.getElementById("pinfo-rows").innerHTML=`<div class="irow"><span class="ilbl">👤 Nome</span><span class="ival">${U.name}</span></div><div class="irow"><span class="ilbl">📱 Número e-Mola</span><span class="ival">+258 ${U.phone}</span></div><div class="irow"><span class="ilbl">📅 Activado</span><span class="ival">${U.activatedAt||today()}</span></div><div class="irow"><span class="ilbl">💎 VIP</span><span class="ival" style="color:${U.vip?.c||"#7090C0"}">${U.vip?"VIP "+U.vip.l+" – "+U.vip.n:"Sem VIP"}</span></div><div class="irow"><span class="ilbl">👥 Indicações</span><span class="ival">${U.referrals}/5</span></div><div class="irow" style="border:none"><span class="ilbl">🔗 Código</span><span class="ival" style="color:#00D4FF">${U.refCode||"—"}</span></div>`;
+  if(U.photo){document.getElementById("av-img").src=U.photo;document.getElementById("av-img").style.display="block";document.getElementById("av-icon").style.display="none";}
+}
+function renderHome(){
+  const items=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-deposit','n-none')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["📲","Baixar APP","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
+  const html=items.map(([ic,lb,ac])=>`<div class="hmitem" onclick="${ac}"><div class="hmicon">${ic}</div><div class="hmlbl">${lb}</div></div>`).join("");
+  document.getElementById("home-menu").innerHTML=html;
+  document.getElementById("p-menu").innerHTML=html;
+}
+function renderVips(){
+  document.getElementById("vip-list").innerHTML=VIPS.map(v=>{
+    const act=U.vip?.l===v.l;
+    return `<div class="vip-card" style="border-color:${act?v.c:"#1E3060"}"><div class="vip-hd"><div class="vip-tag" style="background:${v.c}">VIP ${v.l}</div><div class="vip-nm" style="color:${v.c}">${v.n}</div>${act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅ Activo</div>':""}</div><div class="irow"><span class="ilbl">💳 Depósito</span><span class="ival">${ff(v.p)}</span></div><div class="irow"><span class="ilbl">💰 Ganho/dia</span><span class="ival" style="color:#00D4FF">${ff(v.d)}</span></div><div class="irow"><span class="ilbl">🎬 Tarefas/dia</span><span class="ival">${v.v}</span></div><div class="irow" style="border:none"><span class="ilbl">💵 Por tarefa</span><span class="ival">${ff(Math.floor(v.d/v.v))}</span></div>${!act?`<button class="btn-vip" style="background:${v.c}" onclick="activVip(${v.l})">Activar VIP ${v.l} – ${ff(v.p)}</button>`:""}</div>`;
+  }).join("");
+}
+async function activVip(l){
+  const v=VIPS[l-1];
+  if((U.balance||0)>=v.p){await syncU({balance:U.balance-v.p,vip:v});earnings.push({desc:"✅ VIP "+v.l+" activado",a:-v.p,date:today()});toast("VIP "+v.l+" "+v.n+" activado! 🚀");renderVips();goTab("t-home","n-home");}
+  else{depVip=v;
+    document.getElementById("dep-vip-box").innerHTML=`<div class="vip-card" style="border-color:${v.c};margin-bottom:14px"><div style="color:${v.c};font-size:15px;font-weight:900;margin-bottom:8px">VIP ${v.l} – ${v.n}</div><div class="irow" style="border:none"><span class="ilbl">Valor</span><span class="ival" style="color:#FFD700">${ff(v.p)}</span></div></div>`;
+    const waMsg="Olá MZInvestment! 👋\nQuero fazer depósito para VIP "+v.l+" ("+ff(v.p)+")\nNome: "+U.name+"\nNúmero: +258 "+U.phone+"\nVou enviar o comprovativo em seguida.";
+    const waBtn=document.getElementById("dep-wa-btn");
+    if(waBtn){waBtn.href="https://wa.me/"+SUPPORT+"?text="+encodeURIComponent(waMsg);waBtn.onclick=function(){window.open(this.href,"_blank");return false;};}
+    goTab("t-deposit","n-none");}
+}
+function renderVideos(){
+  if(!U.vip){document.getElementById("vgrid").innerHTML="";return;}
+  document.getElementById("vgrid").innerHTML=VIDEOS.slice(0,U.vip.v).map(v=>{
+    const dk=done.includes(v.id);
+    return `<div class="vcard ${dk?"done":""}" onclick="${dk?"":"openVid("+v.id+")"}"><img src="${v.th}" alt="${v.t}" loading="lazy"/><div class="vbadge">T${U.vip.l}</div>${!dk?`<div class="vplay"><div class="vplay-btn">▶</div></div>`:""} ${dk?`<div class="vdone">✓</div>`:""}<div class="vinfo"><div class="vtit">${v.t}</div><div class="vart">${v.a}</div><div class="vrwd" style="color:${dk?"#2ECC71":"#00D4FF"}">${dk?"✅ Concluído":"MZN +"+Math.floor(U.vip.d/U.vip.v)}</div></div></div>`;
+  }).join("");
+}
+let cdTimer=null;
+function openVid(id){
+  if(!U.vip){toast("Activa um VIP primeiro!","e");return;}
+  if(!isWday()){toast("Tarefas só Seg–Sex!","e");return;}
+  if(done.includes(id)){toast("Já assistido hoje!","e");return;}
+  if(done.length>=U.vip.v){toast("Limite diário atingido!","e");return;}
+  const v=VIDEOS.find(x=>x.id===id);if(!v)return;
+  document.getElementById("pl-title").textContent=v.t;document.getElementById("pl-artist").textContent=v.a;
+  document.getElementById("pl-done").style.display="none";
+  document.getElementById("pl-iframe").src="https://www.youtube.com/embed/"+v.yt+"?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin="+encodeURIComponent(window.location.origin);
+  document.getElementById("i-artist").textContent=v.a;document.getElementById("i-title").textContent=v.t;
+  document.getElementById("i-vip").textContent="VIP "+U.vip.l+" – "+U.vip.n;
+  const rwd=Math.floor(U.vip.d/U.vip.v);
+  document.getElementById("i-rwd").textContent="+"+ff(rwd);document.getElementById("cd-earn").textContent="+"+ff(rwd)+" ao completar";document.getElementById("done-amt").textContent="+"+ff(rwd)+" creditados!";
+  document.getElementById("cd-card").style.display="block";document.getElementById("done-card").style.display="none";document.getElementById("cd-num").style.color="#00D4FF";
+  document.getElementById("player").classList.add("on");startCd(id,v,rwd);
+}
+function startCd(id,v,rwd){
+  let t=15;document.getElementById("cd-num").textContent=t;
+  document.getElementById("cd-num").style.color="#00D4FF";
+  if(cdTimer)clearInterval(cdTimer);
+  // Wait 2 seconds for video to load before starting countdown
+  setTimeout(()=>{
+  cdTimer=setInterval(async()=>{
+    t--;const num=document.getElementById("cd-num");if(num){num.textContent=t;num.style.color=t<=5?"#E74C3C":"#00D4FF";}
+    document.getElementById("i-done").textContent=done.length+" / "+(U.vip?.v||0);document.getElementById("i-rem").textContent=Math.max(0,(U.vip?.v||0)-done.length);
+    if(t<=0){
+      clearInterval(cdTimer);cdTimer=null;done.push(id);
+      try{localStorage.setItem("mzd-"+U.phone+"-"+tkey(),JSON.stringify(done));}catch(e){}
+      const th={...U.taskHistory};th[tkey()]=(th[tkey()]||0)+rwd;
+      await syncU({balance:U.balance+rwd,totalEarned:U.totalEarned+rwd,taskHistory:th});
+      earnings.push({desc:"🎬 "+v.t,a:rwd,date:today()});
+      document.getElementById("cd-card").style.display="none";document.getElementById("done-card").style.display="block";document.getElementById("pl-done").style.display="block";
+      document.getElementById("i-done").textContent=done.length+" / "+(U.vip?.v||0);document.getElementById("i-rem").textContent=Math.max(0,(U.vip?.v||0)-done.length);
+      renderVideos();toast("+"+ff(rwd)+" ganhos! 💰");
+    }
+  },1000);
+  },2000); // 2 second delay for video to load
+}
+function closePlayer(){if(cdTimer){clearInterval(cdTimer);cdTimer=null;}document.getElementById("player").classList.remove("on");document.getElementById("pl-iframe").src="";}
+function renderWd(){document.getElementById("wd-amts").innerHTML=WD_AMTS.map(a=>`<div class="wda${wdAmt===a?" sel":""}" onclick="selWd(${a})">${fmt(a)}</div>`).join("");}
+function selWd(a){wdAmt=a;renderWd();}
+async function submitWd(){
+  if(!wdAmt){toast("Escolhe um valor","e");return;}const ws=wdStat();if(!ws.ok){toast(ws.msg,"e");return;}if(wdAmt>U.balance){toast("Saldo insuficiente","e");return;}
+  const lk=localStorage.getItem("mzlw-"+U.phone);if(lk===tkey()){toast("Só 1 levantamento por dia!","e");return;}
+  const net=Math.floor(wdAmt*0.9);
+  showConfirm("Confirmas o levantamento de "+ff(wdAmt)+" via e-Mola?\n(Taxa 10% · Recebes "+ff(net)+")",async()=>{
+    await syncU({balance:U.balance-wdAmt});await DB.txCreate({user_id:U.phone,user_name:U.name,phone:U.phone,amount:wdAmt,type:"withdrawal",wallet:"e-Mola",status:"pending"});
+    earnings.push({desc:"⏳ Levantamento solicitado",a:-wdAmt,date:today()});localStorage.setItem("mzlw-"+U.phone,tkey());
+    window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("💸 PEDIDO DE LEVANTAMENTO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+wdAmt+" MT (receberá "+net+" MT após taxa 10%)\n🏦 e-Mola\n🕐 "+now2()),"_blank");
+    toast("Pedido enviado! ✅");wdAmt=null;renderWd();
+  });
+}
+function showWdHist(){const hist=earnings.filter(e=>e.a<0);document.getElementById("wd-hist").innerHTML=hist.length===0?`<div class="empty">Sem retiradas ainda</div>`:hist.slice().reverse().map(e=>`<div class="tx-row"><div><div style="font-size:13px;color:#C8D8F0">${e.desc}</div><div style="font-size:11px;color:#3A5070">${e.date}</div></div><div style="color:#FF6B6B;font-weight:900">${ff(Math.abs(e.a))}</div></div>`).join("");goTab("t-wdhist","n-none");}
+async function submitDep(){if(!depVip)return;await DB.txCreate({user_id:U.phone,user_name:U.name,phone:U.phone,amount:depVip.p,type:"deposit",vip_level:depVip.l,wallet:"e-Mola",status:"pending"});window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("💳 NOVO DEPÓSITO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+depVip.p+" MT\n💎 VIP "+depVip.l+"\n🕐 "+now2()),"_blank");toast("Pedido enviado! ✅");depVip=null;goTab("t-home","n-home");}
+function renderFund(){
+  const ul=(U.referrals||0)>=5;let html="";
+  if(!ul){const pct=Math.min(((U.referrals||0)/5)*100,100);html=`<div class="flocked"><div style="font-size:36px;margin-bottom:8px">🔒</div><div style="color:#FF8C00;font-size:17px;font-weight:900;margin-bottom:8px">Acesso Restrito</div><div style="color:#C8A070;font-size:14px;line-height:1.8;margin-bottom:12px">Precisas de convidar <strong style="color:#FFD700">5 pessoas</strong> que activem um VIP.</div><div style="background:#0D2040;border-radius:12px;padding:12px;margin-bottom:12px;text-align:center"><div style="color:#00D4FF;font-size:26px;font-weight:900">${U.referrals||0} / 5</div><div style="background:#1a2a40;border-radius:10px;height:8px;overflow:hidden;margin-top:6px"><div style="height:100%;background:linear-gradient(90deg,#004080,#00D4FF);border-radius:10px;width:${pct}%"></div></div></div><div style="color:#FF8C00;font-size:13px;margin-bottom:12px">Ao atingires 5, acesso automático! 🚀</div><button style="width:100%;padding:13px;background:linear-gradient(135deg,#128C7E,#25D366);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:900;cursor:pointer" onclick="goTab('t-invite','n-none')">👥 Convidar amigos</button></div>`;}
+  else{html=`<div class="card" style="border-color:#2ECC7155"><div style="color:#2ECC71;font-size:14px;font-weight:900">✅ Fundo desbloqueado — ${U.referrals} indicações com VIP!</div></div>`+FPOOLS.map(p=>`<div class="fcard"><div class="fhd"><div style="font-size:30px">${p.icon}</div><div><div style="font-size:15px;font-weight:900">${p.label}</div><div style="font-size:13px;color:#3A6090">${p.desc}</div></div><div class="frate">+${p.rate}%</div></div><div class="ptrack"><div class="pfill" style="width:${p.cur}%"></div></div><div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px"><span style="color:#7090C0">${p.cur}% · ${p.inv} invest.</span><span style="color:${p.cur>=100?"#E74C3C":p.cur>=80?"#FFD700":"#2ECC71"};font-weight:900">${p.cur>=100?"🔒 Cheio":p.cur>=80?"⚡ Quase":"🟢 Disponível"}</span></div><div style="display:flex;gap:8px;margin-bottom:12px"><div style="flex:1;background:#0D2040;border-radius:10px;padding:7px;text-align:center"><div style="font-size:13px;font-weight:900">${p.days}d</div><div style="color:#5070A0;font-size:10px">Prazo</div></div><div style="flex:1;background:#0D2040;border-radius:10px;padding:7px;text-align:center"><div style="font-size:13px;font-weight:900;color:#00D4FF">+${p.rate}%</div><div style="color:#5070A0;font-size:10px">Retorno</div></div><div style="flex:1;background:#0D2040;border-radius:10px;padding:7px;text-align:center"><div style="font-size:12px;font-weight:900">${fmt(MIN_FUND)}</div><div style="color:#5070A0;font-size:10px">Mínimo</div></div></div><button class="btn-p" style="margin-top:0;opacity:${p.cur>=100?0.4:1}" ${p.cur>=100?"disabled":""} onclick="selFund('${p.id}')">${p.cur>=100?"Fundo Cheio":"Investir →"}</button></div>`).join("");}
+  document.getElementById("f-browse").innerHTML=html;renderMyInv();
+}
+function selFund(id){
+  fundPlan=FPOOLS.find(p=>p.id===id);const p=fundPlan;
+  document.getElementById("f-invest").innerHTML=`<div class="fcard"><div class="fhd"><div style="font-size:30px">${p.icon}</div><div><div style="font-size:15px;font-weight:900">${p.label} · +${p.rate}%</div><div style="font-size:13px;color:#3A6090">${p.desc}</div></div></div></div><div class="fld"><label>💵 Valor (mín. ${ff(MIN_FUND)})</label><input type="number" id="fa" placeholder="Ex: 1000" oninput="fundPv()"/></div><div id="f-pv" style="display:none" class="card"></div><div style="color:#5070A0;font-size:14px;margin-bottom:12px">Saldo disponível: <strong style="color:#fff">${ff(U.balance)}</strong></div><button class="btn-p" onclick="doInvest()">Confirmar Investimento 📈</button>`;
+  switchFT("invest");
+}
+function fundPv(){const a=parseInt(document.getElementById("fa")?.value||0),p=fundPlan,pv=document.getElementById("f-pv");if(!pv||!p)return;if(a>=MIN_FUND){const pr=Math.round(a*p.rate/100);pv.style.display="block";pv.innerHTML=`<div class="irow"><span class="ilbl">Capital</span><span class="ival">${ff(a)}</span></div><div class="irow"><span class="ilbl">Retorno ${p.rate}%</span><span class="ival" style="color:#2ECC71">${ff(pr)}</span></div><div class="irow" style="border:none"><span class="ilbl">Total</span><span class="ival" style="color:#00D4FF">${ff(a+pr)}</span></div>`;}else pv.style.display="none";}
+async function doInvest(){const a=parseInt(document.getElementById("fa")?.value||0);if(!fundPlan){toast("Escolhe um plano","e");return;}if(!a||a<MIN_FUND){toast("Mínimo: "+ff(MIN_FUND),"e");return;}if(a>U.balance){toast("Saldo insuficiente","e");return;}if((U.referrals||0)<5){toast("Precisas de 5 indicações!","e");return;}const p=fundPlan,pr=Math.round(a*p.rate/100),mat=new Date();mat.setDate(mat.getDate()+p.days);await syncU({balance:U.balance-a});myInv.push({plan:p,amount:a,profit:pr,total:a+pr,date:today(),maturity:mat.toLocaleDateString("pt-MZ")});earnings.push({desc:"📈 Fundo "+p.label,a:-a,date:today()});toast("Investimento confirmado! 📈");fundPlan=null;renderMyInv();switchFT("mine");}
+function renderMyInv(){document.getElementById("f-mine").innerHTML=myInv.length===0?`<div class="empty">Sem investimentos activos</div>`:myInv.map(iv=>`<div class="fcard"><div class="fhd"><div style="font-size:30px">${iv.plan.icon}</div><div><div style="font-size:15px;font-weight:900">${iv.plan.label} · +${iv.plan.rate}%</div><div style="font-size:13px;color:#3A6090">${iv.date}</div></div><div style="color:#2ECC71;font-size:18px">✅</div></div><div class="irow"><span class="ilbl">Capital</span><span class="ival">${ff(iv.amount)}</span></div><div class="irow"><span class="ilbl">Lucro</span><span class="ival" style="color:#2ECC71">${ff(iv.profit)}</span></div><div class="irow" style="border:none"><span class="ilbl">Vence</span><span class="ival">${iv.maturity}</span></div></div>`).join("");}
+function switchFT(tab){["browse","invest","mine"].forEach(t=>{document.getElementById("ft-"+t)?.classList.toggle("on",t===tab);document.getElementById("f-"+t).style.display=t===tab?"block":"none";});}
+function renderNotifs(){const ns=U?.notifications||[];document.getElementById("notif-list").innerHTML=ns.length===0?`<div class="empty">Sem notificações</div>`:ns.slice().reverse().map(n=>`<div style="border-radius:14px;padding:14px;margin-bottom:10px;background:${n.read?"#071828":"#071830"};border:1px solid ${n.read?"#0D2A4A":"#00D4FF44"}">${!n.read?`<div style="width:8px;height:8px;background:#00D4FF;border-radius:50%;margin-bottom:6px"></div>`:""}<div style="font-size:14px;line-height:1.6">${n.msg}</div><div style="color:#3A5070;font-size:11px;margin-top:4px">${n.date} ${n.time}</div></div>`).join("");}
+async function markRead(){const ns=(U.notifications||[]).map(n=>({...n,read:true}));await syncU({notifications:ns});renderNotifs();}
+function renderTeam(){const c=U.referrals||0;document.getElementById("team-lbl").textContent=c+" / 5 membros com VIP activo";document.getElementById("team-prog").style.width=Math.min((c/5)*100,100)+"%";document.getElementById("team-msg").innerHTML=c>=5?`<div style="color:#2ECC71;font-weight:900;text-align:center;padding:8px">✅ Fundo desbloqueado!</div>`:`<div style="color:#FF8C00;font-size:14px;text-align:center">Faltam ${5-c} membros para desbloquear o Fundo</div>`;const ms=U.teamMembers||[];document.getElementById("team-list").innerHTML=ms.length===0?`<div class="card" style="text-align:center;padding:20px;color:#5070A0">Ainda não tens membros.<br>Partilha o teu código!</div>`:ms.map(m=>`<div class="card"><div style="display:flex;align-items:center;gap:12px"><div style="width:38px;height:38px;background:#1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">👤</div><div><div style="font-weight:900">${m.name}</div><div style="color:#7090C0;font-size:13px">VIP ${m.vip} · ${m.joined}</div></div><div style="margin-left:auto;color:#2ECC71;font-size:13px;font-weight:900">✅ Activo</div></div></div>`).join("");}
+function renderInvite(){
+  const code=U.refCode||"—";
+  document.getElementById("inv-code").textContent=code;
+  document.getElementById("inv-prog-txt").textContent=(U.referrals||0)+" / 5 indicações com VIP activo";
+  document.getElementById("inv-prog").style.width=Math.min(((U.referrals||0)/5)*100,100)+"%";
+  const msg="Olá! 👋\n\nEstou a ganhar dinheiro na MZInvestment assistindo vídeos musicais todos os dias!\n\n💰 Ganhos diários garantidos!\n\n📲 *Como entrar:*\n1. Abre este link: "+BASE_URL+"\n2. Clica em *Regista-te aqui*\n3. No campo de convite insere o meu código:\n\n🎁 *"+code+"*\n\nJunta-te agora! 🚀";
+  document.getElementById("inv-wa").href="https://wa.me/?text="+encodeURIComponent(msg);
+}
+function copyCode(){
+  const code=U?.refCode||"";
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(code)
+      .then(()=>toast("✅ Código "+code+" copiado!"))
+      .catch(()=>toast("O teu código: "+code));
+  } else {
+    toast("O teu código: "+code);
+  }
+}
+async function renderRanking(){const users=await DB.allUsers();const sorted=users.sort((a,b)=>(parseFloat(b.total_earned)||0)-(parseFloat(a.total_earned)||0)).slice(0,10);const medals=["🥇","🥈","🥉"];document.getElementById("ranking-list").innerHTML=sorted.map((u,i)=>`<div class="rank-card ${u.phone===U.phone?"me":""}"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px;min-width:30px;text-align:center">${medals[i]||"#"+(i+1)}</div><div style="width:34px;height:34px;background:#1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px">👤</div><div style="flex:1"><div style="font-weight:900;color:${u.phone===U.phone?"#00D4FF":"#E8F4FF"}">${u.name}${u.phone===U.phone?" (Tu)":""}</div><div style="color:#7090C0;font-size:12px">${u.vip_level?"VIP "+u.vip_level:"Sem VIP"}</div></div><div style="color:#2ECC71;font-size:14px;font-weight:900">${ff(parseFloat(u.total_earned)||0)}</div></div></div>`).join("");}
+async function changePin(){const o=document.getElementById("pin-old").value,n=document.getElementById("pin-new").value,n2=document.getElementById("pin-new2").value;if(o!==U.pin){toast("PIN actual incorrecto","e");return;}if(n.length<4){toast("Novo PIN deve ter 4 dígitos","e");return;}if(n!==n2){toast("PINs não coincidem","e");return;}await syncU({pin:n});document.getElementById("pin-old").value="";document.getElementById("pin-new").value="";document.getElementById("pin-new2").value="";toast("PIN alterado! ✅");}
+function handlePhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{await syncU({photo:ev.target.result});document.getElementById("av-img").src=ev.target.result;document.getElementById("av-img").style.display="block";document.getElementById("av-icon").style.display="none";};r.readAsDataURL(f);}
+let admUsers=[],admTxs=[];
+async function loadAdmin(){admUsers=await DB.allUsers();admTxs=await DB.txAll();const pend=admTxs.filter(t=>t.status==="pending").length;const b=document.getElementById("adm-badge");b.textContent=pend;b.style.display=pend>0?"flex":"none";admTab("dashboard");}
+function admTab(tab){document.querySelectorAll(".atab").forEach((el,i)=>el.classList.toggle("on",["dashboard","deposits","withdrawals","credit","users"][i]===tab));["dashboard","deposits","withdrawals","credit","users"].forEach(t=>document.getElementById("adm-"+t).style.display=t===tab?"block":"none");if(tab==="dashboard")renderAdmDash();else if(tab==="deposits")renderAdmDeps();else if(tab==="withdrawals")renderAdmWds();else if(tab==="credit")renderAdmCredit();else if(tab==="users")renderAdmUsers();}
+function renderAdmDash(){
+  const deps=admTxs.filter(t=>t.type==="deposit"),wds=admTxs.filter(t=>t.type==="withdrawal");
+  const pdeps=deps.filter(t=>t.status==="pending"),pwds=wds.filter(t=>t.status==="pending");
+  const tdep=deps.filter(t=>t.status==="approved").reduce((s,t)=>s+parseFloat(t.amount),0);
+  document.getElementById("adm-dashboard").innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <div class="stcard"><div class="stv" style="color:#C8A0FF">${admUsers.length}</div><div class="stl">Utilizadores</div></div>
+      <div class="stcard"><div class="stv" style="color:${(pdeps.length+pwds.length)>0?"#E74C3C":"#C8A0FF"}">${pdeps.length+pwds.length}</div><div class="stl">Pendentes</div></div>
+      <div class="stcard"><div class="stv" style="color:#2ECC71;font-size:12px">${fmt(tdep)}</div><div class="stl">Total dep.</div></div>
+    </div>
+    ${pdeps.length>0?`<div class="pcard pending"><div style="color:#FFD700;font-weight:900;margin-bottom:10px">⚡ ${pdeps.length} Depósito(s) pendente(s)</div>${pdeps.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0D2040"><div><div style="font-weight:900;font-size:14px">${d.user_name||"—"}</div><div style="color:#7090C0;font-size:12px">e-Mola · ${ff(d.amount)} · VIP ${d.vip_level}</div></div><div style="display:flex;gap:6px"><button class="btn-app" onclick="approveDep('${d.id}','${d.phone}',${d.amount},${d.vip_level},'${d.user_name||""}')">✅</button><button class="btn-rej" onclick="rejectTx('${d.id}','${d.phone}','deposit','${d.user_name||""}',${d.amount})">❌</button></div></div>`).join("")}</div>`:""}
+    ${pwds.length>0?`<div class="pcard pending" style="border-color:#00D4FF44"><div style="color:#00D4FF;font-weight:900;margin-bottom:10px">⚡ ${pwds.length} Levantamento(s) pendente(s)</div>${pwds.map(w=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0D2040"><div><div style="font-weight:900;font-size:14px">${w.user_name||"—"}</div><div style="color:#7090C0;font-size:12px">e-Mola · ${ff(w.amount)}</div></div><div style="display:flex;gap:6px"><button class="btn-app" onclick="approveWd('${w.id}','${w.phone}',${w.amount},'${w.user_name||""}')">✅</button><button class="btn-rej" onclick="rejectTx('${w.id}','${w.phone}','withdrawal','${w.user_name||""}',${w.amount})">❌</button></div></div>`).join("")}</div>`:""}
+    ${(pdeps.length+pwds.length)===0?`<div class="card" style="text-align:center;padding:24px"><div style="font-size:34px">✅</div><div style="color:#5070A0;margin-top:8px">Sem pedidos pendentes</div></div>`:""}
+    <div class="card"><div class="ctit">Últimas transacções</div>${admTxs.slice(0,10).map(t=>`<div class="tx-row"><div><div style="font-size:13px;color:#C8D8F0">${t.user_name||"—"} · ${t.type==="deposit"?"Dep.":t.type==="withdrawal"?"Lev.":"Crédito"}</div><div style="font-size:11px;color:#3A5070">${(t.created_at||"").slice(0,10)}</div></div><div style="color:${t.type==="withdrawal"?"#FF6B6B":"#2ECC71"};font-weight:900">${t.type==="withdrawal"?"-":"+"}{AMTFIX}</div></div>`.replace("{AMTFIX}",ff(parseFloat(t.amount)||0))).join("")||`<div style="color:#5070A0">Nenhuma ainda</div>`}</div>
+  `;
+}
+function renderAdmDeps(){const deps=admTxs.filter(t=>t.type==="deposit");document.getElementById("adm-deposits").innerHTML=deps.length===0?`<div class="empty">Sem depósitos</div>`:deps.map(d=>`<div class="pcard ${d.status}"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:15px">${d.user_name||"—"}</div><span style="font-size:11px;font-weight:700;color:${d.status==="pending"?"#FFD700":d.status==="approved"?"#2ECC71":"#E74C3C"}">${d.status==="pending"?"⏳ Pendente":d.status==="approved"?"✅ Aprovado":"❌ Rejeitado"}</span></div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${d.phone||"—"}</span></div><div class="irow"><span class="ilbl">💰 Valor</span><span class="ival" style="color:#FFD700">${ff(parseFloat(d.amount)||0)}</span></div><div class="irow" style="border:none"><span class="ilbl">💎 VIP</span><span class="ival">VIP ${d.vip_level||"—"}</span></div>${d.status==="pending"?`<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="approveDep('${d.id}','${d.phone}',${d.amount},${d.vip_level},'${d.user_name||""}')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejectTx('${d.id}','${d.phone}','deposit','${d.user_name||""}',${d.amount})">❌ Rejeitar</button></div>`:""}</div>`).join("");}
+function renderAdmWds(){const wds=admTxs.filter(t=>t.type==="withdrawal");document.getElementById("adm-withdrawals").innerHTML=wds.length===0?`<div class="empty">Sem levantamentos</div>`:wds.map(w=>`<div class="pcard ${w.status}"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:15px">${w.user_name||"—"}</div><span style="font-size:11px;font-weight:700;color:${w.status==="pending"?"#FFD700":w.status==="approved"?"#2ECC71":"#E74C3C"}">${w.status==="pending"?"⏳ Pendente":w.status==="approved"?"✅ Aprovado":"❌ Rejeitado"}</span></div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${w.phone||"—"}</span></div><div class="irow" style="border:none"><span class="ilbl">💸 Valor</span><span class="ival" style="color:#00D4FF">${ff(parseFloat(w.amount)||0)}</span></div>${w.status==="pending"?`<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="approveWd('${w.id}','${w.phone}',${w.amount},'${w.user_name||""}')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejectTx('${w.id}','${w.phone}','withdrawal','${w.user_name||""}',${w.amount})">❌ Rejeitar</button></div>`:""}</div>`).join("");}
+async function approveDep(id,phone,amount,vipLevel,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nb=(parseFloat(u.balance)||0)+parseFloat(amount);const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Depósito de "+ff(amount)+" aprovado! VIP "+vipLevel+" activado.",time:now2(),date:today(),read:false}];await DB.update(phone,{balance:nb,vip_level:parseInt(vipLevel),total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:today(),notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n💎 VIP "+vipLevel+" activado"),"_blank");toast("Depósito aprovado! ✅");await loadAdmin();}
+async function approveWd(id,phone,amount,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Receberás via e-Mola em breve.",time:now2(),date:today(),read:false}];await DB.update(phone,{notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n🏦 e-Mola"),"_blank");toast("Levantamento aprovado! ✅");await loadAdmin();}
+async function rejectTx(id,phone,type,name,amount){await DB.txUpdate(id,{status:"rejected"});const u=admUsers.find(x=>x.phone==phone);if(u){const m=`❌ ${type==="deposit"?"Depósito":"Levantamento"} de ${ff(amount)} rejeitado.${type==="withdrawal"?" Saldo devolvido.":""}`;const nn=[...(u.notifications||[]),{id:Date.now(),msg:m,time:now2(),date:today(),read:false}];const p={notifications:nn};if(type==="withdrawal")p.balance=(parseFloat(u.balance)||0)+parseFloat(amount);await DB.update(phone,p);}toast("Rejeitado","e");await loadAdmin();}
+function renderAdmCredit(){document.getElementById("adm-credit").innerHTML=`<div class="card" style="border-color:#2ECC7144"><div class="ctit" style="color:#2ECC71">➕ Creditar Saldo Manualmente</div><div class="fld"><label>📱 Número</label><input type="tel" id="cr-ph" placeholder="Ex: 840000001" oninput="chkCr()"/><div id="cr-info" style="font-size:12px;margin-top:4px"></div></div><div class="fld"><label>💰 Valor (MT)</label><input type="number" id="cr-amt" placeholder="Ex: 1500"/></div><div class="fld"><label>📝 Nota</label><input type="text" id="cr-note" placeholder="Ex: Depósito VIP 2"/></div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;margin-top:8px" onclick="doCredit()">✅ Confirmar Crédito</button></div>`;}
+async function chkCr(){const ph=document.getElementById("cr-ph")?.value,el=document.getElementById("cr-info");if(!ph||ph.length<9){if(el)el.textContent="";return;}const u=admUsers.find(x=>x.phone==ph);if(el){el.textContent=u?"✅ "+u.name:"❌ Não encontrado";el.style.color=u?"#2ECC71":"#E74C3C";}}
+async function doCredit(){const ph=document.getElementById("cr-ph")?.value,a=parseInt(document.getElementById("cr-amt")?.value||0),note=document.getElementById("cr-note")?.value||"Crédito manual";if(!ph){toast("Insere o número","e");return;}if(!a||a<=0){toast("Valor inválido","e");return;}const u=admUsers.find(x=>x.phone==ph);if(!u){toast("Utilizador não encontrado","e");return;}const nb=(parseFloat(u.balance)||0)+a;const nn=[...(u.notifications||[]),{id:Date.now(),msg:"💰 "+ff(a)+" foram creditados na tua conta. "+note,time:now2(),date:today(),read:false}];await DB.update(ph,{balance:nb,total_earned:(parseFloat(u.total_earned)||0)+a,notifications:nn});await DB.txCreate({user_id:ph,user_name:u.name,phone:ph,amount:a,type:"manual_credit",status:"approved",note});toast(ff(a)+" creditados a "+u.name+"! ✅");await loadAdmin();admTab("dashboard");}
+function renderAdmUsers(){document.getElementById("adm-users").innerHTML=admUsers.length===0?`<div class="empty">Sem utilizadores</div>`:admUsers.map(u=>`<div class="ucard ${u.blocked?"blocked":""}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-weight:900;font-size:15px;color:${u.blocked?"#FF6B6B":"#E8F4FF"}">${u.name}${u.blocked?" 🚫":""}</div>${u.blocked?`<div style="color:#FF6B6B;font-size:12px">Conta bloqueada</div>`:""}</div>${u.vip_level?`<div style="background:${VIPS[u.vip_level-1]?.c||"#fff"};border-radius:8px;padding:3px 8px;font-size:12px;font-weight:900;color:#000">VIP ${u.vip_level}</div>`:`<div style="color:#5070A0;font-size:13px">Sem VIP</div>`}</div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${u.phone}</span></div><div class="irow"><span class="ilbl">💰 Saldo</span><span class="ival" style="color:#00D4FF">${ff(parseFloat(u.balance)||0)}</span></div><div class="irow"><span class="ilbl">👥 Indicações</span><span class="ival">${u.referrals||0}/5</span></div><div class="irow"><span class="ilbl">📅 Activado</span><span class="ival">${u.activated_at||"—"}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:15px"><span class="ilbl">🔐 PIN</span><div style="display:flex;align-items:center;gap:10px"><span id="pin-${u.phone}" style="color:#FFD700;font-family:monospace;letter-spacing:3px;font-size:15px">••••</span><button style="background:#0D2040;border:1px solid #1E3060;border-radius:8px;color:#00D4FF;font-size:12px;padding:4px 10px" onclick="tgPin('${u.phone}','${u.pin}')">👁️ Ver</button></div></div><div style="display:flex;gap:10px;margin-top:12px">${u.blocked?`<button class="btn-app-f" onclick="tgBlock('${u.phone}',false,'${u.name}')">✅ Desbloquear</button>`:`<button class="btn-rej-f" onclick="tgBlock('${u.phone}',true,'${u.name}')">🚫 Bloquear</button>`}</div></div>`).join("");}
+function tgPin(ph,pin){const el=document.getElementById("pin-"+ph);if(el)el.textContent=el.textContent==="••••"?pin:"••••";}
+async function tgBlock(ph,block,name){const u=admUsers.find(x=>x.phone==ph);if(!u)return;const msg=block?"🚫 A tua conta foi bloqueada pelo administrador.":"✅ A tua conta foi desbloqueada!";const nn=[...(u.notifications||[]),{id:Date.now(),msg,time:now2(),date:today(),read:false}];await DB.update(ph,{blocked:block,notifications:nn});toast((block?"Conta de "+name+" bloqueada!":"Conta de "+name+" desbloqueada! ✅"),(block?"e":"s"));await loadAdmin();admTab("users");}
+</script>
+</body>
+</html>

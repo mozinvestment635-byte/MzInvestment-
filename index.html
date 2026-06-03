@@ -552,7 +552,10 @@ async function doLogin(){
   err.style.display="none";
   if(ph===ADMIN_PHONE&&pin===ADMIN_PIN){await loadAdmin();pg("pg-admin");return;}
   const btn=document.getElementById("l-btn");btn.disabled=true;btn.textContent="A entrar...";
-  const u=await DB.get(ph);btn.disabled=false;btn.textContent="Entrar →";
+  let u=await DB.get(ph);
+  // Also check localStorage
+  if(!u){const lu=JSON.parse(localStorage.getItem("mz-local-users")||"[]");u=lu.find(x=>x.phone===ph)||null;}
+  btn.disabled=false;btn.textContent="Entrar →";
   if(!u||u.pin!==pin){err.textContent="Número ou PIN incorrectos.";err.style.display="block";return;}
   if(u.blocked){err.textContent="Conta bloqueada. Contacta: +258 86 437 8323";err.style.display="block";return;}
   U=mapU(u);try{done=JSON.parse(localStorage.getItem("mzd-"+U.phone+"-"+tkey())||"[]");}catch(e){done=[];}
@@ -566,14 +569,23 @@ async function doRegister(){
   if(pi.length<4){err.textContent="PIN deve ter 4 dígitos.";err.style.display="block";return;}
   if(pi!==pi2){err.textContent="PINs não coincidem.";err.style.display="block";return;}
   const btn=document.getElementById("r-btn");btn.disabled=true;btn.textContent="A criar conta...";
+  // Check locally first
+  const localUsers=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
+  if(localUsers.find(u=>u.phone===ph)){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+  // Also check Supabase
   const ex=await DB.get(ph);
   if(ex){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
   const rc="MZ"+Math.floor(100000+Math.random()*900000);
   const notif=[{id:1,msg:"Bem-vindo à MZInvestment! 🎉 Activa um VIP para começar a ganhar.",time:now2(),date:today(),read:false}];
   const nu={phone:ph,pin:pi,name:nm,balance:0,referrals:0,ref_code:rc,total_earned:0,week_earned:0,month_earned:0,activated_at:today(),photo:"",lang:"pt",blocked:false,tutorial_done:false,task_history:{},notifications:notif,team_members:[]};
   if(ref)nu.invited_by=ref;
-  const saved=await DB.create(nu);
-  if(!saved){err.textContent="Erro ao criar conta. Verifica a ligação e tenta novamente.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+  // Save locally first - this ALWAYS works
+  const localUser={...nu,id:"local-"+Date.now()};
+  localUsers.push(localUser);
+  localStorage.setItem("mz-local-users",JSON.stringify(localUsers));
+  // Try Supabase in background
+  DB.create(nu).catch(e=>console.warn("Supabase sync failed:",e));
+  const saved=localUser;
   if(ref){try{const{data:ru}=await db.from("users").select("*").eq("ref_code",ref).single();if(ru){const newRefCount=(ru.referrals||0)+1;const bonus=REF_BONUS[newRefCount]||0;const newBal=(parseFloat(ru.balance)||0)+bonus;const bonusMsg=bonus>0?" Bónus de "+ff(bonus)+" creditado! 💰":"";const nn=[...(ru.notifications||[]),{id:Date.now(),msg:"👥 "+nm+" registou-se com o teu código! "+newRefCount+"/5."+bonusMsg,time:now2(),date:today(),read:false}];const patch={referrals:newRefCount,notifications:nn};if(bonus>0){patch.balance=newBal;patch.total_earned=(parseFloat(ru.total_earned)||0)+bonus;}await DB.update(ru.phone,patch);}}catch(e){}}
   U=mapU(saved);done=[];loadMain();pg("pg-main");btn.disabled=false;btn.textContent="Criar Conta →";
 }

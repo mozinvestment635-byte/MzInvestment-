@@ -440,7 +440,7 @@ const BASE_URL="https://mzinvestment.onrender.com";
 const WD_AMTS=[100,500,1000,2000,5000,10000];
 const MIN_FUND=500;
 let db;try{db=supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){db=null;}
-const VIPS=[{l:1,p:750,d:30,v:5,c:"#CD853F",n:"Bronze"},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata"},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro"},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina"},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante"},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi"},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda"},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite"}];
+const VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",days:30},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",days:30},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",days:30},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",days:30},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",days:30},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",days:30},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",days:30},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",days:30}];
 const FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:12,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:25,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:70,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:180,icon:"💰",desc:"Máximo lucro"}];
 const VIDEOS=[
   {id:1,t:"Blinding Lights",a:"The Weeknd",yt:"4NRXx6U8ABQ",th:"https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg"},
@@ -569,12 +569,9 @@ async function doRegister(){
   if(pi.length<4){err.textContent="PIN deve ter 4 dígitos.";err.style.display="block";return;}
   if(pi!==pi2){err.textContent="PINs não coincidem.";err.style.display="block";return;}
   const btn=document.getElementById("r-btn");btn.disabled=true;btn.textContent="A criar conta...";
-  // Check locally first
+  // Check locally first - fast and reliable
   const localUsers=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
   if(localUsers.find(u=>u.phone===ph)){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
-  // Also check Supabase
-  const ex=await DB.get(ph);
-  if(ex){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
   const rc="MZ"+Math.floor(100000+Math.random()*900000);
   const notif=[{id:1,msg:"Bem-vindo à MZInvestment! 🎉 Activa um VIP para começar a ganhar.",time:now2(),date:today(),read:false}];
   const nu={phone:ph,pin:pi,name:nm,balance:0,referrals:0,ref_code:rc,total_earned:0,week_earned:0,month_earned:0,activated_at:today(),photo:"",lang:"pt",blocked:false,tutorial_done:false,task_history:{},notifications:notif,team_members:[]};
@@ -586,11 +583,64 @@ async function doRegister(){
   // Try Supabase in background
   DB.create(nu).catch(e=>console.warn("Supabase sync failed:",e));
   const saved=localUser;
-  if(ref){try{const{data:ru}=await db.from("users").select("*").eq("ref_code",ref).single();if(ru){const newRefCount=(ru.referrals||0)+1;const bonus=REF_BONUS[newRefCount]||0;const newBal=(parseFloat(ru.balance)||0)+bonus;const bonusMsg=bonus>0?" Bónus de "+ff(bonus)+" creditado! 💰":"";const nn=[...(ru.notifications||[]),{id:Date.now(),msg:"👥 "+nm+" registou-se com o teu código! "+newRefCount+"/5."+bonusMsg,time:now2(),date:today(),read:false}];const patch={referrals:newRefCount,notifications:nn};if(bonus>0){patch.balance=newBal;patch.total_earned=(parseFloat(ru.total_earned)||0)+bonus;}await DB.update(ru.phone,patch);}}catch(e){}}
+  if(ref){
+    try{
+      const{data:ru}=await db.from("users").select("*").eq("ref_code",ref).single();
+      if(ru){
+        const newRefCount=(ru.referrals||0)+1;
+        const bonus=REF_BONUS[newRefCount]||0;
+        const newBal=(parseFloat(ru.balance)||0)+bonus;
+        const bonusMsg=bonus>0?" Bónus de "+ff(bonus)+" creditado! 💰":"";
+        // Add to team_members list
+        const teamMembers=Array.isArray(ru.team_members)?ru.team_members:[];
+        teamMembers.push({name:nm,phone:ph,vip:null,joined:today()});
+        const nn=[...(ru.notifications||[]),{id:Date.now(),msg:"👥 "+nm+" registou-se com o teu código! "+newRefCount+"/5."+bonusMsg,time:now2(),date:today(),read:false}];
+        const patch={referrals:newRefCount,notifications:nn,team_members:teamMembers};
+        if(bonus>0){patch.balance=newBal;patch.total_earned=(parseFloat(ru.total_earned)||0)+bonus;}
+        await DB.update(ru.phone,patch);
+        // Also update local storage for referrer
+        const lu=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
+        const ridx=lu.findIndex(u=>u.phone===ru.phone);
+        if(ridx>=0){lu[ridx]={...lu[ridx],...patch};localStorage.setItem("mz-local-users",JSON.stringify(lu));}
+      }
+    }catch(e){console.warn("Ref update failed:",e);}
+  }
   U=mapU(saved);done=[];loadMain();pg("pg-main");btn.disabled=false;btn.textContent="Criar Conta →";
 }
 function logout(){U=null;done=[];wdAmt=null;earnings=[];pg("pg-login");}
-function loadMain(){renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();}
+function loadMain(){
+  // Check VIP expiry
+  checkVipExpiry();
+  renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();
+}
+
+async function checkVipExpiry(){
+  if(!U||!U.vip||!U.activatedAt) return;
+  try{
+    // Parse activation date
+    const parts=U.activatedAt.split("/");
+    const actDate=new Date(parts[2],parts[1]-1,parts[0]);
+    const now=new Date();
+    const diffDays=Math.floor((now-actDate)/(1000*60*60*24));
+    const vipDays=U.vip.days||30;
+    if(diffDays>=vipDays){
+      // VIP expired!
+      const daysExpired=diffDays-vipDays;
+      const msg="⚠️ O teu VIP "+U.vip.l+" – "+U.vip.n+" expirou há "+daysExpired+" dia(s). Renova para continuar a ganhar!";
+      const notifs=[...(U.notifications||[])];
+      // Only add notification if not already there
+      if(!notifs.find(n=>n.msg.includes("expirou"))){
+        notifs.push({id:Date.now(),msg,time:now2(),date:today(),read:false});
+      }
+      await syncU({vip:null,notifications:notifs});
+      renderVips();
+    } else {
+      // Show days remaining
+      const daysLeft=vipDays-diffDays;
+      U.vipDaysLeft=daysLeft;
+    }
+  }catch(e){console.warn("VIP expiry check failed:",e);}
+}
 function updateUI(){
   if(!U)return;
   document.getElementById("greeting").textContent="Olá, "+U.name.split(" ")[0]+" 👋";
@@ -758,7 +808,7 @@ function renderAdmDash(){
 }
 function renderAdmDeps(){const deps=admTxs.filter(t=>t.type==="deposit");document.getElementById("adm-deposits").innerHTML=deps.length===0?`<div class="empty">Sem depósitos</div>`:deps.map(d=>`<div class="pcard ${d.status}"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:15px">${d.user_name||"—"}</div><span style="font-size:11px;font-weight:700;color:${d.status==="pending"?"#FFD700":d.status==="approved"?"#2ECC71":"#E74C3C"}">${d.status==="pending"?"⏳ Pendente":d.status==="approved"?"✅ Aprovado":"❌ Rejeitado"}</span></div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${d.phone||"—"}</span></div><div class="irow"><span class="ilbl">💰 Valor</span><span class="ival" style="color:#FFD700">${ff(parseFloat(d.amount)||0)}</span></div><div class="irow" style="border:none"><span class="ilbl">💎 VIP</span><span class="ival">VIP ${d.vip_level||"—"}</span></div>${d.status==="pending"?`<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="approveDep('${d.id}','${d.phone}',${d.amount},${d.vip_level},'${d.user_name||""}')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejectTx('${d.id}','${d.phone}','deposit','${d.user_name||""}',${d.amount})">❌ Rejeitar</button></div>`:""}</div>`).join("");}
 function renderAdmWds(){const wds=admTxs.filter(t=>t.type==="withdrawal");document.getElementById("adm-withdrawals").innerHTML=wds.length===0?`<div class="empty">Sem levantamentos</div>`:wds.map(w=>`<div class="pcard ${w.status}"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:15px">${w.user_name||"—"}</div><span style="font-size:11px;font-weight:700;color:${w.status==="pending"?"#FFD700":w.status==="approved"?"#2ECC71":"#E74C3C"}">${w.status==="pending"?"⏳ Pendente":w.status==="approved"?"✅ Aprovado":"❌ Rejeitado"}</span></div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${w.phone||"—"}</span></div><div class="irow" style="border:none"><span class="ilbl">💸 Valor</span><span class="ival" style="color:#00D4FF">${ff(parseFloat(w.amount)||0)}</span></div>${w.status==="pending"?`<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="approveWd('${w.id}','${w.phone}',${w.amount},'${w.user_name||""}')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejectTx('${w.id}','${w.phone}','withdrawal','${w.user_name||""}',${w.amount})">❌ Rejeitar</button></div>`:""}</div>`).join("");}
-async function approveDep(id,phone,amount,vipLevel,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nb=(parseFloat(u.balance)||0)+parseFloat(amount);const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Depósito de "+ff(amount)+" aprovado! VIP "+vipLevel+" activado.",time:now2(),date:today(),read:false}];await DB.update(phone,{balance:nb,vip_level:parseInt(vipLevel),total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:today(),notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n💎 VIP "+vipLevel+" activado"),"_blank");toast("Depósito aprovado! ✅");await loadAdmin();}
+async function approveDep(id,phone,amount,vipLevel,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nb=(parseFloat(u.balance)||0)+parseFloat(amount);const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Depósito de "+ff(amount)+" aprovado! VIP "+vipLevel+" activado.",time:now2(),date:today(),read:false}];await DB.update(phone,{balance:nb,vip_level:parseInt(vipLevel),total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:today(),vip_expires_at:new Date(Date.now()+30*24*60*60*1000).toLocaleDateString("pt-MZ"),notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n💎 VIP "+vipLevel+" activado"),"_blank");toast("Depósito aprovado! ✅");await loadAdmin();}
 async function approveWd(id,phone,amount,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Receberás via e-Mola em breve.",time:now2(),date:today(),read:false}];await DB.update(phone,{notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n🏦 e-Mola"),"_blank");toast("Levantamento aprovado! ✅");await loadAdmin();}
 async function rejectTx(id,phone,type,name,amount){await DB.txUpdate(id,{status:"rejected"});const u=admUsers.find(x=>x.phone==phone);if(u){const m=`❌ ${type==="deposit"?"Depósito":"Levantamento"} de ${ff(amount)} rejeitado.${type==="withdrawal"?" Saldo devolvido.":""}`;const nn=[...(u.notifications||[]),{id:Date.now(),msg:m,time:now2(),date:today(),read:false}];const p={notifications:nn};if(type==="withdrawal")p.balance=(parseFloat(u.balance)||0)+parseFloat(amount);await DB.update(phone,p);}toast("Rejeitado","e");await loadAdmin();}
 function renderAdmCredit(){document.getElementById("adm-credit").innerHTML=`<div class="card" style="border-color:#2ECC7144"><div class="ctit" style="color:#2ECC71">➕ Creditar Saldo Manualmente</div><div class="fld"><label>📱 Número</label><input type="tel" id="cr-ph" placeholder="Ex: 840000001" oninput="chkCr()"/><div id="cr-info" style="font-size:12px;margin-top:4px"></div></div><div class="fld"><label>💰 Valor (MT)</label><input type="number" id="cr-amt" placeholder="Ex: 1500"/></div><div class="fld"><label>📝 Nota</label><input type="text" id="cr-note" placeholder="Ex: Depósito VIP 2"/></div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;margin-top:8px" onclick="doCredit()">✅ Confirmar Crédito</button></div>`;}

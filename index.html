@@ -239,7 +239,11 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
   </div>
 
   <div id="t-vips" class="tab">
-    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">💎 Níveis VIP</div>
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:10px">💎 Níveis VIP</div>
+    <div style="background:#2d1500;border:1px solid #FF8C00;border-radius:12px;padding:12px;margin-bottom:16px;text-align:center">
+      <div style="color:#FF8C00;font-size:14px;font-weight:900">⏳ Todos os VIPs são válidos por 30 dias úteis (Seg–Sex)</div>
+      <div style="color:#C8A070;font-size:13px;margin-top:4px">Sábados e domingos não contam. Após expirar, renova para continuar a ganhar.</div>
+    </div>
     <div id="vip-list"></div>
   </div>
 
@@ -314,7 +318,11 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
       <div style="font-size:44px;margin-bottom:8px">🔗</div>
       <div style="color:#7090C0;font-size:13px;margin-bottom:6px">O teu código de convite</div>
       <div class="inv-code" id="inv-code">—</div>
-      <div class="card" style="margin:10px 0"><div style="color:#7090C0;font-size:13px;margin-bottom:4px">🔗 Link da plataforma</div><div style="color:#00D4FF;font-size:12px;word-break:break-all;font-family:monospace" id="inv-link">—</div></div>
+      <div class="card" style="margin:10px 0">
+        <div style="color:#7090C0;font-size:13px;margin-bottom:6px">🔗 Link da plataforma</div>
+        <div style="color:#00D4FF;font-size:13px;font-weight:900;word-break:break-all" id="inv-link">https://mzinvestment.onrender.com</div>
+        <div style="color:#7090C0;font-size:12px;margin-top:6px">🎁 Código: <strong style="color:#FFD700" id="inv-code-sm">—</strong></div>
+      </div>
       <div class="card" style="margin:10px 0;text-align:left">
         <div style="color:#FFD700;font-size:14px;font-weight:900;margin-bottom:10px">💰 Bónus por indicação</div>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #0D2040;font-size:13px"><span style="color:#7090C0">1ª indicação com VIP</span><span style="color:#2ECC71;font-weight:900">+50 MT</span></div>
@@ -614,30 +622,62 @@ function loadMain(){
   renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();
 }
 
+function countWeekdays(startDate, endDate){
+  // Count only Mon-Fri between two dates
+  let count=0;
+  const cur=new Date(startDate);
+  while(cur<=endDate){
+    const day=cur.getDay();
+    if(day>=1&&day<=5) count++;
+    cur.setDate(cur.getDate()+1);
+  }
+  return count;
+}
+
+function addWeekdays(startDate, weekdays){
+  // Add N weekdays to a date
+  let count=0;
+  const cur=new Date(startDate);
+  while(count<weekdays){
+    cur.setDate(cur.getDate()+1);
+    const day=cur.getDay();
+    if(day>=1&&day<=5) count++;
+  }
+  return cur;
+}
+
 async function checkVipExpiry(){
   if(!U||!U.vip||!U.activatedAt) return;
   try{
-    // Parse activation date
     const parts=U.activatedAt.split("/");
     const actDate=new Date(parts[2],parts[1]-1,parts[0]);
     const now=new Date();
-    const diffDays=Math.floor((now-actDate)/(1000*60*60*24));
-    const vipDays=U.vip.days||30;
-    if(diffDays>=vipDays){
+    const vipDays=U.vip.days||30; // 30 working days
+    // Calculate expiry date (30 weekdays from activation)
+    const expiryDate=addWeekdays(actDate,vipDays);
+    // Count weekdays elapsed
+    const weekdaysElapsed=countWeekdays(actDate,now);
+    const weekdaysLeft=vipDays-weekdaysElapsed;
+    if(weekdaysLeft<=0){
       // VIP expired!
-      const daysExpired=diffDays-vipDays;
-      const msg="⚠️ O teu VIP "+U.vip.l+" – "+U.vip.n+" expirou há "+daysExpired+" dia(s). Renova para continuar a ganhar!";
+      const msg="⚠️ O teu VIP "+U.vip.l+" – "+U.vip.n+" expirou. Renova para continuar a ganhar!";
       const notifs=[...(U.notifications||[])];
-      // Only add notification if not already there
       if(!notifs.find(n=>n.msg.includes("expirou"))){
         notifs.push({id:Date.now(),msg,time:now2(),date:today(),read:false});
       }
       await syncU({vip:null,notifications:notifs});
       renderVips();
     } else {
-      // Show days remaining
-      const daysLeft=vipDays-diffDays;
-      U.vipDaysLeft=daysLeft;
+      U.vipDaysLeft=weekdaysLeft;
+      // Warning when 5 days left
+      if(weekdaysLeft<=5){
+        const notifs=[...(U.notifications||[])];
+        const warnMsg="⚠️ O teu VIP "+U.vip.l+" expira em "+weekdaysLeft+" dia(s) útil(eis). Renova em breve!";
+        if(!notifs.find(n=>n.msg.includes("expira em"))){
+          notifs.push({id:Date.now(),msg:warnMsg,time:now2(),date:today(),read:false});
+          await syncU({notifications:notifs});
+        }
+      }
     }
   }catch(e){console.warn("VIP expiry check failed:",e);}
 }
@@ -673,7 +713,7 @@ function renderHome(){
 function renderVips(){
   document.getElementById("vip-list").innerHTML=VIPS.map(v=>{
     const act=U.vip?.l===v.l;
-    return `<div class="vip-card" style="border-color:${act?v.c:"#1E3060"}"><div class="vip-hd"><div class="vip-tag" style="background:${v.c}">VIP ${v.l}</div><div class="vip-nm" style="color:${v.c}">${v.n}</div>${act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅ Activo</div>':""}</div><div class="irow"><span class="ilbl">💳 Depósito</span><span class="ival">${ff(v.p)}</span></div><div class="irow"><span class="ilbl">💰 Ganho/dia</span><span class="ival" style="color:#00D4FF">${ff(v.d)}</span></div><div class="irow"><span class="ilbl">🎬 Tarefas/dia</span><span class="ival">${v.v}</span></div><div class="irow" style="border:none"><span class="ilbl">💵 Por tarefa</span><span class="ival">${ff(Math.floor(v.d/v.v))}</span></div>${!act?`<button class="btn-vip" style="background:${v.c}" onclick="activVip(${v.l})">Activar VIP ${v.l} – ${ff(v.p)}</button>`:""}</div>`;
+    return `<div class="vip-card" style="border-color:${act?v.c:"#1E3060"}"><div class="vip-hd"><div class="vip-tag" style="background:${v.c}">VIP ${v.l}</div><div class="vip-nm" style="color:${v.c}">${v.n}</div>${act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅ Activo</div>':""}</div><div class="irow"><span class="ilbl">💳 Depósito</span><span class="ival">${ff(v.p)}</span></div><div class="irow"><span class="ilbl">💰 Ganho/dia</span><span class="ival" style="color:#00D4FF">${ff(v.d)}</span></div><div class="irow"><span class="ilbl">🎬 Tarefas/dia</span><span class="ival">${v.v}</span></div><div class="irow"><span class="ilbl">💵 Por tarefa</span><span class="ival">${ff(Math.floor(v.d/v.v))}</span></div><div class="irow" style="border:none"><span class="ilbl">⏳ Validade</span><span class="ival" style="color:#FFD700">30 dias úteis</span></div>${!act?`<button class="btn-vip" style="background:${v.c}" onclick="activVip(${v.l})">Activar VIP ${v.l} – ${ff(v.p)}</button>`:""}</div>`;
   }).join("");
 }
 async function activVip(l){
@@ -768,10 +808,16 @@ async function markRead(){const ns=(U.notifications||[]).map(n=>({...n,read:true
 function renderTeam(){const c=U.referrals||0;document.getElementById("team-lbl").textContent=c+" / 5 membros com VIP activo";document.getElementById("team-prog").style.width=Math.min((c/5)*100,100)+"%";document.getElementById("team-msg").innerHTML=c>=5?`<div style="color:#2ECC71;font-weight:900;text-align:center;padding:8px">✅ Fundo desbloqueado!</div>`:`<div style="color:#FF8C00;font-size:14px;text-align:center">Faltam ${5-c} membros para desbloquear o Fundo</div>`;const ms=U.teamMembers||[];document.getElementById("team-list").innerHTML=ms.length===0?`<div class="card" style="text-align:center;padding:20px;color:#5070A0">Ainda não tens membros.<br>Partilha o teu código!</div>`:ms.map(m=>`<div class="card"><div style="display:flex;align-items:center;gap:12px"><div style="width:38px;height:38px;background:#1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">👤</div><div><div style="font-weight:900">${m.name}</div><div style="color:#7090C0;font-size:13px">VIP ${m.vip} · ${m.joined}</div></div><div style="margin-left:auto;color:#2ECC71;font-size:13px;font-weight:900">✅ Activo</div></div></div>`).join("");}
 function renderInvite(){
   const code=U.refCode||"—";
+  const link=BASE_URL;
+  // Update link display
+  const linkEl=document.getElementById("inv-link");
+  if(linkEl) linkEl.textContent=link;
+  const codeSmEl=document.getElementById("inv-code-sm");
+  if(codeSmEl) codeSmEl.textContent=code;
   document.getElementById("inv-code").textContent=code;
   document.getElementById("inv-prog-txt").textContent=(U.referrals||0)+" / 5 indicações com VIP activo";
   document.getElementById("inv-prog").style.width=Math.min(((U.referrals||0)/5)*100,100)+"%";
-  const msg="Olá! 👋\n\nEstou a ganhar dinheiro na MZInvestment assistindo vídeos musicais todos os dias!\n\n💰 Ganhos diários garantidos!\n\n📲 *Como entrar:*\n1. Abre este link: "+BASE_URL+"\n2. Clica em *Regista-te aqui*\n3. No campo de convite insere o meu código:\n\n🎁 *"+code+"*\n\nJunta-te agora! 🚀";
+  const msg="Olá! 👋\n\nEstou a ganhar dinheiro na MZInvestment assistindo vídeos musicais todos os dias!\n\n💰 Ganhos diários garantidos!\n\n📲 *Como entrar:*\n1. Abre este link: "+link+"\n2. Clica em *Regista-te aqui*\n3. No campo de convite insere o meu código:\n\n🎁 Código: *"+code+"*\n\nJunta-te agora! 🚀";
   document.getElementById("inv-wa").href="https://wa.me/?text="+encodeURIComponent(msg);
 }
 function copyCode(){

@@ -156,6 +156,7 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
 </style>
 </head>
 <body>
+<div id="offline-bar" style="position:fixed;top:0;left:0;right:0;background:#C0392B;color:#fff;text-align:center;padding:10px;font-size:14px;font-weight:900;z-index:99999;display:none">📵 Sem ligação à internet</div>
 
 <!-- SPLASH -->
 <div id="pg-splash" class="page on">
@@ -356,6 +357,11 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
     <div id="wd-hist"></div>
   </div>
 
+  <div id="t-txhistory" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-profile','n-profile')">‹</button><div class="back-title">📊 Histórico de Transacções</div></div>
+    <div id="tx-history-list"><div class="empty">Sem transacções ainda</div></div>
+  </div>
+
   <div id="t-suporte" class="tab">
     <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">💬 Suporte</div>
     <div class="card" style="text-align:center"><div style="font-size:44px;margin-bottom:8px">📲</div><div style="font-size:15px;font-weight:900;margin-bottom:4px">Baixar a App MZInvestment</div>
@@ -423,6 +429,8 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
     <div class="atab" onclick="admTab('withdrawals')">💸 Levantar</div>
     <div class="atab" onclick="admTab('credit')">➕ Creditar</div>
     <div class="atab" onclick="admTab('users')">👥 Utilizadores</div>
+    <div class="atab" onclick="admTab('reports')">📊 Relatórios</div>
+    <div class="atab" onclick="admTab('history')">📋 Histórico</div>
   </div>
   <div class="adm-body">
     <div id="adm-dashboard"></div>
@@ -430,11 +438,32 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
     <div id="adm-withdrawals" style="display:none"></div>
     <div id="adm-credit" style="display:none"></div>
     <div id="adm-users" style="display:none"></div>
+    <div id="adm-reports" style="display:none"></div>
+    <div id="adm-history" style="display:none"></div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div id="receipt-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:8500;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#071828;border:1px solid #00D4FF44;border-radius:24px;padding:24px;width:100%;max-width:340px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:40px">🧾</div>
+      <div style="font-size:18px;font-weight:900;margin-top:8px" id="receipt-title">Comprovativo</div>
+      <div style="color:#2ECC71;font-size:13px;margin-top:4px" id="receipt-status">✅ Pedido enviado</div>
+    </div>
+    <div id="receipt-body"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button style="flex:1;padding:12px;background:#0D2040;border:1px solid #1E3060;border-radius:12px;color:#7090C0;font-size:14px;font-weight:700" onclick="document.getElementById('receipt-modal').style.display='none'">Fechar</button>
+      <button style="flex:1;padding:12px;background:linear-gradient(135deg,#128C7E,#25D366);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:900" id="receipt-wa-btn">💬 WhatsApp</button>
+    </div>
   </div>
 </div>
 
 <!-- CONFIRM -->
 <div id="confirm"><div class="ccard"><div style="font-size:30px;margin-bottom:10px">⚠️</div><div class="cmsg" id="c-msg">—</div><div class="cbtns"><button class="cbno" onclick="closeConfirm()">Cancelar</button><button class="cbyes" id="c-yes">Confirmar</button></div></div></div>
+
+<!-- OFFLINE BAR -->
+<div id="offline-bar">📵 Sem ligação à internet. Verifica a tua rede.</div>
 
 <!-- TOAST -->
 <div id="toast"></div>
@@ -536,6 +565,29 @@ function pg(id){
 function goTab(tid,nid){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));document.getElementById(tid)?.classList.add("on");if(nid&&nid!=="n-none"){document.querySelectorAll(".ni").forEach(n=>n.classList.remove("on"));document.getElementById(nid)?.classList.add("on");}}
 function showConfirm(msg,cb){document.getElementById("c-msg").textContent=msg;document.getElementById("c-yes").onclick=()=>{document.getElementById("confirm").classList.remove("on");cb();};document.getElementById("confirm").classList.add("on");}
 function closeConfirm(){document.getElementById("confirm").classList.remove("on");}
+
+function showReceipt({type,amount,net,phone,name,txId,status}){
+  const modal=document.getElementById("receipt-modal");
+  document.getElementById("receipt-title").textContent=type==="Levantamento"?"Comprovativo de Levantamento":"Comprovativo de Depósito";
+  document.getElementById("receipt-status").textContent=status==="Pendente"?"⏳ Aguarda aprovação":"✅ Aprovado";
+  const rows=[
+    ["👤 Nome",name],
+    ["📱 Número","+258 "+phone],
+    ["💰 Valor solicitado",ff(amount)],
+    ["💵 Valor a receber",ff(net)+" (após taxa 10%)"],
+    ["🏦 Método","e-Mola"],
+    ["📅 Data",today()],
+    ["🕐 Hora",now2()],
+    ["🆔 Referência",txId],
+  ];
+  document.getElementById("receipt-body").innerHTML=rows.map(([l,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #0D2040;font-size:13px">
+      <span style="color:#7090C0">${l}</span><span style="font-weight:900">${v}</span>
+    </div>`).join("");
+  const waMsg="🧾 COMPROVATIVO MZInvestment\n\n"+rows.map(([l,v])=>l+": "+v).join("\n");
+  document.getElementById("receipt-wa-btn").onclick=()=>window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent(waMsg),"_blank");
+  modal.style.display="flex";
+}
 function mapU(u){
   let notifs=u.notifications||[];
   let taskHist=u.task_history||{};
@@ -585,16 +637,48 @@ async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!=
     bar.style.width=p+"%";pct.textContent=p+"%";
   },40);
 })();
+
+// Pull to refresh
+let _mzTY=0;
+document.addEventListener('touchstart',e=>{_mzTY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(e.changedTouches[0].clientY-_mzTY>90&&window.scrollY===0&&document.getElementById("pg-main")?.classList.contains("on")){
+    toast("🔄 A actualizar...");
+    if(U)DB.get(U.phone).then(u=>{if(u){Object.assign(U,mapU(u));updateUI();toast("✅ Actualizado!");}});
+  }
+},{passive:true});
+// Offline
+window.addEventListener('online',()=>{document.getElementById('offline-bar').style.display='none';toast('✅ Ligação restaurada!');});
+window.addEventListener('offline',()=>{document.getElementById('offline-bar').style.display='block';});
+if(!navigator.onLine)document.getElementById('offline-bar').style.display='block';
 async function doLogin(){
   const ph=document.getElementById("l-phone").value.trim(),pin=document.getElementById("l-pin").value.trim(),err=document.getElementById("l-err");
   err.style.display="none";
   if(ph===ADMIN_PHONE&&pin===ADMIN_PIN){await loadAdmin();pg("pg-admin");return;}
+  // Check login attempts
+  const attKey="mz-attempts-"+ph;
+  const attData=JSON.parse(localStorage.getItem(attKey)||'{"count":0,"time":0}');
+  const now3=Date.now();
+  if(attData.count>=3&&(now3-attData.time)<300000){
+    const mins=Math.ceil((300000-(now3-attData.time))/60000);
+    err.textContent="⛔ Conta bloqueada temporariamente. Tenta daqui a "+mins+" minuto(s).";
+    err.style.display="block";return;
+  }
   const btn=document.getElementById("l-btn");btn.disabled=true;btn.textContent="A entrar...";
   let u=await DB.get(ph);
-  // Also check localStorage
   if(!u){const lu=JSON.parse(localStorage.getItem("mz-local-users")||"[]");u=lu.find(x=>x.phone===ph)||null;}
   btn.disabled=false;btn.textContent="Entrar →";
-  if(!u||u.pin!==pin){err.textContent="Número ou PIN incorrectos.";err.style.display="block";return;}
+  if(!u||u.pin!==pin){
+    // Increment attempts
+    const newCount=u?(attData.count+1):1;
+    localStorage.setItem(attKey,JSON.stringify({count:newCount,time:now3}));
+    const remaining=3-newCount;
+    if(remaining>0) err.textContent="❌ PIN incorrecto. "+remaining+" tentativa(s) restante(s).";
+    else err.textContent="⛔ Demasiadas tentativas. Aguarda 5 minutos.";
+    err.style.display="block";return;
+  }
+  // Reset attempts on success
+  localStorage.removeItem(attKey);
   if(u.blocked){err.textContent="Conta bloqueada. Contacta: +258 86 437 8323";err.style.display="block";return;}
   U=mapU(u);try{done=JSON.parse(localStorage.getItem("mzd-"+U.phone+"-"+tkey())||"[]");}catch(e){done=[];}
   loadMain();pg("pg-main");
@@ -715,7 +799,15 @@ function updateUI(){
   if(!U)return;
   document.getElementById("greeting").textContent="Olá, "+U.name.split(" ")[0]+" 👋";
   document.getElementById("hdr-bal").textContent=fmt(U.balance);
-  const vs=document.getElementById("vip-sm");vs.textContent=U.vip?"⭐ VIP "+U.vip.l+" – "+U.vip.n:"Sem VIP activo";vs.style.color=U.vip?U.vip.c:"#4A7FFF";
+  const vs=document.getElementById("vip-sm");
+  if(U.vip){
+    const daysLeftTxt=U.vipDaysLeft?(" · "+U.vipDaysLeft+"d restantes"):"";
+    const daysColor=U.vipDaysLeft&&U.vipDaysLeft<=5?"#FF6B6B":U.vip.c;
+    vs.textContent="⭐ VIP "+U.vip.l+" – "+U.vip.n+daysLeftTxt;
+    vs.style.color=daysColor;
+  } else {
+    vs.textContent="Sem VIP activo";vs.style.color="#4A7FFF";
+  }
   document.getElementById("w-phone").textContent=U.phone;
   document.getElementById("w-bal").textContent=fmt(U.balance)+" MZN";
   document.getElementById("p-phone").textContent=U.phone;
@@ -743,9 +835,22 @@ function renderHome(){
 function renderVips(){
   document.getElementById("vip-list").innerHTML=VIPS.map(v=>{
     const act=U.vip?.l===v.l;
-    return `<div class="vip-card" style="border-color:${act?v.c:"#1E3060"}"><div class="vip-hd"><div class="vip-tag" style="background:${v.c}">VIP ${v.l}</div><div class="vip-nm" style="color:${v.c}">${v.n}</div>${act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅ Activo</div>':""}</div><div class="irow"><span class="ilbl">💳 Depósito</span><span class="ival">${ff(v.p)}</span></div><div class="irow"><span class="ilbl">💰 Ganho/dia</span><span class="ival" style="color:#00D4FF">${ff(v.d)}</span></div><div class="irow"><span class="ilbl">🎬 Tarefas/dia</span><span class="ival">${v.v}</span></div><div class="irow"><span class="ilbl">💵 Por tarefa</span><span class="ival">${ff(Math.floor(v.d/v.v))}</span></div><div class="irow" style="border:none"><span class="ilbl">⏳ Validade</span><span class="ival" style="color:#FFD700">30 dias úteis</span></div>${!act?`<button class="btn-vip" style="background:${v.c}" onclick="activVip(${v.l})">Activar VIP ${v.l} – ${ff(v.p)}</button>`:""}</div>`;
+    return `<div class="vip-card" style="border-color:${act?v.c:"#1E3060"}"><div class="vip-hd"><div class="vip-tag" style="background:${v.c}">VIP ${v.l}</div><div class="vip-nm" style="color:${v.c}">${v.n}</div>${act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅ Activo</div>':""}</div><div class="irow"><span class="ilbl">💳 Depósito</span><span class="ival">${ff(v.p)}</span></div><div class="irow"><span class="ilbl">💰 Ganho/dia</span><span class="ival" style="color:#00D4FF">${ff(v.d)}</span></div><div class="irow"><span class="ilbl">🎬 Tarefas/dia</span><span class="ival">${v.v}</span></div><div class="irow"><span class="ilbl">💵 Por tarefa</span><span class="ival">${ff(Math.floor(v.d/v.v))}</span></div><div class="irow" style="border:none"><span class="ilbl">⏳ Validade</span><span class="ival" style="color:#FFD700">30 dias úteis</span></div>${!act?`<button class="btn-vip" style="background:${v.c}" onclick="activVip(${v.l})">Activar VIP ${v.l} – ${ff(v.p)}</button>`:
+    `<button class="btn-vip" style="background:${v.c};opacity:0.85" onclick="renewVip(${v.l})">🔄 Renovar VIP ${v.l} – ${ff(v.p)}</button>`}</div>`;
   }).join("");
 }
+async function renewVip(l){
+  const v=VIPS[l-1];
+  showConfirm("Renovar VIP "+v.l+" – "+v.n+"?\nCusto: "+ff(v.p)+"\nValidade: 30 dias úteis",async()=>{
+    if((U.balance||0)<v.p){toast("Saldo insuficiente para renovar!","e");switchTab("t-deposit","n-none");return;}
+    await syncU({balance:U.balance-v.p,vip:v,activatedAt:today()});
+    U.vipDaysLeft=30;
+    earnings.push({desc:"🔄 Renovação VIP "+v.l,a:-v.p,date:today()});
+    toast("VIP "+v.l+" renovado por mais 30 dias úteis! ✅");
+    renderVips();
+  });
+}
+
 async function activVip(l){
   const v=VIPS[l-1];
   if((U.balance||0)>=v.p){await syncU({balance:U.balance-v.p,vip:v});earnings.push({desc:"✅ VIP "+v.l+" activado",a:-v.p,date:today()});toast("VIP "+v.l+" "+v.n+" activado! 🚀");renderVips();goTab("t-home","n-home");}
@@ -810,10 +915,15 @@ async function submitWd(){
   const lk=localStorage.getItem("mzlw-"+U.phone);if(lk===tkey()){toast("Só 1 levantamento por dia!","e");return;}
   const net=Math.floor(wdAmt*0.9);
   showConfirm("Confirmas o levantamento de "+ff(wdAmt)+" via e-Mola?\n(Taxa 10% · Recebes "+ff(net)+")",async()=>{
-    await syncU({balance:U.balance-wdAmt});await DB.txCreate({user_id:U.phone,user_name:U.name,phone:U.phone,amount:wdAmt,type:"withdrawal",wallet:"e-Mola",status:"pending"});
-    earnings.push({desc:"⏳ Levantamento solicitado",a:-wdAmt,date:today()});localStorage.setItem("mzlw-"+U.phone,tkey());
-    window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("💸 PEDIDO DE LEVANTAMENTO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+wdAmt+" MT (receberá "+net+" MT após taxa 10%)\n🏦 e-Mola\n🕐 "+now2()),"_blank");
-    toast("Pedido enviado! ✅");wdAmt=null;renderWd();
+    const txId="WD"+Date.now();
+    await syncU({balance:U.balance-wdAmt});
+    await DB.txCreate({user_id:U.phone,user_name:U.name,phone:U.phone,amount:wdAmt,type:"withdrawal",wallet:"e-Mola",status:"pending",tx_ref:txId});
+    earnings.push({desc:"⏳ Levantamento solicitado",a:-wdAmt,date:today()});
+    localStorage.setItem("mzlw-"+U.phone,tkey());
+    // Show receipt
+    showReceipt({type:"Levantamento",amount:wdAmt,net,phone:U.phone,name:U.name,txId,status:"Pendente"});
+    window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("💸 PEDIDO DE LEVANTAMENTO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+wdAmt+" MT (receberá "+net+" MT após taxa 10%)\n🏦 e-Mola\n🕐 "+now2()+"\n🆔 Ref: "+txId),"_blank");
+    wdAmt=null;renderWd();
   });
 }
 function showWdHist(){const hist=earnings.filter(e=>e.a<0);document.getElementById("wd-hist").innerHTML=hist.length===0?`<div class="empty">Sem retiradas ainda</div>`:hist.slice().reverse().map(e=>`<div class="tx-row"><div><div style="font-size:13px;color:#C8D8F0">${e.desc}</div><div style="font-size:11px;color:#3A5070">${e.date}</div></div><div style="color:#FF6B6B;font-weight:900">${ff(Math.abs(e.a))}</div></div>`).join("");goTab("t-wdhist","n-none");}
@@ -833,6 +943,19 @@ function fundPv(){const a=parseInt(document.getElementById("fa")?.value||0),p=fu
 async function doInvest(){const a=parseInt(document.getElementById("fa")?.value||0);if(!fundPlan){toast("Escolhe um plano","e");return;}if(!a||a<MIN_FUND){toast("Mínimo: "+ff(MIN_FUND),"e");return;}if(a>U.balance){toast("Saldo insuficiente","e");return;}if((U.referrals||0)<5){toast("Precisas de 5 indicações!","e");return;}const p=fundPlan,pr=Math.round(a*p.rate/100),mat=new Date();mat.setDate(mat.getDate()+p.days);await syncU({balance:U.balance-a});myInv.push({plan:p,amount:a,profit:pr,total:a+pr,date:today(),maturity:mat.toLocaleDateString("pt-MZ")});earnings.push({desc:"📈 Fundo "+p.label,a:-a,date:today()});toast("Investimento confirmado! 📈");fundPlan=null;renderMyInv();switchFT("mine");}
 function renderMyInv(){document.getElementById("f-mine").innerHTML=myInv.length===0?`<div class="empty">Sem investimentos activos</div>`:myInv.map(iv=>`<div class="fcard"><div class="fhd"><div style="font-size:30px">${iv.plan.icon}</div><div><div style="font-size:15px;font-weight:900">${iv.plan.label} · +${iv.plan.rate}%</div><div style="font-size:13px;color:#3A6090">${iv.date}</div></div><div style="color:#2ECC71;font-size:18px">✅</div></div><div class="irow"><span class="ilbl">Capital</span><span class="ival">${ff(iv.amount)}</span></div><div class="irow"><span class="ilbl">Lucro</span><span class="ival" style="color:#2ECC71">${ff(iv.profit)}</span></div><div class="irow" style="border:none"><span class="ilbl">Vence</span><span class="ival">${iv.maturity}</span></div></div>`).join("");}
 function switchFT(tab){["browse","invest","mine"].forEach(t=>{document.getElementById("ft-"+t)?.classList.toggle("on",t===tab);document.getElementById("f-"+t).style.display=t===tab?"block":"none";});}
+function renderTxHistory(){
+  const allTx=[...earnings].reverse();
+  if(allTx.length===0){document.getElementById("tx-history-list").innerHTML='<div class="empty">Sem transacções ainda</div>';return;}
+  document.getElementById("tx-history-list").innerHTML=allTx.map(e=>{
+    const isPos=e.a>0;
+    const icon=e.desc.includes("VIP")?"💎":e.desc.includes("Lev")?"💸":e.desc.includes("Fundo")?"📈":e.desc.includes("Bónus")?"🎁":"🎬";
+    return `<div style="background:#071828;border:1px solid #0D2A4A;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:14px;font-weight:900">${icon} ${e.desc}</div><div style="color:#5070A0;font-size:12px;margin-top:3px">${e.date}</div></div>
+      <div style="font-size:16px;font-weight:900;color:${isPos?"#2ECC71":"#FF6B6B"}">${isPos?"+":""}${ff(e.a)}</div>
+    </div>`;
+  }).join("");
+}
+
 function renderNotifs(){const ns=U?.notifications||[];document.getElementById("notif-list").innerHTML=ns.length===0?`<div class="empty">Sem notificações</div>`:ns.slice().reverse().map(n=>`<div style="border-radius:14px;padding:14px;margin-bottom:10px;background:${n.read?"#071828":"#071830"};border:1px solid ${n.read?"#0D2A4A":"#00D4FF44"}">${!n.read?`<div style="width:8px;height:8px;background:#00D4FF;border-radius:50%;margin-bottom:6px"></div>`:""}<div style="font-size:14px;line-height:1.6">${n.msg}</div><div style="color:#3A5070;font-size:11px;margin-top:4px">${n.date} ${n.time}</div></div>`).join("");}
 async function markRead(){const ns=(U.notifications||[]).map(n=>({...n,read:true}));await syncU({notifications:ns});renderNotifs();}
 function renderTeam(){const c=U.referrals||0;document.getElementById("team-lbl").textContent=c+" / 5 membros com VIP activo";document.getElementById("team-prog").style.width=Math.min((c/5)*100,100)+"%";document.getElementById("team-msg").innerHTML=c>=5?`<div style="color:#2ECC71;font-weight:900;text-align:center;padding:8px">✅ Fundo desbloqueado!</div>`:`<div style="color:#FF8C00;font-size:14px;text-align:center">Faltam ${5-c} membros para desbloquear o Fundo</div>`;const ms=U.teamMembers||[];document.getElementById("team-list").innerHTML=ms.length===0?`<div class="card" style="text-align:center;padding:20px;color:#5070A0">Ainda não tens membros.<br>Partilha o teu código!</div>`:ms.map(m=>`<div class="card"><div style="display:flex;align-items:center;gap:12px"><div style="width:38px;height:38px;background:#1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">👤</div><div><div style="font-weight:900">${m.name}</div><div style="color:#7090C0;font-size:13px">VIP ${m.vip} · ${m.joined}</div></div><div style="margin-left:auto;color:#2ECC71;font-size:13px;font-weight:900">✅ Activo</div></div></div>`).join("");}
@@ -890,7 +1013,25 @@ async function rejectTx(id,phone,type,name,amount){await DB.txUpdate(id,{status:
 function renderAdmCredit(){document.getElementById("adm-credit").innerHTML=`<div class="card" style="border-color:#2ECC7144"><div class="ctit" style="color:#2ECC71">➕ Creditar Saldo Manualmente</div><div class="fld"><label>📱 Número</label><input type="tel" id="cr-ph" placeholder="Ex: 840000001" oninput="chkCr()"/><div id="cr-info" style="font-size:12px;margin-top:4px"></div></div><div class="fld"><label>💰 Valor (MT)</label><input type="number" id="cr-amt" placeholder="Ex: 1500"/></div><div class="fld"><label>📝 Nota</label><input type="text" id="cr-note" placeholder="Ex: Depósito VIP 2"/></div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;margin-top:8px" onclick="doCredit()">✅ Confirmar Crédito</button></div>`;}
 async function chkCr(){const ph=document.getElementById("cr-ph")?.value,el=document.getElementById("cr-info");if(!ph||ph.length<9){if(el)el.textContent="";return;}const u=admUsers.find(x=>x.phone==ph);if(el){el.textContent=u?"✅ "+u.name:"❌ Não encontrado";el.style.color=u?"#2ECC71":"#E74C3C";}}
 async function doCredit(){const ph=document.getElementById("cr-ph")?.value,a=parseInt(document.getElementById("cr-amt")?.value||0),note=document.getElementById("cr-note")?.value||"Crédito manual";if(!ph){toast("Insere o número","e");return;}if(!a||a<=0){toast("Valor inválido","e");return;}const u=admUsers.find(x=>x.phone==ph);if(!u){toast("Utilizador não encontrado","e");return;}const nb=(parseFloat(u.balance)||0)+a;const nn=[...(u.notifications||[]),{id:Date.now(),msg:"💰 "+ff(a)+" foram creditados na tua conta. "+note,time:now2(),date:today(),read:false}];await DB.update(ph,{balance:nb,total_earned:(parseFloat(u.total_earned)||0)+a,notifications:nn});await DB.txCreate({user_id:ph,user_name:u.name,phone:ph,amount:a,type:"manual_credit",status:"approved",note});toast(ff(a)+" creditados a "+u.name+"! ✅");await loadAdmin();admTab("dashboard");}
-function renderAdmUsers(){document.getElementById("adm-users").innerHTML=admUsers.length===0?`<div class="empty">Sem utilizadores</div>`:admUsers.map(u=>`<div class="ucard ${u.blocked?"blocked":""}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-weight:900;font-size:15px;color:${u.blocked?"#FF6B6B":"#E8F4FF"}">${u.name}${u.blocked?" 🚫":""}</div>${u.blocked?`<div style="color:#FF6B6B;font-size:12px">Conta bloqueada</div>`:""}</div>${u.vip_level?`<div style="background:${VIPS[u.vip_level-1]?.c||"#fff"};border-radius:8px;padding:3px 8px;font-size:12px;font-weight:900;color:#000">VIP ${u.vip_level}</div>`:`<div style="color:#5070A0;font-size:13px">Sem VIP</div>`}</div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${u.phone}</span></div><div class="irow"><span class="ilbl">💰 Saldo</span><span class="ival" style="color:#00D4FF">${ff(parseFloat(u.balance)||0)}</span></div><div class="irow"><span class="ilbl">👥 Indicações</span><span class="ival">${u.referrals||0}/5</span></div><div class="irow"><span class="ilbl">📅 Activado</span><span class="ival">${u.activated_at||"—"}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:15px"><span class="ilbl">🔐 PIN</span><div style="display:flex;align-items:center;gap:10px"><span id="pin-${u.phone}" style="color:#FFD700;font-family:monospace;letter-spacing:3px;font-size:15px">••••</span><button style="background:#0D2040;border:1px solid #1E3060;border-radius:8px;color:#00D4FF;font-size:12px;padding:4px 10px" onclick="tgPin('${u.phone}','${u.pin}')">👁️ Ver</button></div></div><div style="display:flex;gap:10px;margin-top:12px">${u.blocked?`<button class="btn-app-f" onclick="tgBlock('${u.phone}',false,'${u.name}')">✅ Desbloquear</button>`:`<button class="btn-rej-f" onclick="tgBlock('${u.phone}',true,'${u.name}')">🚫 Bloquear</button>`}</div></div>`).join("");}
+function renderAdmUsers(filter=""){
+  const filtered=filter?admUsers.filter(u=>(u.name||"").toLowerCase().includes(filter.toLowerCase())||u.phone.includes(filter)):admUsers;
+  const searchHtml=`<div style="margin-bottom:14px"><input type="text" placeholder="🔍 Pesquisar nome ou número..." style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:10px 14px;color:#C8D8F0;font-size:14px" oninput="renderAdmUsers(this.value)" value="${filter||''}"/></div>`;
+  if(filtered.length===0){document.getElementById("adm-users").innerHTML=searchHtml+'<div class="empty">Nenhum encontrado</div>';return;}
+  document.getElementById("adm-users").innerHTML=searchHtml+filtered.map(u=>{document.getElementById("adm-users").innerHTML=admUsers.length===0?`<div class="empty">Sem utilizadores</div>`:admUsers.map(u=>`<div class="ucard ${u.blocked?"blocked":""}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-weight:900;font-size:15px;color:${u.blocked?"#FF6B6B":"#E8F4FF"}">${u.name}${u.blocked?" 🚫":""}</div>${u.blocked?`<div style="color:#FF6B6B;font-size:12px">Conta bloqueada</div>`:""}</div>${u.vip_level?`<div style="background:${VIPS[u.vip_level-1]?.c||"#fff"};border-radius:8px;padding:3px 8px;font-size:12px;font-weight:900;color:#000">VIP ${u.vip_level}</div>`:`<div style="color:#5070A0;font-size:13px">Sem VIP</div>`}</div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${u.phone}</span></div><div class="irow"><span class="ilbl">💰 Saldo</span><span class="ival" style="color:#00D4FF">${ff(parseFloat(u.balance)||0)}</span></div><div class="irow"><span class="ilbl">👥 Indicações</span><span class="ival">${u.referrals||0}/5</span></div><div class="irow"><span class="ilbl">📅 Activado</span><span class="ival">${u.activated_at||"—"}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:15px"><span class="ilbl">🔐 PIN</span><div style="display:flex;align-items:center;gap:10px"><span id="pin-${u.phone}" style="color:#FFD700;font-family:monospace;letter-spacing:3px;font-size:15px">••••</span><button style="background:#0D2040;border:1px solid #1E3060;border-radius:8px;color:#00D4FF;font-size:12px;padding:4px 10px" onclick="tgPin('${u.phone}','${u.pin}')">👁️ Ver</button></div></div><div style="display:flex;gap:10px;margin-top:12px">${u.blocked?`<button class="btn-app-f" onclick="tgBlock('${u.phone}',false,'${u.name}')">✅ Desbloquear</button>`:`<button class="btn-rej-f" onclick="tgBlock('${u.phone}',true,'${u.name}')">🚫 Bloquear</button>`}
+      <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900" onclick="editBalance('${u.phone}','${u.name}',${u.balance||0})">✏️ Saldo</button></div></div>`).join("");}
+function editBalance(phone, name, currentBal){
+  const newBal=prompt("Editar saldo de "+name+"\nSaldo actual: "+ff(currentBal)+"\n\nNovo saldo (MT):");
+  if(newBal===null||newBal==="") return;
+  const val=parseFloat(newBal);
+  if(isNaN(val)||val<0){toast("Valor inválido","e");return;}
+  showConfirm("Confirmas alterar saldo de "+name+" para "+ff(val)+"?",async()=>{
+    await DB.update(phone,{balance:val});
+    await DB.txCreate({user_id:phone,user_name:name,phone,amount:val-currentBal,type:"manual_edit",status:"approved",note:"Edição directa pelo admin"});
+    toast("Saldo actualizado! ✅");
+    await loadAdmin();admTab("users");
+  });
+}
+
 function tgPin(ph,pin){const el=document.getElementById("pin-"+ph);if(el)el.textContent=el.textContent==="••••"?pin:"••••";}
 async function tgBlock(ph,block,name){const u=admUsers.find(x=>x.phone==ph);if(!u)return;const msg=block?"🚫 A tua conta foi bloqueada pelo administrador.":"✅ A tua conta foi desbloqueada!";const nn=[...(u.notifications||[]),{id:Date.now(),msg,time:now2(),date:today(),read:false}];await DB.update(ph,{blocked:block,notifications:nn});toast((block?"Conta de "+name+" bloqueada!":"Conta de "+name+" desbloqueada! ✅"),(block?"e":"s"));await loadAdmin();admTab("users");}
 </script>

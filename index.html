@@ -680,43 +680,48 @@ function mapU(u){
 }
 async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!==undefined)d.balance=patch.balance;if(patch.vip!==undefined){d.vip_level=patch.vip?.l||null;if(patch.vip)d.activated_at=today();}if(patch.totalEarned!==undefined)d.total_earned=patch.totalEarned;if(patch.notifications!==undefined)d.notifications=patch.notifications;if(patch.taskHistory!==undefined)d.task_history=patch.taskHistory;if(patch.tutorialDone!==undefined)d.tutorial_done=patch.tutorialDone;if(patch.photo!==undefined)d.photo=patch.photo;if(patch.pin!==undefined)d.pin=patch.pin;if(Object.keys(d).length>0)await DB.update(U.phone,d);updateUI();}
 (function(){
-  // Read ref code from URL - works on Render.com
+  // Read ref code from URL
   let refCode=null;
   try{
     const params=new URLSearchParams(window.location.search);
     refCode=params.get("ref");
-    if(!refCode){
-      // Also check hash
-      const hash=window.location.hash;
-      if(hash) refCode=new URLSearchParams(hash.replace("#","?")).get("ref");
-    }
-    if(refCode) refCode=refCode.toUpperCase();
+    if(!refCode){const hash=window.location.hash;if(hash)refCode=new URLSearchParams(hash.replace("#","?")).get("ref");}
+    if(refCode)refCode=refCode.toUpperCase();
   }catch(e){}
 
-  let p=0;
-  const bar=document.getElementById("sp-bar"),pct=document.getElementById("sp-pct");
-  const iv=setInterval(()=>{
-    p+=2;
-    if(p>=100){
-      p=100;clearInterval(iv);
-      setTimeout(()=>{
-        if(refCode){
-          // Go to register and pre-fill code
-          pg("pg-register");
-          setTimeout(()=>{
-            const el=document.getElementById("r-ref");
-            if(el){el.value=refCode;el.style.borderColor="#00D4FF";el.style.background="#001830";}
-            // Show a nice message
-            const tag=document.getElementById("reg-tag");
-            if(tag) tag.textContent="Convidado por código "+refCode+" 🎁";
-          },100);
-        } else {
-          pg("pg-login");
-        }
-      },400);
-    }
-    bar.style.width=p+"%";pct.textContent=p+"%";
-  },40);
+  function runSplash(){
+    const bar=document.getElementById("sp-bar");
+    const pct=document.getElementById("sp-pct");
+    if(!bar||!pct){setTimeout(runSplash,50);return;}
+    let p=0;
+    const iv=setInterval(()=>{
+      p+=2;
+      if(p>=100){
+        p=100;clearInterval(iv);
+        setTimeout(()=>{
+          if(refCode){
+            pg("pg-register");
+            setTimeout(()=>{
+              const el=document.getElementById("r-ref");
+              if(el){el.value=refCode;el.style.borderColor="#00D4FF";}
+              const tag=document.getElementById("reg-tag");
+              if(tag)tag.textContent="Convidado · Código: "+refCode+" 🎁";
+            },100);
+          } else {
+            pg("pg-login");
+          }
+        },400);
+      }
+      bar.style.width=p+"%";
+      pct.textContent=p+"%";
+    },40);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",runSplash);
+  } else {
+    runSplash();
+  }
 })();
 
 // Pull to refresh

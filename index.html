@@ -549,7 +549,7 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
 <!-- TOAST -->
 <div id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
 <script>
 const SUPA_URL="https://xltsswpobwgjuwebjlsp.supabase.co";
 const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsdHNzd3BvYndnanV3ZWJqbHNwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODA5MTcwNCwiZXhwIjoyMDkzNjY3NzA0fQ.nAzDailPOQt8HXSfqvZVJboB3CMEMXb11mE_8SmIgEo";
@@ -557,7 +557,12 @@ const ADMIN_PHONE="864378323",ADMIN_PIN="3545",SUPPORT="258864378323";
 const BASE_URL="https://mzinvestment.onrender.com";
 const WD_AMTS=[100,500,1000,2000,5000,10000];
 const MIN_FUND=500;
-let db;try{db=supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){db=null;}
+let db=null;
+function getDB(){
+  if(db) return db;
+  try{db=supabase.createClient(SUPA_URL,SUPA_KEY);}catch(e){db=null;}
+  return db;
+}
 const VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",days:30},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",days:30},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",days:30},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",days:30},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",days:30},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",days:30},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",days:30},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",days:30}];
 const FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:12,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:25,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:70,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:180,icon:"💰",desc:"Máximo lucro"}];
 const VIDEOS=[
@@ -597,7 +602,7 @@ const DB={
     // Try Supabase first
     if(db){
       try{
-        const{data}=await db.from("users").select("*").eq("phone",p).single();
+        const{data}=await (getDB()||db).from("users").select("*").eq("phone",p).single();
         if(data) return data;
       }catch(e){}
     }
@@ -607,10 +612,10 @@ const DB={
       return users.find(u=>u.phone===p)||null;
     }catch(e){return null;}
   },
-  create:async u=>{if(!db)return null;try{const{data,error}=await db.from("users").insert([u]).select().single();if(error){console.error("DB create error:",error);return null;}return data;}catch(e){console.error("DB create exception:",e);return null;}},
+  create:async u=>{const db2=getDB();if(!db2)return null;try{const{data,error}=await db2.from("users").insert([u]).select().single();if(error){console.error("DB create error:",error);return null;}return data;}catch(e){console.error("DB create exception:",e);return null;}},
   update:async(p,d)=>{
     // Try Supabase
-    if(db){try{await db.from("users").update(d).eq("phone",p);}catch(e){}}
+    if(db){try{await (getDB()||db).from("users").update(d).eq("phone",p);}catch(e){}}
     // Always update localStorage too
     try{
       const users=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
@@ -620,7 +625,7 @@ const DB={
   },
   allUsers:async()=>{
     let dbUsers=[];
-    if(db){try{const{data}=await db.from("users").select("*").order("created_at",{ascending:false});dbUsers=data||[];}catch(e){}}
+    if(db){try{const{data}=await (getDB()||db).from("users").select("*").order("created_at",{ascending:false});dbUsers=data||[];}catch(e){}}
     try{
       const localUsers=JSON.parse(localStorage.getItem("mz-local-users")||"[]");
       // Merge: prefer DB users, add local-only users
@@ -629,9 +634,9 @@ const DB={
       return [...dbUsers,...onlyLocal];
     }catch(e){return dbUsers;}
   },
-  txCreate:async t=>{if(!db)return null;try{const{data}=await db.from("transactions").insert([t]).select().single();return data;}catch(e){return null;}},
-  txUpdate:async(id,d)=>{if(!db)return;try{await db.from("transactions").update(d).eq("id",id);}catch(e){}},
-  txAll:async()=>{if(!db)return[];try{const{data}=await db.from("transactions").select("*").order("created_at",{ascending:false});return data||[];}catch(e){return[];}},
+  txCreate:async t=>{const db2=getDB();if(!db2)return null;try{const{data}=await db2.from("transactions").insert([t]).select().single();return data;}catch(e){return null;}},
+  txUpdate:async(id,d)=>{if(!db)return;try{await (getDB()||db).from("transactions").update(d).eq("id",id);}catch(e){}},
+  txAll:async()=>{if(!db)return[];try{const{data}=await (getDB()||db).from("transactions").select("*").order("created_at",{ascending:false});return data||[];}catch(e){return[];}},
 };
 function toast(msg,type="s"){const t=document.getElementById("toast");t.textContent=msg;t.className=type;t.style.display="block";setTimeout(()=>t.style.display="none",3200);}
 function pg(id){
@@ -793,7 +798,7 @@ async function doRegister(){
   const saved=localUser;
   if(ref){
     try{
-      const{data:ru}=await db.from("users").select("*").eq("ref_code",ref).single();
+      const{data:ru}=await (getDB()||db).from("users").select("*").eq("ref_code",ref).single();
       if(ru){
         const newRefCount=(ru.referrals||0)+1;
         const bonus=REF_BONUS[newRefCount]||0;

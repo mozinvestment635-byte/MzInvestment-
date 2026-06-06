@@ -160,12 +160,35 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
 
 <!-- SPLASH -->
 <div id="pg-splash" class="page on">
-  <svg width="80" height="80" viewBox="0 0 100 100" fill="none" style="margin-bottom:14px">
-    <circle cx="50" cy="50" r="48" fill="#071828" stroke="#00D4FF" stroke-width="2"/>
-    <circle cx="50" cy="50" r="36" fill="#0D2040" opacity="0.8"/>
-    <text x="50" y="47" text-anchor="middle" fill="#E8F4FF" font-size="15" font-weight="900" font-family="Calibri">MZ</text>
-    <text x="50" y="62" text-anchor="middle" fill="#00D4FF" font-size="10" font-weight="700" font-family="Calibri">INVEST</text>
-  </svg>
+  <svg width="80" height="80" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lgbg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#030B1A"/>
+      <stop offset="100%" stop-color="#0D2040"/>
+    </linearGradient>
+    <linearGradient id="lgring" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#0050B0"/>
+    </linearGradient>
+    <linearGradient id="lgchart" x1="0" y1="400" x2="400" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0050B0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#00D4FF" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="lgglow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#lgbg)"/>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#lgring)" stroke-width="8" opacity="0.6"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#00D4FF" stroke-width="2" opacity="0.2"/>
+  <rect x="100" y="320" width="50" height="80" rx="8" fill="url(#lgchart)"/>
+  <rect x="170" y="270" width="50" height="130" rx="8" fill="url(#lgchart)"/>
+  <rect x="240" y="220" width="50" height="180" rx="8" fill="url(#lgchart)"/>
+  <rect x="310" y="170" width="50" height="230" rx="8" fill="url(#lgchart)"/>
+  <polyline points="125,310 195,255 265,200 335,150 400,110" fill="none" stroke="#00D4FF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#lgglow)"/>
+  <circle cx="400" cy="110" r="12" fill="#00D4FF" filter="url(#lgglow)"/>
+  <text x="256" y="420" text-anchor="middle" fill="#E8F4FF" font-size="72" font-weight="900" font-family="Calibri,sans-serif" letter-spacing="8">MZ</text>
+  <text x="256" y="455" text-anchor="middle" fill="#00D4FF" font-size="28" font-weight="700" font-family="Calibri,sans-serif" letter-spacing="12">INVEST</text>
+</svg>
+  
   <div class="sp-name">MZ<span>INVESTMENT</span></div>
   <div class="sp-sub">MOÇAMBIQUE</div>
   <div class="sp-track"><div class="sp-bar" id="sp-bar"></div></div>
@@ -175,7 +198,33 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
 <!-- LOGIN -->
 <div id="pg-login" class="page">
   <div class="acard">
-    <div style="text-align:center;margin-bottom:4px"><svg width="48" height="48" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" fill="#071828" stroke="#00D4FF" stroke-width="2"/><text x="50" y="47" text-anchor="middle" fill="#E8F4FF" font-size="15" font-weight="900" font-family="Calibri">MZ</text><text x="50" y="62" text-anchor="middle" fill="#00D4FF" font-size="10" font-weight="700" font-family="Calibri">INVEST</text></svg></div>
+    <div style="text-align:center;margin-bottom:4px"><svg width="52" height="52" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lgbg2" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#030B1A"/>
+      <stop offset="100%" stop-color="#0D2040"/>
+    </linearGradient>
+    <linearGradient id="lgring2" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#0050B0"/>
+    </linearGradient>
+    <linearGradient id="lgchart2" x1="0" y1="400" x2="400" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0050B0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#00D4FF" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="lgglow2"><feGaussianBlur stdDeviation="8" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#lgbg2)"/>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#lgring2)" stroke-width="8" opacity="0.6"/>
+  <rect x="100" y="320" width="50" height="80" rx="8" fill="url(#lgchart2)"/>
+  <rect x="170" y="270" width="50" height="130" rx="8" fill="url(#lgchart2)"/>
+  <rect x="240" y="220" width="50" height="180" rx="8" fill="url(#lgchart2)"/>
+  <rect x="310" y="170" width="50" height="230" rx="8" fill="url(#lgchart2)"/>
+  <polyline points="125,310 195,255 265,200 335,150 400,110" fill="none" stroke="#00D4FF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#lgglow2)"/>
+  <circle cx="400" cy="110" r="12" fill="#00D4FF"/>
+  <text x="256" y="420" text-anchor="middle" fill="#E8F4FF" font-size="72" font-weight="900" font-family="Calibri,sans-serif" letter-spacing="8">MZ</text>
+  <text x="256" y="455" text-anchor="middle" fill="#00D4FF" font-size="28" font-weight="700" font-family="Calibri,sans-serif" letter-spacing="12">INVEST</text>
+</svg></div>
     <div class="abrand">MZ<span>INVESTMENT</span></div>
     <div class="atag">Plataforma de Investimento · Moçambique</div>
     <div class="fld"><label>📱 Número de celular</label>
@@ -190,7 +239,33 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
 <!-- REGISTER -->
 <div id="pg-register" class="page">
   <div class="acard">
-    <div style="text-align:center;margin-bottom:4px"><svg width="48" height="48" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" fill="#071828" stroke="#00D4FF" stroke-width="2"/><text x="50" y="47" text-anchor="middle" fill="#E8F4FF" font-size="15" font-weight="900" font-family="Calibri">MZ</text><text x="50" y="62" text-anchor="middle" fill="#00D4FF" font-size="10" font-weight="700" font-family="Calibri">INVEST</text></svg></div>
+    <div style="text-align:center;margin-bottom:4px"><svg width="52" height="52" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lgbg2" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#030B1A"/>
+      <stop offset="100%" stop-color="#0D2040"/>
+    </linearGradient>
+    <linearGradient id="lgring2" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#0050B0"/>
+    </linearGradient>
+    <linearGradient id="lgchart2" x1="0" y1="400" x2="400" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0050B0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#00D4FF" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="lgglow2"><feGaussianBlur stdDeviation="8" result="b2"/><feMerge><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#lgbg2)"/>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#lgring2)" stroke-width="8" opacity="0.6"/>
+  <rect x="100" y="320" width="50" height="80" rx="8" fill="url(#lgchart2)"/>
+  <rect x="170" y="270" width="50" height="130" rx="8" fill="url(#lgchart2)"/>
+  <rect x="240" y="220" width="50" height="180" rx="8" fill="url(#lgchart2)"/>
+  <rect x="310" y="170" width="50" height="230" rx="8" fill="url(#lgchart2)"/>
+  <polyline points="125,310 195,255 265,200 335,150 400,110" fill="none" stroke="#00D4FF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#lgglow2)"/>
+  <circle cx="400" cy="110" r="12" fill="#00D4FF"/>
+  <text x="256" y="420" text-anchor="middle" fill="#E8F4FF" font-size="72" font-weight="900" font-family="Calibri,sans-serif" letter-spacing="8">MZ</text>
+  <text x="256" y="455" text-anchor="middle" fill="#00D4FF" font-size="28" font-weight="700" font-family="Calibri,sans-serif" letter-spacing="12">INVEST</text>
+</svg></div>
     <div class="abrand">MZ<span>INVESTMENT</span></div>
     <div class="atag">Criar nova conta</div>
     <div class="fld"><label>👤 Nome completo</label><input type="text" id="r-name" placeholder="Ex: João Silva"/></div>
@@ -275,6 +350,12 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
         <div><div style="font-weight:900;font-size:15px" id="p-phone">—</div><div id="p-vip-tag"></div></div>
       </div>
       <div style="background:#0D2040;border-radius:12px;padding:14px;text-align:center"><div style="font-size:22px;font-weight:900" id="p-bal">0</div><div style="color:#7090C0;font-size:13px;margin-top:2px">Saldo (MZN)</div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="ctit">🔔 Notificações Push</div>
+      <div style="color:#7090C0;font-size:13px;margin-bottom:10px;line-height:1.7">Recebe alertas quando o teu levantamento for aprovado.</div>
+      <div id="push-status" style="font-size:13px;margin-bottom:10px;color:#5070A0">A verificar...</div>
+      <button style="width:100%;padding:12px;background:linear-gradient(135deg,#0050B0,#00D4FF);border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:900;cursor:pointer" id="push-btn" onclick="requestPushPermission()">🔔 Activar Notificações</button>
     </div>
     <div class="strow" id="p-stats"></div>
     <div class="hmenu" id="p-menu"></div>
@@ -731,6 +812,7 @@ async function doRegister(){
 }
 function logout(){U=null;done=[];wdAmt=null;earnings=[];pg("pg-login");}
 function loadMain(){
+  setTimeout(updatePushStatus,500);
   // Check VIP expiry
   checkVipExpiry();
   renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();
@@ -986,6 +1068,34 @@ function copyCode(){
 async function renderRanking(){const users=await DB.allUsers();const sorted=users.sort((a,b)=>(parseFloat(b.total_earned)||0)-(parseFloat(a.total_earned)||0)).slice(0,10);const medals=["🥇","🥈","🥉"];document.getElementById("ranking-list").innerHTML=sorted.map((u,i)=>`<div class="rank-card ${u.phone===U.phone?"me":""}"><div style="display:flex;align-items:center;gap:12px"><div style="font-size:22px;min-width:30px;text-align:center">${medals[i]||"#"+(i+1)}</div><div style="width:34px;height:34px;background:#1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px">👤</div><div style="flex:1"><div style="font-weight:900;color:${u.phone===U.phone?"#00D4FF":"#E8F4FF"}">${u.name}${u.phone===U.phone?" (Tu)":""}</div><div style="color:#7090C0;font-size:12px">${u.vip_level?"VIP "+u.vip_level:"Sem VIP"}</div></div><div style="color:#2ECC71;font-size:14px;font-weight:900">${ff(parseFloat(u.total_earned)||0)}</div></div></div>`).join("");}
 async function changePin(){const o=document.getElementById("pin-old").value,n=document.getElementById("pin-new").value,n2=document.getElementById("pin-new2").value;if(o!==U.pin){toast("PIN actual incorrecto","e");return;}if(n.length<4){toast("Novo PIN deve ter 4 dígitos","e");return;}if(n!==n2){toast("PINs não coincidem","e");return;}await syncU({pin:n});document.getElementById("pin-old").value="";document.getElementById("pin-new").value="";document.getElementById("pin-new2").value="";toast("PIN alterado! ✅");}
 function handlePhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{await syncU({photo:ev.target.result});document.getElementById("av-img").src=ev.target.result;document.getElementById("av-img").style.display="block";document.getElementById("av-icon").style.display="none";};r.readAsDataURL(f);}
+
+// ─── PUSH NOTIFICATIONS ─────────────────────────────────────────────────────
+async function requestPushPermission(){
+  if(!("Notification" in window)){toast("Não suportado neste browser","e");return;}
+  const perm=await Notification.requestPermission();
+  updatePushStatus();
+  if(perm==="granted"){toast("✅ Notificações activadas!");}
+  else toast("Notificações bloqueadas. Activa nas definições.","e");
+}
+function updatePushStatus(){
+  const s=document.getElementById("push-status");
+  const b=document.getElementById("push-btn");
+  if(!s||!("Notification" in window)){if(s)s.textContent="❌ Não suportado";if(b)b.style.display="none";return;}
+  if(Notification.permission==="granted"){
+    s.textContent="✅ Notificações activadas!";s.style.color="#2ECC71";
+    if(b){b.textContent="✅ Activo";b.disabled=true;b.style.opacity="0.6";}
+  } else if(Notification.permission==="denied"){
+    s.textContent="⛔ Bloqueado — activa nas definições do browser";s.style.color="#FF6B6B";
+    if(b)b.style.display="none";
+  } else {
+    s.textContent="Clica para activar";
+  }
+}
+function sendPushNotif(title,body){
+  if(Notification.permission!=="granted")return;
+  try{new Notification(title,{body,icon:"https://mzinvestment.onrender.com/favicon.ico",tag:"mzinvest"});}catch(e){}
+}
+
 let admUsers=[],admTxs=[];
 async function loadAdmin(){admUsers=await DB.allUsers();admTxs=await DB.txAll();const pend=admTxs.filter(t=>t.status==="pending").length;const b=document.getElementById("adm-badge");b.textContent=pend;b.style.display=pend>0?"flex":"none";admTab("dashboard");}
 function admTab(tab){document.querySelectorAll(".atab").forEach((el,i)=>el.classList.toggle("on",["dashboard","deposits","withdrawals","credit","users"][i]===tab));["dashboard","deposits","withdrawals","credit","users"].forEach(t=>document.getElementById("adm-"+t).style.display=t===tab?"block":"none");if(tab==="dashboard")renderAdmDash();else if(tab==="deposits")renderAdmDeps();else if(tab==="withdrawals")renderAdmWds();else if(tab==="credit")renderAdmCredit();else if(tab==="users")renderAdmUsers();}
@@ -1008,7 +1118,11 @@ function renderAdmDash(){
 function renderAdmDeps(){const deps=admTxs.filter(t=>t.type==="deposit");document.getElementById("adm-deposits").innerHTML=deps.length===0?`<div class="empty">Sem depósitos</div>`:deps.map(d=>`<div class="pcard ${d.status}"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:15px">${d.user_name||"—"}</div><span style="font-size:11px;font-weight:700;color:${d.status==="pending"?"#FFD700":d.status==="approved"?"#2ECC71":"#E74C3C"}">${d.status==="pending"?"⏳ Pendente":d.status==="approved"?"✅ Aprovado":"❌ Rejeitado"}</span></div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${d.phone||"—"}</span></div><div class="irow"><span class="ilbl">💰 Valor</span><span class="ival" style="color:#FFD700">${ff(parseFloat(d.amount)||0)}</span></div><div class="irow" style="border:none"><span class="ilbl">💎 VIP</span><span class="ival">VIP ${d.vip_level||"—"}</span></div>${d.status==="pending"?`<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="approveDep('${d.id}','${d.phone}',${d.amount},${d.vip_level},'${d.user_name||""}')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejectTx('${d.id}','${d.phone}','deposit','${d.user_name||""}',${d.amount})">❌ Rejeitar</button></div>`:""}</div>`).join("");}
 function renderAdmWds(){const wds=admTxs.filter(t=>t.type==="withdrawal");document.getElementById("adm-withdrawals").innerHTML=wds.length===0?`<div class="empty">Sem levantamentos</div>`:wds.map(w=>`<div class="pcard ${w.status}"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:15px">${w.user_name||"—"}</div><span style="font-size:11px;font-weight:700;color:${w.status==="pending"?"#FFD700":w.status==="approved"?"#2ECC71":"#E74C3C"}">${w.status==="pending"?"⏳ Pendente":w.status==="approved"?"✅ Aprovado":"❌ Rejeitado"}</span></div><div class="irow"><span class="ilbl">📱 Número</span><span class="ival">${w.phone||"—"}</span></div><div class="irow" style="border:none"><span class="ilbl">💸 Valor</span><span class="ival" style="color:#00D4FF">${ff(parseFloat(w.amount)||0)}</span></div>${w.status==="pending"?`<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="approveWd('${w.id}','${w.phone}',${w.amount},'${w.user_name||""}')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejectTx('${w.id}','${w.phone}','withdrawal','${w.user_name||""}',${w.amount})">❌ Rejeitar</button></div>`:""}</div>`).join("");}
 async function approveDep(id,phone,amount,vipLevel,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nb=(parseFloat(u.balance)||0)+parseFloat(amount);const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Depósito de "+ff(amount)+" aprovado! VIP "+vipLevel+" activado.",time:now2(),date:today(),read:false}];await DB.update(phone,{balance:nb,vip_level:parseInt(vipLevel),total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:today(),vip_expires_at:new Date(Date.now()+30*24*60*60*1000).toLocaleDateString("pt-MZ"),notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n💎 VIP "+vipLevel+" activado"),"_blank");toast("Depósito aprovado! ✅");await loadAdmin();}
-async function approveWd(id,phone,amount,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Receberás via e-Mola em breve.",time:now2(),date:today(),read:false}];await DB.update(phone,{notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n🏦 e-Mola"),"_blank");toast("Levantamento aprovado! ✅");await loadAdmin();}
+async function approveWd(id,phone,amount,name){await DB.txUpdate(id,{status:"approved",approved_at:now2()});const u=admUsers.find(x=>x.phone==phone);if(u){const nn=[...(u.notifications||[]),{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Receberás via e-Mola em breve.",time:now2(),date:today(),read:false}];await DB.update(phone,{notifications:nn});}window.open("https://wa.me/"+SUPPORT+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n📱 "+phone+"\n💰 "+amount+" MT\n🏦 e-Mola"),"_blank");
+  // Send push notification to user if it's the current user
+  if(U&&U.phone===phone) sendPushNotif("✅ Levantamento Aprovado!","O teu levantamento de "+ff(amount)+" foi aprovado! Verifica o teu e-Mola.");
+  sendPushNotif('✅ MZInvestment — Levantamento Aprovado!','O levantamento de '+ff(amount)+' foi aprovado! Verifica o teu e-Mola. 💰');
+  toast("Levantamento aprovado! ✅");await loadAdmin();}
 async function rejectTx(id,phone,type,name,amount){await DB.txUpdate(id,{status:"rejected"});const u=admUsers.find(x=>x.phone==phone);if(u){const m=`❌ ${type==="deposit"?"Depósito":"Levantamento"} de ${ff(amount)} rejeitado.${type==="withdrawal"?" Saldo devolvido.":""}`;const nn=[...(u.notifications||[]),{id:Date.now(),msg:m,time:now2(),date:today(),read:false}];const p={notifications:nn};if(type==="withdrawal")p.balance=(parseFloat(u.balance)||0)+parseFloat(amount);await DB.update(phone,p);}toast("Rejeitado","e");await loadAdmin();}
 function renderAdmCredit(){document.getElementById("adm-credit").innerHTML=`<div class="card" style="border-color:#2ECC7144"><div class="ctit" style="color:#2ECC71">➕ Creditar Saldo Manualmente</div><div class="fld"><label>📱 Número</label><input type="tel" id="cr-ph" placeholder="Ex: 840000001" oninput="chkCr()"/><div id="cr-info" style="font-size:12px;margin-top:4px"></div></div><div class="fld"><label>💰 Valor (MT)</label><input type="number" id="cr-amt" placeholder="Ex: 1500"/></div><div class="fld"><label>📝 Nota</label><input type="text" id="cr-note" placeholder="Ex: Depósito VIP 2"/></div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;margin-top:8px" onclick="doCredit()">✅ Confirmar Crédito</button></div>`;}
 async function chkCr(){const ph=document.getElementById("cr-ph")?.value,el=document.getElementById("cr-info");if(!ph||ph.length<9){if(el)el.textContent="";return;}const u=admUsers.find(x=>x.phone==ph);if(el){el.textContent=u?"✅ "+u.name:"❌ Não encontrado";el.style.color=u?"#2ECC71":"#E74C3C";}}

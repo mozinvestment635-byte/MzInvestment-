@@ -550,6 +550,7 @@ button{cursor:pointer}input{outline:none;box-sizing:border-box}
 <div id="toast"></div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 const SUPA_URL="https://xltsswpobwgjuwebjlsp.supabase.co";
 const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsdHNzd3BvYndnanV3ZWJqbHNwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODA5MTcwNCwiZXhwIjoyMDkzNjY3NzA0fQ.nAzDailPOQt8HXSfqvZVJboB3CMEMXb11mE_8SmIgEo";
@@ -678,7 +679,7 @@ function mapU(u){
   try{if(typeof teamMem==="string")teamMem=JSON.parse(teamMem);}catch(e){teamMem=[];}
   return{...u,vip:u.vip_level?VIPS[u.vip_level-1]:null,balance:parseFloat(u.balance)||0,referrals:u.referrals||0,totalEarned:parseFloat(u.total_earned)||0,refCode:u.ref_code,notifications:notifs,taskHistory:taskHist,teamMembers:teamMem};
 }
-async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!==undefined)d.balance=patch.balance;if(patch.vip!==undefined){d.vip_level=patch.vip?.l||null;if(patch.vip)d.activated_at=today();}if(patch.totalEarned!==undefined)d.total_earned=patch.totalEarned;if(patch.notifications!==undefined)d.notifications=patch.notifications;if(patch.taskHistory!==undefined)d.task_history=patch.taskHistory;if(patch.tutorialDone!==undefined)d.tutorial_done=patch.tutorialDone;if(patch.photo!==undefined)d.photo=patch.photo;if(patch.pin!==undefined)d.pin=patch.pin;if(Object.keys(d).length>0)await DB.update(U.phone,d);updateUI();}
+async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!==undefined)d.balance=patch.balance;if(patch.vip!==undefined){d.vip_level=patch.(vip&&vip.l)||null;if(patch.vip)d.activated_at=today();}if(patch.totalEarned!==undefined)d.total_earned=patch.totalEarned;if(patch.notifications!==undefined)d.notifications=patch.notifications;if(patch.taskHistory!==undefined)d.task_history=patch.taskHistory;if(patch.tutorialDone!==undefined)d.tutorial_done=patch.tutorialDone;if(patch.photo!==undefined)d.photo=patch.photo;if(patch.pin!==undefined)d.pin=patch.pin;if(Object.keys(d).length>0)await DB.update(U.phone,d);updateUI();}
 (function(){
   let refCode=null;
   try{
@@ -727,7 +728,7 @@ async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!=
 let _mzTY=0;
 document.addEventListener('touchstart',function(e){_mzTY=e.touches[0].clientY;},{passive:true});
 document.addEventListener('touchend',function(e){
-  if(e.changedTouches[0].clientY-_mzTY>90&&window.scrollY===0&&document.getElementById("pg-main")?.classList.contains("on")){
+  if(e.changedTouches[0].clientY-_mzTY>90&&window.scrollY===0&&(document.getElementById("pg-main")&&document.getElementById("pg-main").classList.contains("on"))){
     toast("🔄 A actualizar...");
     if(U)DB.get(U.phone).then(function(u){if(u){Object.assign(U,mapU(u));updateUI();toast("✅ Actualizado!");}});
   }
@@ -913,16 +914,16 @@ function updateUI(){
   document.getElementById("p-bal").textContent=fmt(U.balance);
   const pvt=document.getElementById("p-vip-tag");pvt.innerHTML=U.vip?`<div style="background:${U.vip.c};border-radius:6px;padding:2px 10px;font-size:12px;font-weight:900;color:#000;display:inline-block;margin-top:4px">T${U.vip.l}</div>`:"";
   const ws=wdStat();const wb=document.getElementById("wd-banner");wb.textContent=(ws.ok?"✅":"🔒")+" "+ws.msg;wb.className="wd-banner "+(ws.ok?"wd-open":"wd-closed");
-  const rem=Math.max(0,(U.vip?.v||0)-done.length);document.getElementById("t-rem").textContent=rem;document.getElementById("t-done").textContent=done.length;
+  const rem=Math.max(0,((U.vip&&U.vip.v)||0)-done.length);document.getElementById("t-rem").textContent=rem;document.getElementById("t-done").textContent=done.length;
   document.getElementById("wday-warn").style.display=isWday()?"none":"block";
   document.getElementById("no-vip").style.display=U.vip?"none":"block";
   document.getElementById("no-vip2").style.display=U.vip?"none":"block";
   const te=earnings.filter(e=>e.a>0).reduce((s,e)=>s+e.a,0);
-  const stats=[["Ganhos hoje",fmt(te)],["Total ganho",fmt(U.totalEarned)],["Indicações",U.referrals+"/5"],["Tarefas",done.length+"/"+(U.vip?.v||0)]];
+  const stats=[["Ganhos hoje",fmt(te)],["Total ganho",fmt(U.totalEarned)],["Indicações",U.referrals+"/5"],["Tarefas",done.length+"/"+((U.vip&&U.vip.v)||0)]];
   document.getElementById("home-stats").innerHTML=stats.map(([l,v])=>`<div class="stcard"><div class="stv">${v}</div><div class="stl">${l}</div></div>`).join("");
-  document.getElementById("p-stats").innerHTML=`<div class="stcard"><div class="stv">${U.referrals}/5</div><div class="stl">Indicações VIP</div></div><div class="stcard"><div class="stv">${done.length}/${U.vip?.v||0}</div><div class="stl">Tarefas hoje</div></div><div class="stcard"><div class="stv" style="font-size:12px">${ff(U.totalEarned)}</div><div class="stl">Total ganho</div></div><div class="stcard"><div class="stv" style="font-size:12px">${U.activatedAt||today()}</div><div class="stl">Membro desde</div></div>`;
+  document.getElementById("p-stats").innerHTML=`<div class="stcard"><div class="stv">${U.referrals}/5</div><div class="stl">Indicações VIP</div></div><div class="stcard"><div class="stv">${done.length}/${(U.vip&&U.vip.v)||0}</div><div class="stl">Tarefas hoje</div></div><div class="stcard"><div class="stv" style="font-size:12px">${ff(U.totalEarned)}</div><div class="stl">Total ganho</div></div><div class="stcard"><div class="stv" style="font-size:12px">${U.activatedAt||today()}</div><div class="stl">Membro desde</div></div>`;
   const un=(U.notifications||[]).filter(n=>!n.read).length;const nd=document.getElementById("notif-dot");if(nd)nd.style.display=un>0?"inline-block":"none";
-  document.getElementById("pinfo-rows").innerHTML=`<div class="irow"><span class="ilbl">👤 Nome</span><span class="ival">${U.name}</span></div><div class="irow"><span class="ilbl">📱 Número e-Mola</span><span class="ival">+258 ${U.phone}</span></div><div class="irow"><span class="ilbl">📅 Activado</span><span class="ival">${U.activatedAt||today()}</span></div><div class="irow"><span class="ilbl">💎 VIP</span><span class="ival" style="color:${U.vip?.c||"#7090C0"}">${U.vip?"VIP "+U.vip.l+" – "+U.vip.n:"Sem VIP"}</span></div><div class="irow"><span class="ilbl">👥 Indicações</span><span class="ival">${U.referrals}/5</span></div><div class="irow" style="border:none"><span class="ilbl">🔗 Código</span><span class="ival" style="color:#00D4FF">${U.refCode||"—"}</span></div>`;
+  document.getElementById("pinfo-rows").innerHTML=`<div class="irow"><span class="ilbl">👤 Nome</span><span class="ival">${U.name}</span></div><div class="irow"><span class="ilbl">📱 Número e-Mola</span><span class="ival">+258 ${U.phone}</span></div><div class="irow"><span class="ilbl">📅 Activado</span><span class="ival">${U.activatedAt||today()}</span></div><div class="irow"><span class="ilbl">💎 VIP</span><span class="ival" style="color:${(U.vip&&U.vip.c)||"#7090C0"}">${U.vip?"VIP "+U.vip.l+" – "+U.vip.n:"Sem VIP"}</span></div><div class="irow"><span class="ilbl">👥 Indicações</span><span class="ival">${U.referrals}/5</span></div><div class="irow" style="border:none"><span class="ilbl">🔗 Código</span><span class="ival" style="color:#00D4FF">${U.refCode||"—"}</span></div>`;
   if(U.photo){document.getElementById("av-img").src=U.photo;document.getElementById("av-img").style.display="block";document.getElementById("av-icon").style.display="none";}
 }
 function renderHome(){
@@ -933,7 +934,7 @@ function renderHome(){
 }
 function renderVips(){
   document.getElementById("vip-list").innerHTML=VIPS.map(v=>{
-    const act=U.vip?.l===v.l;
+    const act=(U.vip&&U.vip.l)===v.l;
     return `<div class="vip-card" style="border-color:${act?v.c:"#1E3060"}"><div class="vip-hd"><div class="vip-tag" style="background:${v.c}">VIP ${v.l}</div><div class="vip-nm" style="color:${v.c}">${v.n}</div>${act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅ Activo</div>':""}</div><div class="irow"><span class="ilbl">💳 Depósito</span><span class="ival">${ff(v.p)}</span></div><div class="irow"><span class="ilbl">💰 Ganho/dia</span><span class="ival" style="color:#00D4FF">${ff(v.d)}</span></div><div class="irow"><span class="ilbl">🎬 Tarefas/dia</span><span class="ival">${v.v}</span></div><div class="irow"><span class="ilbl">💵 Por tarefa</span><span class="ival">${ff(Math.floor(v.d/v.v))}</span></div><div class="irow" style="border:none"><span class="ilbl">⏳ Validade</span><span class="ival" style="color:#FFD700">30 dias úteis</span></div>${!act?`<button class="btn-vip" style="background:${v.c}" onclick="activVip(${v.l})">Activar VIP ${v.l} – ${ff(v.p)}</button>`:
     `<button class="btn-vip" style="background:${v.c};opacity:0.85" onclick="renewVip(${v.l})">🔄 Renovar VIP ${v.l} – ${ff(v.p)}</button>`}</div>`;
   }).join("");
@@ -992,7 +993,7 @@ function startCd(id,v,rwd){
   setTimeout(()=>{
   cdTimer=setInterval(async()=>{
     t--;const num=document.getElementById("cd-num");if(num){num.textContent=t;num.style.color=t<=5?"#E74C3C":"#00D4FF";}
-    document.getElementById("i-done").textContent=done.length+" / "+(U.vip?.v||0);document.getElementById("i-rem").textContent=Math.max(0,(U.vip?.v||0)-done.length);
+    document.getElementById("i-done").textContent=done.length+" / "+((U.vip&&U.vip.v)||0);document.getElementById("i-rem").textContent=Math.max(0,((U.vip&&U.vip.v)||0)-done.length);
     if(t<=0){
       clearInterval(cdTimer);cdTimer=null;done.push(id);
       try{localStorage.setItem("mzd-"+U.phone+"-"+tkey(),JSON.stringify(done));}catch(e){}
@@ -1000,7 +1001,7 @@ function startCd(id,v,rwd){
       await syncU({balance:U.balance+rwd,totalEarned:U.totalEarned+rwd,taskHistory:th});
       earnings.push({desc:"🎬 "+v.t,a:rwd,date:today()});
       document.getElementById("cd-card").style.display="none";document.getElementById("done-card").style.display="block";document.getElementById("pl-done").style.display="block";
-      document.getElementById("i-done").textContent=done.length+" / "+(U.vip?.v||0);document.getElementById("i-rem").textContent=Math.max(0,(U.vip?.v||0)-done.length);
+      document.getElementById("i-done").textContent=done.length+" / "+((U.vip&&U.vip.v)||0);document.getElementById("i-rem").textContent=Math.max(0,((U.vip&&U.vip.v)||0)-done.length);
       renderVideos();toast("+"+ff(rwd)+" ganhos! 💰");
     }
   },1000);
@@ -1055,7 +1056,7 @@ function renderTxHistory(){
   }).join("");
 }
 
-function renderNotifs(){const ns=U?.notifications||[];document.getElementById("notif-list").innerHTML=ns.length===0?`<div class="empty">Sem notificações</div>`:ns.slice().reverse().map(n=>`<div style="border-radius:14px;padding:14px;margin-bottom:10px;background:${n.read?"#071828":"#071830"};border:1px solid ${n.read?"#0D2A4A":"#00D4FF44"}">${!n.read?`<div style="width:8px;height:8px;background:#00D4FF;border-radius:50%;margin-bottom:6px"></div>`:""}<div style="font-size:14px;line-height:1.6">${n.msg}</div><div style="color:#3A5070;font-size:11px;margin-top:4px">${n.date} ${n.time}</div></div>`).join("");}
+function renderNotifs(){const ns=(U&&U.notifications)||[];document.getElementById("notif-list").innerHTML=ns.length===0?`<div class="empty">Sem notificações</div>`:ns.slice().reverse().map(n=>`<div style="border-radius:14px;padding:14px;margin-bottom:10px;background:${n.read?"#071828":"#071830"};border:1px solid ${n.read?"#0D2A4A":"#00D4FF44"}">${!n.read?`<div style="width:8px;height:8px;background:#00D4FF;border-radius:50%;margin-bottom:6px"></div>`:""}<div style="font-size:14px;line-height:1.6">${n.msg}</div><div style="color:#3A5070;font-size:11px;margin-top:4px">${n.date} ${n.time}</div></div>`).join("");}
 async function markRead(){const ns=(U.notifications||[]).map(n=>({...n,read:true}));await syncU({notifications:ns});renderNotifs();}
 function renderTeam(){const c=U.referrals||0;document.getElementById("team-lbl").textContent=c+" / 5 membros com VIP activo";document.getElementById("team-prog").style.width=Math.min((c/5)*100,100)+"%";document.getElementById("team-msg").innerHTML=c>=5?`<div style="color:#2ECC71;font-weight:900;text-align:center;padding:8px">✅ Fundo desbloqueado!</div>`:`<div style="color:#FF8C00;font-size:14px;text-align:center">Faltam ${5-c} membros para desbloquear o Fundo</div>`;const ms=U.teamMembers||[];document.getElementById("team-list").innerHTML=ms.length===0?`<div class="card" style="text-align:center;padding:20px;color:#5070A0">Ainda não tens membros.<br>Partilha o teu código!</div>`:ms.map(m=>`<div class="card"><div style="display:flex;align-items:center;gap:12px"><div style="width:38px;height:38px;background:#1E3060;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">👤</div><div><div style="font-weight:900">${m.name}</div><div style="color:#7090C0;font-size:13px">VIP ${m.vip} · ${m.joined}</div></div><div style="margin-left:auto;color:#2ECC71;font-size:13px;font-weight:900">✅ Activo</div></div></div>`).join("");}
 function renderInvite(){
@@ -1073,7 +1074,7 @@ function renderInvite(){
   document.getElementById("inv-wa").href="https://wa.me/?text="+encodeURIComponent(msg);
 }
 function copyCode(){
-  const code=U?.refCode||"";
+  const code=(U&&U.refCode)||"";
   if(navigator.clipboard){
     navigator.clipboard.writeText(code)
       .then(()=>toast("✅ Código "+code+" copiado!"))
@@ -1165,12 +1166,7 @@ function editBalance(phone, name, currentBal){
 
 function tgPin(ph,pin){const el=document.getElementById("pin-"+ph);if(el)el.textContent=el.textContent==="••••"?pin:"••••";}
 async function tgBlock(ph,block,name){const u=admUsers.find(x=>x.phone==ph);if(!u)return;const msg=block?"🚫 A tua conta foi bloqueada pelo administrador.":"✅ A tua conta foi desbloqueada!";const nn=[...(u.notifications||[]),{id:Date.now(),msg,time:now2(),date:today(),read:false}];await DB.update(ph,{blocked:block,notifications:nn});toast((block?"Conta de "+name+" bloqueada!":"Conta de "+name+" desbloqueada! ✅"),(block?"e":"s"));await loadAdmin();admTab("users");}
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
-</body>
-</html>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+}</script>
 
 </body>
 </html>

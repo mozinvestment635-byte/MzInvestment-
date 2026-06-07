@@ -692,24 +692,31 @@ async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!=
   let p=0;
   const iv=setInterval(function(){
     p+=2;if(p>100)p=100;
-    const bar=document.getElementById("sp-bar");
-    const pct=document.getElementById("sp-pct");
+    var bar=document.getElementById("sp-bar");
+    var pct=document.getElementById("sp-pct");
     if(bar)bar.style.width=p+"%";
     if(pct)pct.textContent=p+"%";
     if(p>=100){
       clearInterval(iv);
       setTimeout(function(){
-        const rc=window._splashRef;
-        if(rc){
-          pg("pg-register");
-          setTimeout(function(){
-            const el=document.getElementById("r-ref");
-            if(el){el.value=rc;el.style.borderColor="#00D4FF";}
-            const tag=document.getElementById("reg-tag");
-            if(tag)tag.textContent="Convidado · Código: "+rc+" 🎁";
-          },150);
-        } else {
-          pg("pg-login");
+        try{
+          var rc=window._splashRef;
+          if(rc){
+            pg("pg-register");
+            setTimeout(function(){
+              var el=document.getElementById("r-ref");
+              if(el){el.value=rc;el.style.borderColor="#00D4FF";}
+              var tag=document.getElementById("reg-tag");
+              if(tag)tag.textContent="Convidado · Código: "+rc+" 🎁";
+            },150);
+          } else {
+            pg("pg-login");
+          }
+        }catch(err){
+          // Fallback - show login directly
+          document.querySelectorAll(".page").forEach(function(p){p.classList.remove("on");});
+          var login=document.getElementById("pg-login");
+          if(login)login.classList.add("on");
         }
       },400);
     }
@@ -718,17 +725,30 @@ async function syncU(patch){Object.assign(U,patch);const d={};if(patch.balance!=
 
 // Pull to refresh
 let _mzTY=0;
-document.addEventListener('touchstart',e=>{_mzTY=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchend',e=>{
+document.addEventListener('touchstart',function(e){_mzTY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',function(e){
   if(e.changedTouches[0].clientY-_mzTY>90&&window.scrollY===0&&document.getElementById("pg-main")?.classList.contains("on")){
     toast("🔄 A actualizar...");
-    if(U)DB.get(U.phone).then(u=>{if(u){Object.assign(U,mapU(u));updateUI();toast("✅ Actualizado!");}});
+    if(U)DB.get(U.phone).then(function(u){if(u){Object.assign(U,mapU(u));updateUI();toast("✅ Actualizado!");}});
   }
 },{passive:true});
-// Offline
-window.addEventListener('online',()=>{document.getElementById('offline-bar').style.display='none';toast('✅ Ligação restaurada!');});
-window.addEventListener('offline',()=>{document.getElementById('offline-bar').style.display='block';});
-if(!navigator.onLine)document.getElementById('offline-bar').style.display='block';
+// Offline detection - only show after 5 seconds to avoid false positives
+setTimeout(function(){
+  window.addEventListener('online',function(){
+    const b=document.getElementById('offline-bar');
+    if(b)b.style.display='none';
+    toast('✅ Ligação restaurada!');
+  });
+  window.addEventListener('offline',function(){
+    const b=document.getElementById('offline-bar');
+    if(b)b.style.display='block';
+  });
+  // Only show offline bar if truly offline after delay
+  if(!navigator.onLine){
+    const b=document.getElementById('offline-bar');
+    if(b)b.style.display='block';
+  }
+}, 5000);
 async function doLogin(){
   const ph=document.getElementById("l-phone").value.trim(),pin=document.getElementById("l-pin").value.trim(),err=document.getElementById("l-err");
   err.style.display="none";

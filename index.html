@@ -1362,6 +1362,34 @@ function showWelcomeMsg(){
   toast("🎉 Bem-vindo à MZInvestment! Activa um VIP para começar a ganhar!");
 }
 
+
+// SPLASH ANIMATION - runs immediately
+var _sp=0;
+var _spIv=setInterval(function(){
+  _sp+=2;if(_sp>100)_sp=100;
+  var b=document.getElementById("sp-bar");
+  var p=document.getElementById("sp-pct");
+  if(b)b.style.width=_sp+"%";
+  if(p)p.textContent=_sp+"%";
+  if(_sp>=100){
+    clearInterval(_spIv);
+    var ref=null;
+    try{ref=new URLSearchParams(window.location.search).get("ref");if(ref)ref=ref.toUpperCase();}catch(e){}
+    setTimeout(function(){
+      try{
+        if(ref){
+          pg("pg-register");
+          setTimeout(function(){var el=document.getElementById("r-ref");if(el){el.value=ref;el.style.borderColor="#00D4FF";}},150);
+        }else{
+          pg("pg-login");
+        }
+      }catch(e){
+        var el=document.getElementById("pg-login");
+        if(el){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("on");});el.classList.add("on");}
+      }
+    },400);
+  }
+},40);
 </script>
 </body>
 </html>

@@ -585,6 +585,15 @@ function mapU(u){
   if(typeof tm==="string")try{tm=JSON.parse(tm);}catch(e){tm=[];}
   return Object.assign({},u,{vip:u.vip_level?VIPS[u.vip_level-1]:null,balance:parseFloat(u.balance)||0,referrals:u.referrals||0,totalEarned:parseFloat(u.total_earned)||0,refCode:u.ref_code,notifications:n,taskHistory:th,teamMembers:tm});
 }
+// ─── SUPABASE BACKUP CHECK ────────────────────────────────
+async function backupUserLocal(){
+  if(!U)return;
+  try{
+    var backup={...U,backup_time:n2(),backup_date:tod()};
+    localStorage.setItem("mz-backup-"+U.phone,JSON.stringify(backup));
+  }catch(e){}
+}
+
 async function syncU(patch){
   Object.assign(U,patch);
   var d={};
@@ -616,6 +625,40 @@ async function doLogin(){
   U=mapU(u);try{done=JSON.parse(localStorage.getItem("mzd-"+U.phone+"-"+tkey())||"[]");}catch(e){done=[];}
   loadMain();pg("pg-main");
 }
+// ─── VERIFICATION ────────────────────────────────────────
+function showVerification(ph, vcode){
+  document.getElementById("verif-code-display").textContent=vcode;
+  var waMsg=encodeURIComponent("🔐 MZInvestment — Código de Verificação\n\nO meu código é: *"+vcode+"*\nNúmero: +258 "+ph);
+  document.getElementById("verif-wa-btn").href="https://wa.me/"+SUP+"?text="+waMsg;
+  document.getElementById("verif-modal").style.display="flex";
+}
+
+function confirmVerif(){
+  var input=document.getElementById("verif-input").value.trim();
+  var ph=U?U.phone:"";
+  var stored=localStorage.getItem("mz-vcode-"+ph);
+  var err=document.getElementById("verif-err");
+  if(input===String(stored)){
+    localStorage.setItem("mz-verified-"+ph,"true");
+    document.getElementById("verif-modal").style.display="none";
+    DB.upd(ph,{phone_verified:true});
+    toast("✅ Número verificado com sucesso!");
+    loadMain();pg("pg-main");
+  } else {
+    err.textContent="Código incorrecto. Tenta novamente.";err.style.display="block";
+  }
+}
+
+function skipVerif(){
+  document.getElementById("verif-modal").style.display="none";
+  toast("⚠️ Número não verificado. Verifica em breve.");
+  loadMain();pg("pg-main");
+}
+
+function isVerified(){
+  return U&&(U.phone_verified||localStorage.getItem("mz-verified-"+U.phone)==="true");
+}
+
 async function doRegister(){
   var nm=document.getElementById("r-nm").value.trim(),ph=document.getElementById("r-ph").value.trim(),pi=document.getElementById("r-pin").value.trim(),pi2=document.getElementById("r-pin2").value.trim(),ref=document.getElementById("r-ref").value.trim().toUpperCase();
   var err=document.getElementById("r-err");err.style.display="none";
@@ -870,39 +913,7 @@ function admPromo(){var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}
 function createPromo(){var code=document.getElementById("pc").value.trim().toUpperCase(),bonus=parseInt(document.getElementById("pb").value||0),uses=parseInt(document.getElementById("pu").value||100);if(!code||!bonus){toast("Preenche código e bónus","e");return;}var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");promos[code]={bonus:bonus,max:uses,used:0,created:tod()};localStorage.setItem("mz-promos",JSON.stringify(promos));toast("Código "+code+" criado! ✅");admPromo();}
 function delPromo(code){var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");delete promos[code];localStorage.setItem("mz-promos",JSON.stringify(promos));toast("Removido","e");admPromo();}
 
-// ─── VERIFICATION ────────────────────────────────────────
-function showVerification(ph, vcode){
-  document.getElementById("verif-code-display").textContent=vcode;
-  var waMsg=encodeURIComponent("🔐 MZInvestment — Código de Verificação\n\nO meu código é: *"+vcode+"*\nNúmero: +258 "+ph);
-  document.getElementById("verif-wa-btn").href="https://wa.me/"+SUP+"?text="+waMsg;
-  document.getElementById("verif-modal").style.display="flex";
-}
 
-function confirmVerif(){
-  var input=document.getElementById("verif-input").value.trim();
-  var ph=U?U.phone:"";
-  var stored=localStorage.getItem("mz-vcode-"+ph);
-  var err=document.getElementById("verif-err");
-  if(input===String(stored)){
-    localStorage.setItem("mz-verified-"+ph,"true");
-    document.getElementById("verif-modal").style.display="none";
-    DB.upd(ph,{phone_verified:true});
-    toast("✅ Número verificado com sucesso!");
-    loadMain();pg("pg-main");
-  } else {
-    err.textContent="Código incorrecto. Tenta novamente.";err.style.display="block";
-  }
-}
-
-function skipVerif(){
-  document.getElementById("verif-modal").style.display="none";
-  toast("⚠️ Número não verificado. Verifica em breve.");
-  loadMain();pg("pg-main");
-}
-
-function isVerified(){
-  return U&&(U.phone_verified||localStorage.getItem("mz-verified-"+U.phone)==="true");
-}
 
 // ─── SUPPORT TICKETS ─────────────────────────────────────
 function switchSupport(tab){
@@ -955,14 +966,7 @@ function renderVipHist(){
   }).join("");
 }
 
-// ─── SUPABASE BACKUP CHECK ────────────────────────────────
-async function backupUserLocal(){
-  if(!U)return;
-  try{
-    var backup={...U,backup_time:n2(),backup_date:tod()};
-    localStorage.setItem("mz-backup-"+U.phone,JSON.stringify(backup));
-  }catch(e){}
-}
+
 
 </script>
 </body>

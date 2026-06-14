@@ -336,12 +336,23 @@ input{outline:none;font-family:inherit}
     <div class="back-hdr"><button class="back-btn" onclick="goTab('t-wallet','n-wallet')">‹</button><div class="back-title">Histórico de retiradas</div></div>
     <div id="wd-hist"></div>
   </div>
+  <div id="t-viphist" class="tab">
+    <div class="back-hdr"><button class="back-btn" onclick="goTab('t-profile','n-profile')">‹</button><div class="back-title">💎 Histórico de VIPs</div></div>
+    <div id="vip-hist-list"><div class="empty">Sem histórico de VIPs</div></div>
+  </div>
+
   <div id="t-txhist" class="tab">
     <div class="back-hdr"><button class="back-btn" onclick="goTab('t-profile','n-profile')">‹</button><div class="back-title">📊 Histórico de Transacções</div></div>
     <div id="tx-hist-list"><div class="empty">Sem transacções ainda</div></div>
   </div>
   <div id="t-suporte" class="tab">
     <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">💬 Suporte</div>
+    <div class="subtabs" style="margin-bottom:16px">
+      <div class="stab on" id="st-contact" onclick="switchSupport('contact')">Contacto</div>
+      <div class="stab" id="st-ticket" onclick="switchSupport('ticket')">Ticket</div>
+      <div class="stab" id="st-mytickets" onclick="switchSupport('mytickets')">Os meus</div>
+    </div>
+    <div id="s-contact">
     <div style="display:flex;gap:8px;margin-bottom:16px">
       <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showFAQ()">❓ FAQ</button>
       <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showAbout()">ℹ️ Sobre Nós</button>
@@ -355,7 +366,32 @@ input{outline:none;font-family:inherit}
         <button style="flex:1;padding:10px;background:transparent;border:1px solid #1E3060;border-radius:10px;color:#5070A0;font-size:12px;cursor:pointer" onclick="showAbout()">ℹ️ Sobre nós</button>
       </div>
     </div>
+    </div><!-- end s-contact -->
+    <div id="s-ticket" style="display:none">
+      <div class="card">
+        <div class="ctit">📩 Novo Ticket de Suporte</div>
+        <div style="color:#7090C0;font-size:13px;margin-bottom:14px">Descreve o teu problema e respondemos em breve via notificação.</div>
+        <div class="fld"><label>Assunto</label>
+          <select id="tk-subject" style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:11px 13px;color:#C8D8F0;font-size:15px">
+            <option value="deposit">Problema com depósito</option>
+            <option value="withdrawal">Problema com levantamento</option>
+            <option value="vip">Problema com VIP</option>
+            <option value="tasks">Problema com tarefas</option>
+            <option value="account">Problema com conta</option>
+            <option value="other">Outro</option>
+          </select>
+        </div>
+        <div class="fld"><label>Descrição</label>
+          <textarea id="tk-desc" placeholder="Descreve o teu problema em detalhe..." style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:11px 13px;color:#C8D8F0;font-size:14px;height:120px;resize:none"></textarea>
+        </div>
+        <button class="btn-p" onclick="submitTicket()">📤 Enviar Ticket</button>
+      </div>
+    </div>
+    <div id="s-mytickets" style="display:none">
+      <div id="my-tickets-list"><div class="empty">Sem tickets ainda</div></div>
+    </div>
   </div>
+
   <nav class="nav">
     <div class="ni on" id="n-home" onclick="goTab('t-home','n-home')"><div class="ni-ic">🏠</div><div class="ni-lb">Lar</div><div class="ni-dot"></div></div>
     <div class="ni" id="n-videos" onclick="goTab('t-videos','n-videos')"><div class="ni-ic">📋</div><div class="ni-lb">Tarefa</div><div class="ni-dot"></div></div>
@@ -413,6 +449,27 @@ input{outline:none;font-family:inherit}
   <div style="padding:16px;flex-shrink:0"><button class="btn-p" onclick="closeModal()">Fechar</button></div>
 </div>
 
+<!-- VERIFICATION MODAL -->
+<div id="verif-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9800;display:none;align-items:center;justify-content:center;padding:24px">
+  <div style="background:#071828;border:1px solid #0D2A4A;border-radius:24px;padding:24px;width:100%;max-width:400px">
+    <div style="font-size:36px;text-align:center;margin-bottom:12px">📲</div>
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:8px">Verificar Número</div>
+    <div style="color:#7090C0;font-size:13px;text-align:center;margin-bottom:20px;line-height:1.7">Para confirmar o teu número, envia o código abaixo via WhatsApp para o nosso suporte.</div>
+    <div style="background:#0D2040;border-radius:14px;padding:20px;text-align:center;margin-bottom:16px">
+      <div style="color:#7090C0;font-size:12px;margin-bottom:6px">O teu código de verificação</div>
+      <div id="verif-code-display" style="font-size:48px;font-weight:900;letter-spacing:10px;color:#00D4FF;font-family:monospace">----</div>
+    </div>
+    <a id="verif-wa-btn" class="btn-wa" href="#" target="_blank" style="margin-bottom:12px">💬 Enviar código via WhatsApp</a>
+    <div style="color:#7090C0;font-size:13px;text-align:center;margin-bottom:12px">Após enviar, insere o código que o administrador te confirmar:</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <input type="number" id="verif-input" maxlength="4" placeholder="Código confirmado" style="flex:1;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:12px;color:#C8D8F0;font-size:18px;text-align:center"/>
+      <button style="padding:12px 20px;background:linear-gradient(135deg,#0050B0,#00D4FF);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:900;cursor:pointer" onclick="confirmVerif()">✅</button>
+    </div>
+    <div class="err" id="verif-err"></div>
+    <button style="width:100%;padding:12px;background:transparent;border:1px solid #1E3060;border-radius:12px;color:#5070A0;font-size:13px;cursor:pointer;margin-top:4px" onclick="skipVerif()">Verificar mais tarde</button>
+  </div>
+</div>
+
 <!-- PIN RECOVERY -->
 <div id="pin-rec" style="position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9000;display:none;align-items:center;justify-content:center;padding:24px">
   <div style="background:#071828;border:1px solid #0D2A4A;border-radius:24px;padding:24px;width:100%;max-width:380px">
@@ -448,6 +505,36 @@ function tod(){return new Date().toLocaleDateString("pt-MZ");}
 function tkey(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"}));return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
 function n2(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"}));return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
 function isWd(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"})).getDay();return d>=1&&d<=5;}
+
+function countWeekdays(start,end){
+  var count=0;var cur=new Date(start);cur.setHours(0,0,0,0);
+  var e=new Date(end);e.setHours(0,0,0,0);
+  while(cur<=e){var d=cur.getDay();if(d>=1&&d<=5)count++;cur.setDate(cur.getDate()+1);}
+  return count;
+}
+
+function addWeekdays(start,n){
+  var cur=new Date(start);var count=0;
+  while(count<n){cur.setDate(cur.getDate()+1);var d=cur.getDay();if(d>=1&&d<=5)count++;}
+  return cur;
+}
+
+function getVipDaysLeft(){
+  if(!U||!U.vip||!U.activated_at)return null;
+  try{
+    var parts=U.activated_at.split("/");
+    var actDate=new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0]));
+    var now=new Date();now.setHours(0,0,0,0);
+    var elapsed=countWeekdays(actDate,now);
+    var left=30-elapsed;
+    return left;
+  }catch(e){return null;}
+}
+
+function isVipExpired(){
+  var left=getVipDaysLeft();
+  return left!==null&&left<=0;
+}
 function wdSt(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"})),dy=d.getDay(),h=d.getHours(),t=String(h).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");if(dy===0||dy===6)return{ok:false,msg:"Só Seg-Sex"};if(h<10)return{ok:false,msg:"Abre às 10:00"};if(h>=18)return{ok:false,msg:"Fechou às 18:00"};return{ok:true,msg:"Aberto até 18:00 ("+t+")"};}
 function toast(m,t){var el=document.getElementById("toast");el.textContent=m;el.className=t||"s";el.style.display="block";setTimeout(function(){el.style.display="none";},3200);}
 function pg(id){document.querySelectorAll(".pg").forEach(function(p){p.classList.remove("on");});var el=document.getElementById(id);if(el)el.classList.add("on");}
@@ -509,6 +596,7 @@ async function syncU(patch){
   if(patch.pin!==undefined)d.pin=patch.pin;
   if(patch.photo!==undefined)d.photo=patch.photo;
   if(Object.keys(d).length>0)await DB.upd(U.phone,d);
+  backupUserLocal();
   updateUI();
 }
 // AUTH
@@ -545,19 +633,61 @@ async function doRegister(){
   var rc="MZ"+Math.floor(100000+Math.random()*900000);
   var notif=[{id:1,msg:"Bem-vindo à MZInvestment! Activa um VIP para começar a ganhar.",time:n2(),date:tod(),read:false}];
   if(pb>0)notif.push({id:2,msg:"Bónus de registo: +"+ff(pb)+" creditado!",time:n2(),date:tod(),read:false});
-  var nu={phone:ph,pin:pi,name:nm,balance:pb,referrals:0,ref_code:rc,total_earned:pb,activated_at:tod(),photo:"",lang:"pt",blocked:false,task_history:{},notifications:notif,team_members:[]};
+  var nu={phone:ph,pin:pi,name:nm,balance:pb,referrals:0,ref_code:rc,total_earned:pb,activated_at:tod(),photo:"",lang:"pt",blocked:false,task_history:{},notifications:notif,team_members:[],terms_accepted:tod(),terms_accepted_time:n2()};
   if(ref)nu.invited_by=ref;
   var sv=await DB.save(nu);
   if(!sv){var newU=Object.assign({},nu,{id:"local-"+Date.now()});lu.push(newU);localStorage.setItem("mz-lu",JSON.stringify(lu));sv=newU;}
   if(ref&&db){try{var rr=await db.from("users").select("*").eq("ref_code",ref).single();if(rr.data){var ru=rr.data,nc=(ru.referrals||0)+1,bonus=RB[nc]||0;var tm=Array.isArray(ru.team_members)?ru.team_members:[];tm.push({name:nm,phone:ph,joined:tod()});var nn=(ru.notifications||[]).concat([{id:Date.now(),msg:"👥 "+nm+" registou-se! "+nc+"/5."+(bonus>0?" Bónus de "+ff(bonus)+" creditado!":""),time:n2(),date:tod(),read:false}]);// Don't increment referrals count yet - only add to team_members list
 var patch={team_members:tm,notifications:nn};
 await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}}}catch(e){}}
-  U=mapU(sv);done=[];loadMain();pg("pg-main");btn.disabled=false;btn.textContent="Criar Conta →";
+  U=mapU(sv);done=[];
+  // Send verification code via WhatsApp
+  var vcode=Math.floor(1000+Math.random()*9000);
+  localStorage.setItem("mz-vcode-"+ph,vcode);
+  localStorage.setItem("mz-verified-"+ph,"false");
+  // Open WhatsApp with verification code
+  var waVerif=encodeURIComponent("🔐 MZInvestment — Código de Verificação
+
+O meu código é: *"+vcode+"*
+
+Número: +258 "+ph);
+  setTimeout(function(){
+    showVerification(ph,vcode);
+  },500);
+  btn.disabled=false;btn.textContent="Criar Conta →";
 }
 function logout(){U=null;done=[];wdAmt=null;earn=[];pg("pg-login");}
 function showPinRec(){var ph=document.getElementById("l-ph").value.trim();var w=document.getElementById("pin-rec-wa");if(w&&ph)w.href="https://wa.me/258864378323?text="+encodeURIComponent("Olá, esqueci o PIN. Número: +258 "+ph);document.getElementById("pin-rec").style.display="flex";}
 // MAIN
-function loadMain(){setTimeout(updPush,500);renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();}
+function loadMain(){
+  setTimeout(updPush,500);
+  checkVipExpiry();
+  renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();
+}
+
+async function checkVipExpiry(){
+  if(!U||!U.vip)return;
+  var left=getVipDaysLeft();
+  if(left===null)return;
+  U.vipDaysLeft=Math.max(0,left);
+  if(left<=0){
+    // VIP expired - remove it
+    var nn=(U.notifications||[]).concat([{id:Date.now(),msg:"⚠️ O teu VIP "+U.vip.l+" – "+U.vip.n+" expirou! Renova para continuar a ganhar.",time:n2(),date:tod(),read:false}]);
+    await syncU({vip:null,notifications:nn});
+    // Show expiry alert
+    setTimeout(function(){
+      toast("⚠️ VIP expirado! Renova para continuar a ganhar.","e");
+    },1000);
+  } else if(left<=5){
+    // Warning - expiring soon
+    var warnKey="mz-vip-warn-"+U.phone+"-"+tkey();
+    if(!localStorage.getItem(warnKey)){
+      localStorage.setItem(warnKey,"1");
+      var nn2=(U.notifications||[]).concat([{id:Date.now(),msg:"⏳ O teu VIP "+U.vip.l+" expira em "+left+" dia(s) útil(eis). Renova em breve!",time:n2(),date:tod(),read:false}]);
+      await syncU({notifications:nn2});
+    }
+  }
+}
 function updateUI(){
   if(!U)return;
   document.getElementById("greeting").textContent="Olá, "+U.name.split(" ")[0]+" 👋";
@@ -580,7 +710,17 @@ function updateUI(){
   document.getElementById("home-stats").innerHTML=[["Ganhos hoje",fmt(te)],["Total",fmt(U.totalEarned)],["Indicações",U.referrals+"/5"],["Tarefas",done.length+"/"+(U.vip?U.vip.v:0)]].map(function(x){return '<div class="stcard"><div class="stv">'+x[1]+'</div><div class="stl">'+x[0]+'</div></div>';}).join("");
   document.getElementById("p-stats").innerHTML='<div class="stcard"><div class="stv">'+U.referrals+'/5</div><div class="stl">Indicações</div></div><div class="stcard"><div class="stv">'+done.length+'/'+(U.vip?U.vip.v:0)+'</div><div class="stl">Tarefas</div></div><div class="stcard"><div class="stv" style="font-size:12px">'+ff(U.totalEarned)+'</div><div class="stl">Total ganho</div></div>';
   var un=(U.notifications||[]).filter(function(n){return !n.read;}).length;var nd=document.getElementById("notif-dot");if(nd)nd.style.display=un>0?"inline-block":"none";
-  var vipExp=U.vip&&U.vipDaysLeft?'<div class="irow"><span class="ilbl">Expira em</span><span class="ival" style="color:'+(U.vipDaysLeft<=5?"#FF6B6B":"#FFD700")+'">'+U.vipDaysLeft+' dias úteis</span></div>':"";
+  var expDate="";
+  if(U.vip&&U.activated_at){
+    try{
+      var parts2=U.activated_at.split("/");
+      var actD=new Date(parseInt(parts2[2]),parseInt(parts2[1])-1,parseInt(parts2[0]));
+      var expD=addWeekdays(actD,30);
+      expDate=expD.toLocaleDateString("pt-MZ");
+    }catch(e){}
+  }
+  var dLeft=getVipDaysLeft();
+  var vipExp=U.vip?'<div class="irow"><span class="ilbl">⏳ Expira a</span><span class="ival" style="color:'+(dLeft!==null&&dLeft<=5?"#FF6B6B":"#FFD700")+'">'+expDate+'</span></div><div class="irow"><span class="ilbl">📅 Dias restantes</span><span class="ival" style="color:'+(dLeft!==null&&dLeft<=5?"#FF6B6B":"#2ECC71")+'">'+(dLeft!==null?Math.max(0,dLeft)+" dias úteis":"—")+'</span></div>':"";
   document.getElementById("pinfo-rows").innerHTML='<div class="irow"><span class="ilbl">Nome</span><span class="ival">'+U.name+'</span></div><div class="irow"><span class="ilbl">Número</span><span class="ival">+258 '+U.phone+'</span></div><div class="irow"><span class="ilbl">VIP</span><span class="ival" style="color:'+(U.vip?U.vip.c:"#7090C0")+'">'+(U.vip?"VIP "+U.vip.l+" – "+U.vip.n:"Sem VIP")+'</span></div>'+vipExp+'<div class="irow"><span class="ilbl">Indicações</span><span class="ival">'+U.referrals+'/5</span></div><div class="irow" style="border:none"><span class="ilbl">Código</span><span class="ival" style="color:#00D4FF">'+(U.refCode||"—")+'</span></div>';
   if(U.photo){var ai=document.getElementById("av-img");if(ai){ai.src=U.photo;ai.style.display="block";document.getElementById("av-icon").style.display="none";}}
   // Chart
@@ -591,7 +731,7 @@ function updateUI(){
   if(ce)ce.innerHTML='<div class="card" style="margin-bottom:12px"><div class="ctit">📊 Ganhos últimos 7 dias</div><div class="chart-bars">'+chartData.map(function(v){return '<div class="chart-bar" style="height:'+Math.max(4,Math.round(v/mx*70))+'px"></div>';}).join("")+'</div><div class="chart-lbls">'+chartLbls.map(function(l){return '<div class="chart-lbl">'+l+'</div>';}).join("")+'</div></div>';
 }
 function renderHome(){
-  var items=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-deposit','n-none')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
+  var items=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-deposit','n-none')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
   var h=items.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
   document.getElementById("home-menu").innerHTML=h;document.getElementById("p-menu").innerHTML=h;
 }
@@ -612,7 +752,7 @@ async function activVip(l){
   var v=VIPS[l-1];
   if((U.balance||0)>=v.p){
     await syncU({balance:U.balance-v.p,vip:v});
-    earn.push({desc:"VIP "+v.l+" activado",a:-v.p,date:tod()});
+    earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" activado",a:-v.p,date:tod()});
     // Increment referrer's referrals count when VIP is activated
     if(U.invited_by&&db){
       try{
@@ -637,9 +777,13 @@ async function activVip(l){
     goTab("t-deposit","n-none");
   }
 }
-async function renewVip(l){var v=VIPS[l-1];showConfirm("Renovar VIP "+v.l+"?\nCusto: "+ff(v.p)+"\n30 dias úteis",async function(){if((U.balance||0)<v.p){toast("Saldo insuficiente!","e");return;}await syncU({balance:U.balance-v.p,vip:v});U.vipDaysLeft=30;earn.push({desc:"Renovação VIP "+v.l,a:-v.p,date:tod()});toast("VIP "+v.l+" renovado!");renderVips();});}
+async function renewVip(l){var v=VIPS[l-1];showConfirm("Renovar VIP "+v.l+"?\nCusto: "+ff(v.p)+"\n30 dias úteis",async function(){if((U.balance||0)<v.p){toast("Saldo insuficiente!","e");return;}await syncU({balance:U.balance-v.p,vip:v});U.vipDaysLeft=30;earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" renovado",a:-v.p,date:tod()});toast("VIP "+v.l+" renovado!");renderVips();});}
 function renderVideos(){
-  if(!U.vip){document.getElementById("vgrid").innerHTML="";return;}
+  if(!U.vip){
+    document.getElementById("vgrid").innerHTML='<div style="background:#2d0a0a;border:2px solid #E74C3C;border-radius:16px;padding:30px;text-align:center;margin:10px 0"><div style="font-size:48px;margin-bottom:12px">🔒</div><div style="color:#FF6B6B;font-size:18px;font-weight:900;margin-bottom:10px">VIP Expirado ou Inactivo</div><div style="color:#C8A0A0;font-size:14px;line-height:1.8;margin-bottom:20px">Precisas de um VIP activo para
+fazer as tarefas e ganhar diariamente.</div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#0050B0,#00D4FF);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;cursor:pointer" onclick="goTab('t-vips','n-vips')">💎 Activar / Renovar VIP</button></div>';
+    return;
+  }
   document.getElementById("vgrid").innerHTML=VDS.slice(0,U.vip.v).map(function(v){
     var dk=done.indexOf(v.id)>=0;
     return '<div class="vcard '+(dk?"done":"")+'" onclick="'+(dk?"":"openVid("+v.id+")")+'"><img src="'+v.th+'" alt="'+v.t+'" loading="lazy"/><div class="vbadge">T'+U.vip.l+'</div>'+(dk?'<div class="vdone">✓</div>':'<div class="vplay"><div class="vplay-btn">▶</div></div>')+'<div class="vinfo"><div class="vtit">'+v.t+'</div><div class="vart">'+v.a+'</div><div class="vrwd" style="color:'+(dk?"#2ECC71":"#00D4FF")+'">'+(dk?"Concluído":"+"+Math.floor(U.vip.d/U.vip.v)+" MT")+'</div></div></div>';
@@ -725,6 +869,101 @@ function admReports(){var av=aU.filter(function(u){return u.vip_level;}).length;
 function admPromo(){var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}"),list=Object.entries(promos);document.getElementById("adm-promo").innerHTML='<div class="card" style="border-color:#FFD70044"><div class="ctit" style="color:#FFD700">🎁 Códigos Promocionais</div><div class="fld"><label>Código</label><input type="text" id="pc" placeholder="Ex: BEMVINDO50" style="text-transform:uppercase"/></div><div class="fld"><label>Bónus (MT)</label><input type="number" id="pb" placeholder="Ex: 50"/></div><div class="fld"><label>Usos máximos</label><input type="number" id="pu" placeholder="Ex: 100"/></div><button style="width:100%;padding:13px;background:linear-gradient(135deg,#B8860B,#FFD700);border:none;border-radius:14px;color:#000;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:16px" onclick="createPromo()">✅ Criar Código</button></div>'+(list.length>0?'<div class="card"><div class="ctit">Códigos activos</div>'+list.map(function(e){return '<div class="tx-row"><div><div style="font-size:14px;font-weight:900;color:#FFD700">'+e[0]+'</div><div style="color:#5070A0;font-size:12px">Bónus: '+ff(e[1].bonus)+' · Usos: '+(e[1].used||0)+'/'+e[1].max+'</div></div><button style="background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:4px 10px;cursor:pointer" onclick="delPromo(\''+e[0]+'\')">🗑️</button></div>';}).join("")+'</div>':'<div class="empty">Sem códigos ainda</div>');}
 function createPromo(){var code=document.getElementById("pc").value.trim().toUpperCase(),bonus=parseInt(document.getElementById("pb").value||0),uses=parseInt(document.getElementById("pu").value||100);if(!code||!bonus){toast("Preenche código e bónus","e");return;}var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");promos[code]={bonus:bonus,max:uses,used:0,created:tod()};localStorage.setItem("mz-promos",JSON.stringify(promos));toast("Código "+code+" criado! ✅");admPromo();}
 function delPromo(code){var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");delete promos[code];localStorage.setItem("mz-promos",JSON.stringify(promos));toast("Removido","e");admPromo();}
+
+// ─── VERIFICATION ────────────────────────────────────────
+function showVerification(ph, vcode){
+  document.getElementById("verif-code-display").textContent=vcode;
+  var waMsg=encodeURIComponent("🔐 MZInvestment — Código de Verificação\n\nO meu código é: *"+vcode+"*\nNúmero: +258 "+ph);
+  document.getElementById("verif-wa-btn").href="https://wa.me/"+SUP+"?text="+waMsg;
+  document.getElementById("verif-modal").style.display="flex";
+}
+
+function confirmVerif(){
+  var input=document.getElementById("verif-input").value.trim();
+  var ph=U?U.phone:"";
+  var stored=localStorage.getItem("mz-vcode-"+ph);
+  var err=document.getElementById("verif-err");
+  if(input===String(stored)){
+    localStorage.setItem("mz-verified-"+ph,"true");
+    document.getElementById("verif-modal").style.display="none";
+    DB.upd(ph,{phone_verified:true});
+    toast("✅ Número verificado com sucesso!");
+    loadMain();pg("pg-main");
+  } else {
+    err.textContent="Código incorrecto. Tenta novamente.";err.style.display="block";
+  }
+}
+
+function skipVerif(){
+  document.getElementById("verif-modal").style.display="none";
+  toast("⚠️ Número não verificado. Verifica em breve.");
+  loadMain();pg("pg-main");
+}
+
+function isVerified(){
+  return U&&(U.phone_verified||localStorage.getItem("mz-verified-"+U.phone)==="true");
+}
+
+// ─── SUPPORT TICKETS ─────────────────────────────────────
+function switchSupport(tab){
+  ["contact","ticket","mytickets"].forEach(function(t){
+    var el=document.getElementById("s-"+t);if(el)el.style.display=t===tab?"block":"none";
+    var stEl=document.getElementById("st-"+t);if(stEl)stEl.classList.toggle("on",t===tab);
+  });
+  if(tab==="mytickets")renderMyTickets();
+}
+
+function submitTicket(){
+  var subj=document.getElementById("tk-subject").value;
+  var desc=document.getElementById("tk-desc").value.trim();
+  if(!desc){toast("Descreve o teu problema","e");return;}
+  var tickets=JSON.parse(localStorage.getItem("mz-tickets-"+(U?U.phone:""))||"[]");
+  var subjLabels={"deposit":"Depósito","withdrawal":"Levantamento","vip":"VIP","tasks":"Tarefas","account":"Conta","other":"Outro"};
+  var ticket={id:"TK"+Date.now(),subject:subjLabels[subj]||subj,desc:desc,date:tod(),time:n2(),status:"pending"};
+  tickets.push(ticket);
+  localStorage.setItem("mz-tickets-"+(U?U.phone:""),JSON.stringify(tickets));
+  // Send to WhatsApp
+  var waMsg=encodeURIComponent("🎫 TICKET DE SUPORTE\n\n👤 "+U.name+"\n📱 +258 "+U.phone+"\n📋 Assunto: "+ticket.subject+"\n\n"+desc+"\n\n🆔 "+ticket.id);
+  window.open("https://wa.me/"+SUP+"?text="+waMsg,"_blank");
+  document.getElementById("tk-desc").value="";
+  toast("Ticket enviado! ✅ Aguarda resposta.");
+  switchSupport("mytickets");
+}
+
+function renderMyTickets(){
+  var tickets=JSON.parse(localStorage.getItem("mz-tickets-"+(U?U.phone:""))||"[]");
+  var el=document.getElementById("my-tickets-list");if(!el)return;
+  if(tickets.length===0){el.innerHTML='<div class="empty">Sem tickets ainda</div>';return;}
+  el.innerHTML=tickets.slice().reverse().map(function(t){
+    var sCol=t.status==="resolved"?"#2ECC71":t.status==="pending"?"#FFD700":"#00D4FF";
+    var sLbl=t.status==="resolved"?"✅ Resolvido":t.status==="pending"?"⏳ Pendente":"💬 Em análise";
+    return '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:14px">'+t.subject+'</div><span style="font-size:12px;font-weight:900;color:'+sCol+'">'+sLbl+'</span></div><div style="color:#7090C0;font-size:13px;line-height:1.6;margin-bottom:8px">'+t.desc+'</div><div style="color:#3A5070;font-size:11px">'+t.date+' '+t.time+' · 🆔 '+t.id+'</div></div>';
+  }).join("");
+}
+
+// ─── VIP HISTORY ─────────────────────────────────────────
+function renderVipHist(){
+  var hist=earn.filter(function(e){return e.desc&&e.desc.includes("VIP");});
+  var el=document.getElementById("vip-hist-list");if(!el)return;
+  // Also add current VIP
+  var current=U&&U.vip?[{desc:"💎 VIP "+U.vip.l+" – "+U.vip.n+" (Activo)",date:U.activated_at||tod(),status:"active",color:U.vip.c}]:[];
+  var all=current.concat(hist.slice().reverse().map(function(e){return {desc:e.desc,date:e.date,status:"past",a:e.a};}));
+  if(all.length===0){el.innerHTML='<div class="empty">Sem histórico de VIPs</div>';return;}
+  el.innerHTML=all.map(function(v){
+    var dLeft=v.status==="active"?getVipDaysLeft():null;
+    return '<div class="card" style="border-color:'+(v.color||"#0D2A4A")+'">'+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+'<div style="font-weight:900;font-size:14px">'+v.desc+'</div>'+(v.status==="active"?'<span style="background:#2ECC71;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:900;color:#000">✅ Activo</span>':'<span style="color:#5070A0;font-size:12px">Concluído</span>')+'</div>'+(v.status==="active"&&dLeft!==null?'<div class="irow" style="border:none"><span class="ilbl">⏳ Dias restantes</span><span class="ival" style="color:'+(dLeft<=5?"#FF6B6B":"#FFD700")+'">'+Math.max(0,dLeft)+' dias úteis</span></div>':'')+'<div style="color:#3A5070;font-size:12px;margin-top:6px">📅 '+v.date+'</div></div>';
+  }).join("");
+}
+
+// ─── SUPABASE BACKUP CHECK ────────────────────────────────
+async function backupUserLocal(){
+  if(!U)return;
+  try{
+    var backup={...U,backup_time:n2(),backup_date:tod()};
+    localStorage.setItem("mz-backup-"+U.phone,JSON.stringify(backup));
+  }catch(e){}
+}
+
 </script>
 </body>
 </html>

@@ -353,24 +353,24 @@ input{outline:none;font-family:inherit}
       <div class="stab" id="st-mytickets" onclick="switchSupport('mytickets')">Os meus</div>
     </div>
     <div id="s-contact">
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showFAQ()">❓ FAQ</button>
-      <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showAbout()">ℹ️ Sobre Nós</button>
-      <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showTerms()">📋 Termos</button>
-    </div>
-    <div class="card">
-      <div style="background:#0D2040;border-radius:10px;padding:14px;text-align:center;margin-bottom:12px"><div style="font-size:20px;font-weight:900;letter-spacing:3px;font-family:monospace">86 437 8323</div><div style="color:#7090C0;font-size:13px;margin-top:4px">João Aguiar · Seg–Sex · 08:00–20:00</div></div>
-      <a class="btn-wa" href="https://wa.me/258864378323?text=Ol%C3%A1%20MZInvestment%2C%20preciso%20de%20ajuda." target="_blank">💬 Falar no WhatsApp</a>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button style="flex:1;padding:10px;background:transparent;border:1px solid #1E3060;border-radius:10px;color:#5070A0;font-size:12px;cursor:pointer" onclick="showPrivacy()">🔒 Privacidade</button>
-        <button style="flex:1;padding:10px;background:transparent;border:1px solid #1E3060;border-radius:10px;color:#5070A0;font-size:12px;cursor:pointer" onclick="showAbout()">ℹ️ Sobre nós</button>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showFAQ()">❓ FAQ</button>
+        <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showAbout()">ℹ️ Sobre Nós</button>
+        <button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:12px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="showTerms()">📋 Termos</button>
+      </div>
+      <div class="card">
+        <div style="background:#0D2040;border-radius:10px;padding:14px;text-align:center;margin-bottom:12px"><div style="font-size:20px;font-weight:900;letter-spacing:3px;font-family:monospace">86 437 8323</div><div style="color:#7090C0;font-size:13px;margin-top:4px">João Aguiar · Seg–Sex · 08:00–20:00</div></div>
+        <a class="btn-wa" href="https://wa.me/258864378323?text=Ol%C3%A1%20MZInvestment%2C%20preciso%20de%20ajuda." target="_blank">💬 Falar no WhatsApp</a>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button style="flex:1;padding:10px;background:transparent;border:1px solid #1E3060;border-radius:10px;color:#5070A0;font-size:12px;cursor:pointer" onclick="showPrivacy()">🔒 Privacidade</button>
+          <button style="flex:1;padding:10px;background:transparent;border:1px solid #1E3060;border-radius:10px;color:#5070A0;font-size:12px;cursor:pointer" onclick="showAbout()">ℹ️ Sobre nós</button>
+        </div>
       </div>
     </div>
-    </div><!-- end s-contact -->
     <div id="s-ticket" style="display:none">
       <div class="card">
         <div class="ctit">📩 Novo Ticket de Suporte</div>
-        <div style="color:#7090C0;font-size:13px;margin-bottom:14px">Descreve o teu problema e respondemos em breve via notificação.</div>
+        <div style="color:#7090C0;font-size:13px;margin-bottom:14px">Descreve o teu problema e respondemos via WhatsApp.</div>
         <div class="fld"><label>Assunto</label>
           <select id="tk-subject" style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:11px 13px;color:#C8D8F0;font-size:15px">
             <option value="deposit">Problema com depósito</option>
@@ -382,7 +382,7 @@ input{outline:none;font-family:inherit}
           </select>
         </div>
         <div class="fld"><label>Descrição</label>
-          <textarea id="tk-desc" placeholder="Descreve o teu problema em detalhe..." style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:11px 13px;color:#C8D8F0;font-size:14px;height:120px;resize:none"></textarea>
+          <textarea id="tk-desc" placeholder="Descreve o teu problema..." style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:11px 13px;color:#C8D8F0;font-size:14px;height:120px;resize:none"></textarea>
         </div>
         <button class="btn-p" onclick="submitTicket()">📤 Enviar Ticket</button>
       </div>

@@ -688,12 +688,6 @@ await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref]
   var vcode=Math.floor(1000+Math.random()*9000);
   localStorage.setItem("mz-vcode-"+ph,vcode);
   localStorage.setItem("mz-verified-"+ph,"false");
-  // Open WhatsApp with verification code
-  var waVerif=encodeURIComponent("🔐 MZInvestment — Código de Verificação
-
-O meu código é: *"+vcode+"*
-
-Número: +258 "+ph);
   setTimeout(function(){
     showVerification(ph,vcode);
   },500);
@@ -822,30 +816,28 @@ async function activVip(l){
 }
 async function renewVip(l){var v=VIPS[l-1];showConfirm("Renovar VIP "+v.l+"?\nCusto: "+ff(v.p)+"\n30 dias úteis",async function(){if((U.balance||0)<v.p){toast("Saldo insuficiente!","e");return;}await syncU({balance:U.balance-v.p,vip:v});U.vipDaysLeft=30;earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" renovado",a:-v.p,date:tod()});toast("VIP "+v.l+" renovado!");renderVips();});}
 function renderVideos(){
-  if(!U.vip){
-    document.getElementById("vgrid").innerHTML='<div style="background:#2d0a0a;border:2px solid #E74C3C;border-radius:16px;padding:30px;text-align:center;margin:10px 0"><div style="font-size:48px;margin-bottom:12px">🔒</div><div style="color:#FF6B6B;font-size:18px;font-weight:900;margin-bottom:10px">VIP Expirado ou Inactivo</div><div style="color:#C8A0A0;font-size:14px;line-height:1.8;margin-bottom:20px">Precisas de um VIP activo para
-fazer as tarefas e ganhar diariamente.</div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#0050B0,#00D4FF);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;cursor:pointer" onclick="goTab('t-vips','n-vips')">💎 Activar / Renovar VIP</button></div>';
+  var vg=document.getElementById("vgrid");
+  if(!U||!U.vip){
+    vg.innerHTML='<div style="background:#2d0a0a;border:2px solid #E74C3C;border-radius:16px;padding:30px;text-align:center;margin:10px 0">'
+      +'<div style="font-size:48px;margin-bottom:12px">🔒</div>'
+      +'<div style="color:#FF6B6B;font-size:18px;font-weight:900;margin-bottom:10px">VIP Expirado ou Inactivo</div>'
+      +'<div style="color:#C8A0A0;font-size:14px;line-height:1.8;margin-bottom:20px">Precisas de um VIP activo para fazer as tarefas e ganhar diariamente.</div>'
+      +'<button style="width:100%;padding:14px;background:linear-gradient(135deg,#0050B0,#00D4FF);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;cursor:pointer" onclick=\"goTab(\'t-vips\',\'n-vips\')\">💎 Activar / Renovar VIP</button>'
+      +'</div>';
     return;
   }
-  document.getElementById("vgrid").innerHTML=VDS.slice(0,U.vip.v).map(function(v){
+  vg.innerHTML=VDS.slice(0,U.vip.v).map(function(v){
     var dk=done.indexOf(v.id)>=0;
-    return '<div class="vcard '+(dk?"done":"")+'" onclick="'+(dk?"":"openVid("+v.id+")")+'"><img src="'+v.th+'" alt="'+v.t+'" loading="lazy"/><div class="vbadge">T'+U.vip.l+'</div>'+(dk?'<div class="vdone">✓</div>':'<div class="vplay"><div class="vplay-btn">▶</div></div>')+'<div class="vinfo"><div class="vtit">'+v.t+'</div><div class="vart">'+v.a+'</div><div class="vrwd" style="color:'+(dk?"#2ECC71":"#00D4FF")+'">'+(dk?"Concluído":"+"+Math.floor(U.vip.d/U.vip.v)+" MT")+'</div></div></div>';
+    return '<div class="vcard '+(dk?"done":"")+'" onclick="'+(dk?"":"openVid("+v.id+")")+'">'
+      +'<img src="'+v.th+'" alt="'+v.t+'" loading="lazy"/>'
+      +'<div class="vbadge">T'+U.vip.l+'</div>'
+      +(dk?'<div class="vdone">✓</div>':'<div class="vplay"><div class="vplay-btn">▶</div></div>')
+      +'<div class="vinfo">'
+      +'<div class="vtit">'+v.t+'</div>'
+      +'<div class="vart">'+v.a+'</div>'
+      +'<div class="vrwd" style="color:'+(dk?"#2ECC71":"#00D4FF")+'">'+(dk?"Concluído":"+"+Math.floor(U.vip.d/U.vip.v)+" MT")+'</div>'
+      +'</div></div>';
   }).join("");
-}
-var cdT=null;
-function openVid(id){
-  if(!U.vip){toast("Activa um VIP primeiro!","e");return;}
-  if(!isWd()){toast("Tarefas só Seg-Sex!","e");return;}
-  if(done.indexOf(id)>=0){toast("Já assistido hoje!","e");return;}
-  if(done.length>=U.vip.v){toast("Limite diário atingido!","e");return;}
-  var v=null;for(var i=0;i<VDS.length;i++){if(VDS[i].id===id){v=VDS[i];break;}}if(!v)return;
-  document.getElementById("pl-title").textContent=v.t;document.getElementById("pl-artist").textContent=v.a;document.getElementById("pl-done").style.display="none";
-  document.getElementById("pl-iframe").src="https://www.youtube.com/embed/"+v.yt+"?autoplay=1&rel=0&modestbranding=1&playsinline=1";
-  var rwd=Math.floor(U.vip.d/U.vip.v);
-  document.getElementById("i-artist").textContent=v.a;document.getElementById("i-title").textContent=v.t;document.getElementById("i-rwd").textContent="+"+ff(rwd);document.getElementById("cd-earn").textContent="+"+ff(rwd)+" ao completar";document.getElementById("done-amt").textContent="+"+ff(rwd)+" creditados!";
-  document.getElementById("cd-card").style.display="block";document.getElementById("done-card").style.display="none";document.getElementById("cd-num").style.color="#00D4FF";document.getElementById("player").classList.add("on");
-  var t=15;document.getElementById("cd-num").textContent=t;if(cdT)clearInterval(cdT);
-  cdT=setInterval(async function(){t--;var num=document.getElementById("cd-num");if(num){num.textContent=t;num.style.color=t<=5?"#E74C3C":"#00D4FF";}document.getElementById("i-done").textContent=done.length+"/"+(U.vip?U.vip.v:0);document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);if(t<=0){clearInterval(cdT);cdT=null;done.push(id);try{localStorage.setItem("mzd-"+U.phone+"-"+tkey(),JSON.stringify(done));}catch(e){}var th=Object.assign({},U.taskHistory);th[tkey()]=(th[tkey()]||0)+rwd;await syncU({balance:U.balance+rwd,totalEarned:U.totalEarned+rwd,taskHistory:th});earn.push({desc:"🎬 "+v.t,a:rwd,date:tod()});document.getElementById("cd-card").style.display="none";document.getElementById("done-card").style.display="block";document.getElementById("pl-done").style.display="block";document.getElementById("i-done").textContent=done.length+"/"+(U.vip?U.vip.v:0);document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);renderVideos();toast("+"+ff(rwd)+" ganhos!");}},1000);
 }
 function closePlayer(){if(cdT){clearInterval(cdT);cdT=null;}document.getElementById("player").classList.remove("on");document.getElementById("pl-iframe").src="";}
 function renderWd(){document.getElementById("wd-amts").innerHTML=[100,500,1000,2000,5000,10000].map(function(a){return '<div class="wda'+(wdAmt===a?" sel":"")+'" onclick="selWd('+a+')">'+fmt(a)+'</div>';}).join("");}

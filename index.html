@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOC
 <html lang="pt">
 <head>
 <meta charset="UTF-8"/>
@@ -143,6 +143,31 @@ input{outline:none;font-family:inherit}
 .chart-bar{flex:1;background:linear-gradient(180deg,#00D4FF,#0050B0);border-radius:4px 4px 0 0;min-height:4px}
 .chart-lbls{display:flex;gap:6px}
 .chart-lbl{flex:1;text-align:center;color:#5070A0;font-size:10px}
+
+/* ═══ GLASSMORPHISM ENHANCED ═══ */
+.card{background:rgba(255,255,255,0.08)!important;border:1px solid rgba(0,212,255,0.25)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.1)!important}
+.acard{background:rgba(255,255,255,0.08)!important;border:1px solid rgba(0,212,255,0.3)!important;backdrop-filter:blur(30px)!important;-webkit-backdrop-filter:blur(30px)!important;box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15)!important}
+.hdr{background:rgba(0,0,0,0.2)!important;backdrop-filter:blur(30px)!important;-webkit-backdrop-filter:blur(30px)!important;border-bottom:1px solid rgba(0,212,255,0.2)!important;box-shadow:0 2px 20px rgba(0,0,0,0.3)!important}
+.nav{background:rgba(0,0,0,0.25)!important;backdrop-filter:blur(30px)!important;-webkit-backdrop-filter:blur(30px)!important;border-top:1px solid rgba(0,212,255,0.2)!important;box-shadow:0 -2px 20px rgba(0,0,0,0.3)!important}
+.bal-card{background:rgba(255,255,255,0.06)!important;border:1px solid rgba(0,212,255,0.2)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,0.1)!important}
+.stcard{background:rgba(255,255,255,0.06)!important;border:1px solid rgba(0,212,255,0.2)!important;backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
+.vip-card{background:rgba(255,255,255,0.07)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;box-shadow:0 4px 24px rgba(0,0,0,0.3)!important}
+.fcard{background:rgba(255,255,255,0.07)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important}
+.hmicon{background:rgba(255,255,255,0.08)!important;border:1px solid rgba(0,212,255,0.25)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
+.fld input,.fld select,.fld textarea{background:rgba(255,255,255,0.07)!important;border:1px solid rgba(0,212,255,0.25)!important;color:#E8F4FF!important}
+.vcard{background:rgba(255,255,255,0.06)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
+.ccard{background:rgba(0,0,0,0.5)!important;backdrop-filter:blur(40px)!important;-webkit-backdrop-filter:blur(40px)!important;border:1px solid rgba(0,212,255,0.3)!important}
+#confirm{backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
+.pcard{background:rgba(255,255,255,0.06)!important;backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
+.ucard{background:rgba(255,255,255,0.06)!important;backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
+.profile-hdr{background:rgba(255,255,255,0.05)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important}
+.cd-card{background:rgba(255,255,255,0.07)!important;backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
+.done-card{backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
+.dep-num-box{background:rgba(255,255,255,0.07)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
+.wd-amts .wda{background:rgba(255,255,255,0.07)!important;border:1px solid rgba(0,212,255,0.2)!important}
+.wda.sel{background:rgba(0,212,255,0.3)!important}
+.alert{background:rgba(0,50,120,0.3)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
+
 </style>
 </head>
 <body>
@@ -1146,7 +1171,7 @@ async function activVip(l){
 async function renewVip(l){var v=VIPS[l-1];showConfirm("Renovar VIP "+v.l+"?\nCusto: "+ff(v.p)+"\n30 dias úteis",async function(){if((U.balance||0)<v.p){toast("Saldo insuficiente!","e");return;}await syncU({balance:U.balance-v.p,vip:v});U.vipDaysLeft=30;earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" renovado",a:-v.p,date:tod()});toast("VIP "+v.l+" renovado!");renderVips();});}
 function renderVideos(){
   var vg=document.getElementById("vgrid");
-  if(!U||!U.vip||isVipExpired()){
+  if(!U||!U.vip){
     vg.innerHTML='<div style="background:#2d0a0a;border:2px solid #E74C3C;border-radius:16px;padding:30px;text-align:center;margin:10px 0">'
       +'<div style="font-size:48px;margin-bottom:12px">🔒</div>'
       +'<div style="color:#FF6B6B;font-size:18px;font-weight:900;margin-bottom:10px">VIP Expirado ou Inactivo</div>'

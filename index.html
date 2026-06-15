@@ -7,11 +7,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Calibri,sans-serif;font-weight:700;-webkit-tap-highlight-color:transparent}
 body{background:#030B1A;color:#E8F4FF;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,#030B1A,#071828,#0D2040,#071828,#030B1A);background-size:400% 400%;animation:bgAnim 12s ease infinite}
-@keyframes bgAnim{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes orb1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(80px,40px) scale(1.1)}66%{transform:translate(20px,80px) scale(0.9)}}
-@keyframes orb2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-60px,-40px) scale(1.2)}66%{transform:translate(-30px,60px) scale(0.8)}}
-@keyframes orb3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:#030B1A}
+
 #pg-splash{background:transparent!important}
 #pg-login,#pg-register{background:transparent!important}
 #pg-main{background:transparent!important}
@@ -150,10 +147,65 @@ input{outline:none;font-family:inherit}
 </head>
 <body>
 <div id="offline-bar">📵 Sem ligação à internet.</div>
-<div style="position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden">
-  <div style="position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,0.06),transparent);top:-100px;left:-100px;animation:orb1 15s ease-in-out infinite"></div>
-  <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,80,176,0.08),transparent);bottom:-50px;right:-50px;animation:orb2 18s ease-in-out infinite"></div>
-  <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,0.04),transparent);top:50%;left:50%;animation:orb3 20s ease-in-out infinite"></div>
+<!-- BACKGROUND SLIDESHOW -->
+<div id="bg-slideshow" style="position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden">
+  <div class="bg-slide" id="bs0" style="position:absolute;inset:0;opacity:1;transition:opacity 2s ease;display:flex;align-items:center;justify-content:center;background:#030B1A">
+    <!-- Slide 1: Logo animado -->
+    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgg1" x1="0" y1="0" x2="400" y2="800" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#030B1A"/><stop offset="100%" stop-color="#0D2040"/></linearGradient>
+        <linearGradient id="bgg2" x1="0" y1="0" x2="400" y2="800" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00D4FF" stop-opacity="0.3"/><stop offset="100%" stop-color="#0050B0" stop-opacity="0.1"/></linearGradient>
+      </defs>
+      <rect width="400" height="800" fill="url(#bgg1)"/>
+      <circle cx="200" cy="350" r="180" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.15"/>
+      <circle cx="200" cy="350" r="140" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.1"/>
+      <circle cx="200" cy="350" r="100" fill="url(#bgg2)" opacity="0.5"/>
+      <!-- Chart bars -->
+      <rect x="80" y="420" width="30" height="60" rx="4" fill="#00D4FF" opacity="0.12"/>
+      <rect x="120" y="390" width="30" height="90" rx="4" fill="#00D4FF" opacity="0.15"/>
+      <rect x="160" y="350" width="30" height="130" rx="4" fill="#00D4FF" opacity="0.18"/>
+      <rect x="200" y="310" width="30" height="170" rx="4" fill="#00D4FF" opacity="0.20"/>
+      <rect x="240" y="270" width="30" height="210" rx="4" fill="#00D4FF" opacity="0.22"/>
+      <polyline points="95,415 135,385 175,345 215,305 255,265" fill="none" stroke="#00D4FF" stroke-width="2" opacity="0.3"/>
+      <circle cx="255" cy="265" r="6" fill="#00D4FF" opacity="0.4"/>
+      <!-- MZ text -->
+      <text x="200" y="560" text-anchor="middle" fill="#E8F4FF" font-size="80" font-weight="900" font-family="Calibri,sans-serif" opacity="0.08" letter-spacing="10">MZ</text>
+      <text x="200" y="620" text-anchor="middle" fill="#00D4FF" font-size="30" font-weight="700" font-family="Calibri,sans-serif" opacity="0.08" letter-spacing="15">INVESTMENT</text>
+    </svg>
+  </div>
+  <div class="bg-slide" id="bs1" style="position:absolute;inset:0;opacity:0;transition:opacity 2s ease;background:#030B1A">
+    <!-- Slide 2: VIP ganhos -->
+    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="800" fill="#030B1A"/>
+      <!-- Scattered VIP labels -->
+      <text x="50" y="150" fill="#CD853F" font-size="18" font-weight="900" opacity="0.08">VIP 1 · 33 MT/dia</text>
+      <text x="150" y="250" fill="#FFD700" font-size="20" font-weight="900" opacity="0.08">VIP 3 · 180 MT/dia</text>
+      <text x="30" y="360" fill="#9B59B6" font-size="18" font-weight="900" opacity="0.08">VIP 5 · 900 MT/dia</text>
+      <text x="120" y="470" fill="#E91E63" font-size="20" font-weight="900" opacity="0.08">VIP 8 · 9.000 MT/dia</text>
+      <text x="60" y="580" fill="#00D4FF" font-size="16" font-weight="900" opacity="0.08">Regista-te GRÁTIS</text>
+      <!-- Big number -->
+      <text x="200" y="420" text-anchor="middle" fill="#00D4FF" font-size="120" font-weight="900" opacity="0.05">💰</text>
+      <!-- Grid -->
+      <line x1="0" y1="200" x2="400" y2="200" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+      <line x1="0" y1="400" x2="400" y2="400" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+      <line x1="0" y1="600" x2="400" y2="600" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+      <line x1="133" y1="0" x2="133" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+      <line x1="266" y1="0" x2="266" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+    </svg>
+  </div>
+  <div class="bg-slide" id="bs2" style="position:absolute;inset:0;opacity:0;transition:opacity 2s ease;background:#030B1A">
+    <!-- Slide 3: Convite -->
+    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="800" fill="#030B1A"/>
+      <text x="200" y="200" text-anchor="middle" fill="#2ECC71" font-size="14" font-weight="900" opacity="0.08">+50 MT por indicação</text>
+      <text x="200" y="270" text-anchor="middle" fill="#2ECC71" font-size="14" font-weight="900" opacity="0.08">+75 MT · +100 MT · +150 MT</text>
+      <text x="200" y="340" text-anchor="middle" fill="#FFD700" font-size="16" font-weight="900" opacity="0.08">+200 MT + Fundo desbloqueado</text>
+      <text x="200" y="500" text-anchor="middle" fill="#00D4FF" font-size="70" opacity="0.06">🤝</text>
+      <text x="200" y="620" text-anchor="middle" fill="#E8F4FF" font-size="22" font-weight="900" opacity="0.06">Convida &amp; Ganha!</text>
+      <circle cx="200" cy="400" r="200" fill="none" stroke="#2ECC71" stroke-width="0.5" opacity="0.07"/>
+      <circle cx="200" cy="400" r="150" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+    </svg>
+  </div>
 </div>
 
 <!-- SPLASH -->
@@ -296,7 +348,7 @@ input{outline:none;font-family:inherit}
       <div class="dep-num-box"><div style="color:#7090C0;font-size:12px;margin-bottom:6px">e-Mola</div><div class="dep-num">86 437 8323</div><div style="color:#00D4FF;font-size:14px;margin-top:4px">João Aguiar</div></div>
       <div style="color:#7090C0;font-size:14px;line-height:2">1️⃣ Transfere via e-Mola<br>2️⃣ Envia comprovativo via WhatsApp<br>3️⃣ Aguarda aprovação</div>
     </div>
-    <a class="btn-wa" id="dep-wa-btn" href="#" target="_blank">💬 Enviar Comprovativo via WhatsApp</a>
+    <button class="btn-wa" onclick="openDepWA()" style="border:none;cursor:pointer">💬 Enviar Comprovativo via WhatsApp</button>
     <button class="btn-p" onclick="submitDep()">📤 Confirmar Pedido</button>
   </div>
   <div id="t-fund" class="tab">
@@ -576,6 +628,20 @@ var _iv=setInterval(function(){
   }
 },40);
 // OFFLINE
+// Background slideshow
+(function(){
+  var slides=["bs0","bs1","bs2"];
+  var cur=0;
+  setInterval(function(){
+    var prev=cur;
+    cur=(cur+1)%slides.length;
+    var prevEl=document.getElementById(slides[prev]);
+    var curEl=document.getElementById(slides[cur]);
+    if(prevEl)prevEl.style.opacity="0";
+    if(curEl)curEl.style.opacity="1";
+  },6000);
+})();
+
 window.addEventListener("online",function(){document.getElementById("offline-bar").style.display="none";});
 window.addEventListener("offline",function(){document.getElementById("offline-bar").style.display="block";});
 // PUSH
@@ -872,6 +938,14 @@ async function submitWd(){
 }
 function showWdHist(){var h=earn.filter(function(e){return e.a<0;});document.getElementById("wd-hist").innerHTML=h.length===0?'<div class="empty">Sem retiradas ainda</div>':h.slice().reverse().map(function(e){return '<div class="tx-row"><div><div style="font-size:13px;color:#C8D8F0">'+e.desc+'</div><div style="font-size:11px;color:#3A5070">'+e.date+'</div></div><div style="color:#FF6B6B;font-weight:900">'+ff(Math.abs(e.a))+'</div></div>';}).join("");goTab("t-wdhist","n-none");}
 function renderTxHist(){document.getElementById("tx-hist-list").innerHTML=earn.length===0?'<div class="empty">Sem transacções ainda</div>':earn.slice().reverse().map(function(e){return '<div style="background:#071828;border:1px solid #0D2A4A;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:900">'+e.desc+'</div><div style="color:#5070A0;font-size:12px">'+e.date+'</div></div><div style="font-size:16px;font-weight:900;color:'+(e.a>0?"#2ECC71":"#FF6B6B")+'">'+(e.a>0?"+":"")+ff(e.a)+'</div></div>';}).join("");}
+function openDepWA(){
+  var vipInfo=depVip?"VIP "+depVip.l+" – "+depVip.n+" ("+ff(depVip.p)+")":"depósito";
+  var name=U?U.name:"";
+  var phone=U?"+258 "+U.phone:"";
+  var msg="Olá MZInvestment!%0A%0AQuero efectuar um depósito para activar o "+vipInfo+".%0A%0A👤 Nome: "+name+"%0A📱 Número: "+phone+"%0A%0ASegue em anexo o comprovativo de pagamento via e-Mola.";
+  window.open("https://wa.me/258864378323?text="+msg,"_blank");
+}
+
 async function submitDep(){if(!depVip)return;await DB.txSave({user_id:U.phone,user_name:U.name,phone:U.phone,amount:depVip.p,type:"deposit",vip_level:depVip.l,wallet:"e-Mola",status:"pending"});window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💳 DEPÓSITO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+depVip.p+" MT\n💎 VIP "+depVip.l+"\n🕐 "+n2()),"_blank");toast("Pedido enviado! ✅");depVip=null;goTab("t-home","n-home");}
 function renderFund(){
   var ul=(U.referrals||0)>=5;

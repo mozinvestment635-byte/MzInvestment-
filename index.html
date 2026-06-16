@@ -908,6 +908,20 @@ input{outline:none;font-family:inherit}
     <div class="bal-card"><div class="bal-lbl">Saldo (MZN)</div><div class="bal-num" id="hdr-bal">0</div></div>
   </div>
   <div id="t-home" class="tab on">
+    <!-- PROPAGANDA BANNER -->
+    <div id="promo-banner" style="border-radius:16px;overflow:hidden;margin-bottom:14px;position:relative;height:120px;cursor:pointer" onclick="goTab('t-vips','n-vips')">
+      <div id="promo-slide" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0D2040,#071828);transition:opacity 0.8s ease">
+        <svg width="100%" height="120" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="pb1" x1="0" y1="0" x2="360" y2="120" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#030B1A"/><stop offset="100%" stop-color="#0D2040"/></linearGradient></defs>
+          <rect width="360" height="120" fill="url(#pb1)"/>
+          <rect x="0" y="0" width="4" height="120" fill="#00D4FF"/>
+          <text x="24" y="42" fill="#FFD700" font-size="18" font-weight="900" font-family="Calibri,sans-serif">🚀 Ganha Assistindo Vídeos!</text>
+          <text x="24" y="72" fill="#E8F4FF" font-size="14" font-family="Calibri,sans-serif">Activa um VIP e começa hoje</text>
+          <text x="24" y="100" fill="#00D4FF" font-size="13" font-weight="900" font-family="Calibri,sans-serif">💎 8 Níveis VIP · 33 a 9.000 MT/dia</text>
+          <text x="310" y="65" text-anchor="middle" fill="#00D4FF" font-size="30" opacity="0.4">›</text>
+        </svg>
+      </div>
+    </div>
     <div id="earnings-chart"></div>
     <div class="strow" id="home-stats"></div>
     <div class="alert" id="no-vip" style="display:none">⚠️ Activa um VIP para ganhar. <span onclick="goTab('t-vips','n-vips')">Activar →</span></div>
@@ -1270,6 +1284,42 @@ var _iv=setInterval(function(){
   },6000);
 })();
 
+
+// Promo banner rotation
+(function(){
+  var promos=[
+    {bg:'linear-gradient(135deg,#030B1A,#0D2040)',col:'#00D4FF',t1:'🚀 Ganha Assistindo Vídeos!',t2:'Activa um VIP e começa hoje',t3:'💎 8 Níveis VIP · 33 a 9.000 MT/dia',tab:'t-vips',nav:'n-vips'},
+    {bg:'linear-gradient(135deg,#051A10,#0A2818)',col:'#2ECC71',t1:'🤝 Convida & Ganha Bónus!',t2:'Até +200 MT por indicação',t3:'👥 5 amigos = Fundo desbloqueado!',tab:'t-invite',nav:'n-none'},
+    {bg:'linear-gradient(135deg,#0A0520,#1a0a40)',col:'#9B59B6',t1:'📈 Fundo de Investimento',t2:'Retornos até +180%',t3:'🌱 A partir de 500 MT · 15 a 210 dias',tab:'t-fund',nav:'n-none'},
+    {bg:'linear-gradient(135deg,#1A0800,#2d1500)',col:'#FF8C00',t1:'💰 Levantamentos Diários',t2:'Seg–Sex · 10h–18h · Taxa 10%',t3:'📱 Via e-Mola · Rápido e seguro',tab:'t-wallet',nav:'n-wallet'},
+    {bg:'linear-gradient(135deg,#0A0A00,#1A1A00)',col:'#FFD700',t1:'🇲🇿 100% Moçambicano',t2:'Plataforma local de rendimento digital',t3:'✅ Pagamentos via e-Mola garantidos',tab:'t-home',nav:'n-home'}
+  ];
+  var pc=0;
+  function showPromo(p){
+    var el=document.getElementById("promo-slide");
+    var pb=document.getElementById("promo-banner");
+    if(!el||!pb)return;
+    el.style.opacity="0";
+    setTimeout(function(){
+      el.style.background=p.bg;
+      el.innerHTML='<svg width="100%" height="120" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg">'
+        +'<rect width="360" height="120" fill="transparent"/>'
+        +'<rect x="0" y="0" width="4" height="120" fill="'+p.col+'"/>'
+        +'<text x="24" y="42" fill="'+p.col+'" font-size="18" font-weight="900" font-family="Calibri,sans-serif">'+p.t1+'</text>'
+        +'<text x="24" y="70" fill="#E8F4FF" font-size="14" font-family="Calibri,sans-serif">'+p.t2+'</text>'
+        +'<text x="24" y="100" fill="'+p.col+'" font-size="13" font-weight="900" font-family="Calibri,sans-serif">'+p.t3+'</text>'
+        +'<text x="340" y="65" text-anchor="middle" fill="'+p.col+'" font-size="28" opacity="0.5">›</text>'
+        +'</svg>';
+      pb.onclick=function(){goTab(p.tab,p.nav);};
+      el.style.opacity="1";
+    },400);
+  }
+  setInterval(function(){
+    pc=(pc+1)%promos.length;
+    showPromo(promos[pc]);
+  },4000);
+})();
+
 window.addEventListener("online",function(){document.getElementById("offline-bar").style.display="none";});
 window.addEventListener("offline",function(){document.getElementById("offline-bar").style.display="block";});
 // PUSH
@@ -1559,7 +1609,8 @@ function openVid(id){
   document.getElementById("pl-title").textContent=v.t;
   document.getElementById("pl-artist").textContent=v.a;
   document.getElementById("pl-done").style.display="none";
-  document.getElementById("pl-iframe").src="https://www.youtube.com/embed/"+v.yt+"?autoplay=1&rel=0&modestbranding=1&playsinline=1";
+  // Load video with autoplay
+  document.getElementById("pl-iframe").src="https://www.youtube.com/embed/"+v.yt+"?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1";
   var rwd=Math.floor(U.vip.d/U.vip.v);
   document.getElementById("i-artist").textContent=v.a;
   document.getElementById("i-title").textContent=v.t;
@@ -1568,12 +1619,18 @@ function openVid(id){
   document.getElementById("done-amt").textContent="+"+ff(rwd)+" MT creditados!";
   document.getElementById("cd-card").style.display="block";
   document.getElementById("done-card").style.display="none";
-  document.getElementById("cd-num").style.color="#00D4FF";
+  var numEl=document.getElementById("cd-num");
+  numEl.textContent="▶";numEl.style.color="#00D4FF";numEl.style.fontSize="40px";
+  document.getElementById("cd-earn").textContent="A aguardar o vídeo iniciar...";
   document.getElementById("player").classList.add("on");
-  var t=15;
-  document.getElementById("cd-num").textContent=t;
   if(cdT)clearInterval(cdT);
-  cdT=setInterval(async function(){
+  // Wait 3 seconds for video to load, then start countdown
+  var waitT=setTimeout(function(){
+    var t=15;
+    var numEl2=document.getElementById("cd-num");
+    if(numEl2){numEl2.textContent=t;numEl2.style.fontSize="58px";}
+    document.getElementById("cd-earn").textContent="+"+ff(rwd)+" MT ao completar";
+    cdT=setInterval(async function(){
     t--;
     var num=document.getElementById("cd-num");
     if(num){num.textContent=t;num.style.color=t<=5?"#E74C3C":"#00D4FF";}
@@ -1596,6 +1653,7 @@ function openVid(id){
       toast("+"+ff(rwd)+" MT ganhos! 💰");
     }
   },1000);
+  },3000); // end waitT - countdown starts 3s after video loads
 }
 
 function closePlayer(){if(cdT){clearInterval(cdT);cdT=null;}document.getElementById("player").classList.remove("on");document.getElementById("pl-iframe").src="";}

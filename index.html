@@ -6,7 +6,7 @@
 <title>MZInvestment</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Calibri,sans-serif;font-weight:700;-webkit-tap-highlight-color:transparent}
-body{background:#030B1A;color:#E8F4FF;min-height:100vh}
+body{background:#020810;color:#E8F4FF;min-height:100vh}
 
 
 #pg-splash{background:transparent!important}
@@ -144,7 +144,51 @@ input{outline:none;font-family:inherit}
 .chart-lbls{display:flex;gap:6px}
 .chart-lbl{flex:1;text-align:center;color:#5070A0;font-size:10px}
 
-/* ═══ GLASSMORPHISM ENHANCED ═══ */
+/* ═══ GLASSMORPHISM ENHANCED v3 ═══ */
+.card,.acard,.stcard,.vip-card,.fcard,.pcard,.ucard,.rank-card,.cd-card,.ccard,.dep-num-box,.alert{
+  background:rgba(255,255,255,0.12)!important;
+  backdrop-filter:blur(25px) saturate(180%)!important;
+  -webkit-backdrop-filter:blur(25px) saturate(180%)!important;
+  border:1px solid rgba(255,255,255,0.2)!important;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15)!important;
+}
+.hdr,.nav{
+  background:rgba(0,0,0,0.15)!important;
+  backdrop-filter:blur(40px) saturate(200%)!important;
+  -webkit-backdrop-filter:blur(40px) saturate(200%)!important;
+  border-color:rgba(255,255,255,0.15)!important;
+}
+.bal-card{
+  background:rgba(0,212,255,0.08)!important;
+  backdrop-filter:blur(25px)!important;
+  -webkit-backdrop-filter:blur(25px)!important;
+  border:1px solid rgba(0,212,255,0.3)!important;
+}
+.hmicon{
+  background:rgba(255,255,255,0.1)!important;
+  backdrop-filter:blur(15px)!important;
+  -webkit-backdrop-filter:blur(15px)!important;
+  border:1px solid rgba(255,255,255,0.2)!important;
+}
+.fld input,.fld select,.fld textarea{
+  background:rgba(255,255,255,0.1)!important;
+  border:1px solid rgba(255,255,255,0.2)!important;
+  color:#fff!important;
+}
+.fld input::placeholder{color:rgba(255,255,255,0.4)!important}
+.wda{background:rgba(255,255,255,0.1)!important;border:1px solid rgba(255,255,255,0.2)!important}
+.wda.sel{background:rgba(0,212,255,0.35)!important;border-color:rgba(0,212,255,0.6)!important}
+.vcard{background:rgba(255,255,255,0.08)!important;border:1px solid rgba(255,255,255,0.15)!important}
+#confirm{backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important;background:rgba(0,0,0,0.5)!important}
+.profile-hdr{background:rgba(255,255,255,0.06)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important}
+.adm-hdr{background:rgba(45,10,94,0.3)!important;backdrop-filter:blur(25px)!important;-webkit-backdrop-filter:blur(25px)!important}
+.adm-tabs{background:rgba(0,0,0,0.15)!important;backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
+.atab{background:rgba(255,255,255,0.08)!important;border:1px solid rgba(255,255,255,0.15)!important}
+.atab.on{background:rgba(155,89,182,0.3)!important;border-color:rgba(155,89,182,0.5)!important}
+.irow{border-bottom-color:rgba(255,255,255,0.1)!important}
+.pl-hdr{background:rgba(0,0,0,0.2)!important;backdrop-filter:blur(25px)!important;-webkit-backdrop-filter:blur(25px)!important}
+.pl-body{background:transparent!important}
+
 .card{background:rgba(255,255,255,0.08)!important;border:1px solid rgba(0,212,255,0.25)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.1)!important}
 .acard{background:rgba(255,255,255,0.08)!important;border:1px solid rgba(0,212,255,0.3)!important;backdrop-filter:blur(30px)!important;-webkit-backdrop-filter:blur(30px)!important;box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.15)!important}
 .hdr{background:rgba(0,0,0,0.2)!important;backdrop-filter:blur(30px)!important;-webkit-backdrop-filter:blur(30px)!important;border-bottom:1px solid rgba(0,212,255,0.2)!important;box-shadow:0 2px 20px rgba(0,0,0,0.3)!important}
@@ -179,19 +223,19 @@ input{outline:none;font-family:inherit}
   <div class="bg-slide" id="bs0" style="position:absolute;inset:0;opacity:1;transition:opacity 2.5s ease">
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="800" fill="#030B1A"/>
-      <circle cx="200" cy="380" r="280" fill="none" stroke="#00D4FF" stroke-width="1.5" opacity="0.3"/>
-      <circle cx="200" cy="380" r="220" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.2"/>
-      <circle cx="200" cy="380" r="150" fill="none" stroke="#0050B0" stroke-width="0.5" opacity="0.3"/>
-      <rect x="60" y="450" width="40" height="100" rx="6" fill="#00D4FF" opacity="0.25"/>
-      <rect x="115" y="400" width="40" height="150" rx="6" fill="#00D4FF" opacity="0.28"/>
-      <rect x="170" y="340" width="40" height="210" rx="6" fill="#00D4FF" opacity="0.32"/>
-      <rect x="225" y="290" width="40" height="260" rx="6" fill="#00D4FF" opacity="0.35"/>
-      <rect x="280" y="240" width="40" height="310" rx="6" fill="#00D4FF" opacity="0.38"/>
+      <circle cx="200" cy="380" r="280" fill="none" stroke="#00D4FF" stroke-width="1.5" opacity="0.70"/>
+      <circle cx="200" cy="380" r="220" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.50"/>
+      <circle cx="200" cy="380" r="150" fill="none" stroke="#0050B0" stroke-width="0.5" opacity="0.70"/>
+      <rect x="60" y="450" width="40" height="100" rx="6" fill="#00D4FF" opacity="0.62"/>
+      <rect x="115" y="400" width="40" height="150" rx="6" fill="#00D4FF" opacity="0.70"/>
+      <rect x="170" y="340" width="40" height="210" rx="6" fill="#00D4FF" opacity="0.70"/>
+      <rect x="225" y="290" width="40" height="260" rx="6" fill="#00D4FF" opacity="0.70"/>
+      <rect x="280" y="240" width="40" height="310" rx="6" fill="#00D4FF" opacity="0.70"/>
       <polyline points="80,445 135,395 190,335 245,285 300,235" fill="none" stroke="#00D4FF" stroke-width="3" opacity="0.5"/>
       <circle cx="300" cy="235" r="10" fill="#00D4FF" opacity="0.6"/>
-      <text x="200" y="180" text-anchor="middle" fill="#E8F4FF" font-size="100" font-weight="900" font-family="Calibri,sans-serif" opacity="0.18" letter-spacing="6">MZ</text>
-      <text x="200" y="660" text-anchor="middle" fill="#00D4FF" font-size="34" font-weight="700" font-family="Calibri,sans-serif" opacity="0.18" letter-spacing="10">INVESTMENT</text>
-      <text x="200" y="710" text-anchor="middle" fill="#3A6090" font-size="16" font-family="Calibri,sans-serif" opacity="0.25" letter-spacing="12">MOÇAMBIQUE</text>
+      <text x="200" y="180" text-anchor="middle" fill="#E8F4FF" font-size="100" font-weight="900" font-family="Calibri,sans-serif" opacity="0.45" letter-spacing="6">MZ</text>
+      <text x="200" y="660" text-anchor="middle" fill="#00D4FF" font-size="34" font-weight="700" font-family="Calibri,sans-serif" opacity="0.45" letter-spacing="10">INVESTMENT</text>
+      <text x="200" y="710" text-anchor="middle" fill="#3A6090" font-size="16" font-family="Calibri,sans-serif" opacity="0.62" letter-spacing="12">MOÇAMBIQUE</text>
     </svg>
   </div>
 
@@ -199,23 +243,23 @@ input{outline:none;font-family:inherit}
   <div class="bg-slide" id="bs1" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease">
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="800" fill="#030B1A"/>
-      <line x1="0" y1="100" x2="400" y2="100" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="0" y1="200" x2="400" y2="200" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="0" y1="300" x2="400" y2="300" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="0" y1="400" x2="400" y2="400" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="0" y1="500" x2="400" y2="500" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="0" y1="600" x2="400" y2="600" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="100" y1="0" x2="100" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="200" y1="0" x2="200" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <line x1="300" y1="0" x2="300" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
-      <text x="200" y="100" text-anchor="middle" fill="#CD853F" font-size="22" font-weight="900" opacity="0.35">💎 VIP 1 Bronze · 33 MT/dia</text>
-      <text x="200" y="180" text-anchor="middle" fill="#A8A8C8" font-size="22" font-weight="900" opacity="0.35">💎 VIP 2 Prata · 75 MT/dia</text>
-      <text x="200" y="260" text-anchor="middle" fill="#FFD700" font-size="22" font-weight="900" opacity="0.35">💎 VIP 3 Ouro · 180 MT/dia</text>
-      <text x="200" y="340" text-anchor="middle" fill="#00CED1" font-size="22" font-weight="900" opacity="0.35">💎 VIP 4 Platina · 400 MT/dia</text>
-      <text x="200" y="420" text-anchor="middle" fill="#9B59B6" font-size="22" font-weight="900" opacity="0.35">💎 VIP 5 Diamante · 900 MT/dia</text>
-      <text x="200" y="500" text-anchor="middle" fill="#E74C3C" font-size="22" font-weight="900" opacity="0.35">💎 VIP 6 Rubi · 1.800 MT/dia</text>
-      <text x="200" y="580" text-anchor="middle" fill="#2ECC71" font-size="22" font-weight="900" opacity="0.35">💎 VIP 7 Esmeralda · 4.000 MT/dia</text>
-      <text x="200" y="660" text-anchor="middle" fill="#E91E63" font-size="22" font-weight="900" opacity="0.35">💎 VIP 8 Elite · 9.000 MT/dia</text>
+      <line x1="0" y1="100" x2="400" y2="100" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="0" y1="200" x2="400" y2="200" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="0" y1="300" x2="400" y2="300" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="0" y1="400" x2="400" y2="400" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="0" y1="500" x2="400" y2="500" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="0" y1="600" x2="400" y2="600" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="100" y1="0" x2="100" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="200" y1="0" x2="200" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <line x1="300" y1="0" x2="300" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.30"/>
+      <text x="200" y="100" text-anchor="middle" fill="#CD853F" font-size="22" font-weight="900" opacity="0.70">💎 VIP 1 Bronze · 33 MT/dia</text>
+      <text x="200" y="180" text-anchor="middle" fill="#A8A8C8" font-size="22" font-weight="900" opacity="0.70">💎 VIP 2 Prata · 75 MT/dia</text>
+      <text x="200" y="260" text-anchor="middle" fill="#FFD700" font-size="22" font-weight="900" opacity="0.70">💎 VIP 3 Ouro · 180 MT/dia</text>
+      <text x="200" y="340" text-anchor="middle" fill="#00CED1" font-size="22" font-weight="900" opacity="0.70">💎 VIP 4 Platina · 400 MT/dia</text>
+      <text x="200" y="420" text-anchor="middle" fill="#9B59B6" font-size="22" font-weight="900" opacity="0.70">💎 VIP 5 Diamante · 900 MT/dia</text>
+      <text x="200" y="500" text-anchor="middle" fill="#E74C3C" font-size="22" font-weight="900" opacity="0.70">💎 VIP 6 Rubi · 1.800 MT/dia</text>
+      <text x="200" y="580" text-anchor="middle" fill="#2ECC71" font-size="22" font-weight="900" opacity="0.70">💎 VIP 7 Esmeralda · 4.000 MT/dia</text>
+      <text x="200" y="660" text-anchor="middle" fill="#E91E63" font-size="22" font-weight="900" opacity="0.70">💎 VIP 8 Elite · 9.000 MT/dia</text>
     </svg>
   </div>
 
@@ -223,16 +267,16 @@ input{outline:none;font-family:inherit}
   <div class="bg-slide" id="bs2" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease">
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="800" fill="#030B1A"/>
-      <circle cx="200" cy="400" r="300" fill="none" stroke="#2ECC71" stroke-width="1" opacity="0.2"/>
-      <circle cx="200" cy="400" r="220" fill="none" stroke="#2ECC71" stroke-width="0.5" opacity="0.15"/>
-      <text x="200" y="120" text-anchor="middle" fill="#FFD700" font-size="28" font-weight="900" opacity="0.45">🤝 CONVIDA &amp; GANHA!</text>
-      <text x="200" y="230" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.40">1ª indicação com VIP → +50 MT</text>
-      <text x="200" y="300" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.40">2ª indicação com VIP → +75 MT</text>
-      <text x="200" y="370" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.40">3ª indicação com VIP → +100 MT</text>
-      <text x="200" y="440" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.40">4ª indicação com VIP → +150 MT</text>
-      <text x="200" y="510" text-anchor="middle" fill="#FFD700" font-size="20" font-weight="900" opacity="0.45">5ª indicação → +200 MT</text>
-      <text x="200" y="580" text-anchor="middle" fill="#FFD700" font-size="20" font-weight="900" opacity="0.45">🔓 Fundo desbloqueado!</text>
-      <text x="200" y="680" text-anchor="middle" fill="#00D4FF" font-size="18" font-weight="900" opacity="0.35">mzinvestment.onrender.com</text>
+      <circle cx="200" cy="400" r="300" fill="none" stroke="#2ECC71" stroke-width="1" opacity="0.50"/>
+      <circle cx="200" cy="400" r="220" fill="none" stroke="#2ECC71" stroke-width="0.5" opacity="0.38"/>
+      <text x="200" y="120" text-anchor="middle" fill="#FFD700" font-size="28" font-weight="900" opacity="0.70">🤝 CONVIDA &amp; GANHA!</text>
+      <text x="200" y="230" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.70">1ª indicação com VIP → +50 MT</text>
+      <text x="200" y="300" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.70">2ª indicação com VIP → +75 MT</text>
+      <text x="200" y="370" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.70">3ª indicação com VIP → +100 MT</text>
+      <text x="200" y="440" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.70">4ª indicação com VIP → +150 MT</text>
+      <text x="200" y="510" text-anchor="middle" fill="#FFD700" font-size="20" font-weight="900" opacity="0.70">5ª indicação → +200 MT</text>
+      <text x="200" y="580" text-anchor="middle" fill="#FFD700" font-size="20" font-weight="900" opacity="0.70">🔓 Fundo desbloqueado!</text>
+      <text x="200" y="680" text-anchor="middle" fill="#00D4FF" font-size="18" font-weight="900" opacity="0.70">mzinvestment.onrender.com</text>
     </svg>
   </div>
 
@@ -240,15 +284,15 @@ input{outline:none;font-family:inherit}
   <div class="bg-slide" id="bs3" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease">
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="800" fill="#030B1A"/>
-      <text x="200" y="100" text-anchor="middle" fill="#00D4FF" font-size="26" font-weight="900" opacity="0.45">📈 FUNDO DE INVESTIMENTO</text>
-      <text x="200" y="200" text-anchor="middle" fill="#2ECC71" font-size="22" font-weight="900" opacity="0.40">🌱 15 Dias → +12%</text>
-      <text x="200" y="290" text-anchor="middle" fill="#00D4FF" font-size="22" font-weight="900" opacity="0.40">🌿 30 Dias → +25%</text>
-      <text x="200" y="380" text-anchor="middle" fill="#FFD700" font-size="22" font-weight="900" opacity="0.40">🌳 90 Dias → +70%</text>
-      <text x="200" y="470" text-anchor="middle" fill="#E91E63" font-size="26" font-weight="900" opacity="0.45">💰 210 Dias → +180%</text>
-      <text x="200" y="590" text-anchor="middle" fill="#E8F4FF" font-size="18" font-weight="900" opacity="0.30">Requer 5 indicações com VIP</text>
-      <text x="200" y="660" text-anchor="middle" fill="#00D4FF" font-size="20" font-weight="900" opacity="0.35">Investe e multiplica!</text>
-      <polyline points="40,700 120,600 200,480 280,360 360,200" fill="none" stroke="#00D4FF" stroke-width="2.5" opacity="0.3"/>
-      <circle cx="360" cy="200" r="8" fill="#00D4FF" opacity="0.4"/>
+      <text x="200" y="100" text-anchor="middle" fill="#00D4FF" font-size="26" font-weight="900" opacity="0.70">📈 FUNDO DE INVESTIMENTO</text>
+      <text x="200" y="200" text-anchor="middle" fill="#2ECC71" font-size="22" font-weight="900" opacity="0.70">🌱 15 Dias → +12%</text>
+      <text x="200" y="290" text-anchor="middle" fill="#00D4FF" font-size="22" font-weight="900" opacity="0.70">🌿 30 Dias → +25%</text>
+      <text x="200" y="380" text-anchor="middle" fill="#FFD700" font-size="22" font-weight="900" opacity="0.70">🌳 90 Dias → +70%</text>
+      <text x="200" y="470" text-anchor="middle" fill="#E91E63" font-size="26" font-weight="900" opacity="0.70">💰 210 Dias → +180%</text>
+      <text x="200" y="590" text-anchor="middle" fill="#E8F4FF" font-size="18" font-weight="900" opacity="0.70">Requer 5 indicações com VIP</text>
+      <text x="200" y="660" text-anchor="middle" fill="#00D4FF" font-size="20" font-weight="900" opacity="0.70">Investe e multiplica!</text>
+      <polyline points="40,700 120,600 200,480 280,360 360,200" fill="none" stroke="#00D4FF" stroke-width="2.5" opacity="0.70"/>
+      <circle cx="360" cy="200" r="8" fill="#00D4FF" opacity="0.70"/>
     </svg>
   </div>
 
@@ -256,14 +300,14 @@ input{outline:none;font-family:inherit}
   <div class="bg-slide" id="bs4" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease">
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="800" fill="#030B1A"/>
-      <text x="200" y="150" text-anchor="middle" fill="#E8F4FF" font-size="70" opacity="0.35">🇲🇿</text>
-      <text x="200" y="280" text-anchor="middle" fill="#E8F4FF" font-size="26" font-weight="900" opacity="0.40">100% MOÇAMBICANO</text>
-      <text x="200" y="360" text-anchor="middle" fill="#7090C0" font-size="18" opacity="0.40">Feito para Moçambicanos</text>
-      <text x="200" y="460" text-anchor="middle" fill="#00D4FF" font-size="20" font-weight="900" opacity="0.40">📱 Paga via e-Mola</text>
-      <text x="200" y="530" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.40">✅ Ganhos diários Seg–Sex</text>
-      <text x="200" y="600" text-anchor="middle" fill="#FFD700" font-size="20" font-weight="900" opacity="0.40">💎 8 Níveis VIP</text>
-      <text x="200" y="700" text-anchor="middle" fill="#00D4FF" font-size="18" font-weight="900" opacity="0.35">mzinvestment.onrender.com</text>
-      <circle cx="200" cy="400" r="350" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.1"/>
+      <text x="200" y="150" text-anchor="middle" fill="#E8F4FF" font-size="70" opacity="0.70">🇲🇿</text>
+      <text x="200" y="280" text-anchor="middle" fill="#E8F4FF" font-size="26" font-weight="900" opacity="0.70">100% MOÇAMBICANO</text>
+      <text x="200" y="360" text-anchor="middle" fill="#7090C0" font-size="18" opacity="0.70">Feito para Moçambicanos</text>
+      <text x="200" y="460" text-anchor="middle" fill="#00D4FF" font-size="20" font-weight="900" opacity="0.70">📱 Paga via e-Mola</text>
+      <text x="200" y="530" text-anchor="middle" fill="#2ECC71" font-size="20" font-weight="900" opacity="0.70">✅ Ganhos diários Seg–Sex</text>
+      <text x="200" y="600" text-anchor="middle" fill="#FFD700" font-size="20" font-weight="900" opacity="0.70">💎 8 Níveis VIP</text>
+      <text x="200" y="700" text-anchor="middle" fill="#00D4FF" font-size="18" font-weight="900" opacity="0.70">mzinvestment.onrender.com</text>
+      <circle cx="200" cy="400" r="350" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.25"/>
     </svg>
   </div>
 
@@ -275,7 +319,7 @@ input{outline:none;font-family:inherit}
 <title>MZInvestment</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Calibri,sans-serif;font-weight:700;-webkit-tap-highlight-color:transparent}
-body{background:#030B1A;color:#E8F4FF;min-height:100vh}
+body{background:#020810;color:#E8F4FF;min-height:100vh}
 
 
 #pg-splash{background:transparent!important}
@@ -423,23 +467,23 @@ input{outline:none;font-family:inherit}
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="bgg1" x1="0" y1="0" x2="400" y2="800" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#030B1A"/><stop offset="100%" stop-color="#0D2040"/></linearGradient>
-        <linearGradient id="bgg2" x1="0" y1="0" x2="400" y2="800" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00D4FF" stop-opacity="0.3"/><stop offset="100%" stop-color="#0050B0" stop-opacity="0.1"/></linearGradient>
+        <linearGradient id="bgg2" x1="0" y1="0" x2="400" y2="800" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00D4FF" stop-opacity="0.70"/><stop offset="100%" stop-color="#0050B0" stop-opacity="0.25"/></linearGradient>
       </defs>
       <rect width="400" height="800" fill="url(#bgg1)"/>
-      <circle cx="200" cy="350" r="180" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.15"/>
-      <circle cx="200" cy="350" r="140" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.1"/>
+      <circle cx="200" cy="350" r="180" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.38"/>
+      <circle cx="200" cy="350" r="140" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.25"/>
       <circle cx="200" cy="350" r="100" fill="url(#bgg2)" opacity="0.5"/>
       <!-- Chart bars -->
-      <rect x="80" y="420" width="30" height="60" rx="4" fill="#00D4FF" opacity="0.12"/>
-      <rect x="120" y="390" width="30" height="90" rx="4" fill="#00D4FF" opacity="0.15"/>
-      <rect x="160" y="350" width="30" height="130" rx="4" fill="#00D4FF" opacity="0.18"/>
-      <rect x="200" y="310" width="30" height="170" rx="4" fill="#00D4FF" opacity="0.20"/>
-      <rect x="240" y="270" width="30" height="210" rx="4" fill="#00D4FF" opacity="0.22"/>
-      <polyline points="95,415 135,385 175,345 215,305 255,265" fill="none" stroke="#00D4FF" stroke-width="2" opacity="0.3"/>
-      <circle cx="255" cy="265" r="6" fill="#00D4FF" opacity="0.4"/>
+      <rect x="80" y="420" width="30" height="60" rx="4" fill="#00D4FF" opacity="0.30"/>
+      <rect x="120" y="390" width="30" height="90" rx="4" fill="#00D4FF" opacity="0.38"/>
+      <rect x="160" y="350" width="30" height="130" rx="4" fill="#00D4FF" opacity="0.45"/>
+      <rect x="200" y="310" width="30" height="170" rx="4" fill="#00D4FF" opacity="0.50"/>
+      <rect x="240" y="270" width="30" height="210" rx="4" fill="#00D4FF" opacity="0.55"/>
+      <polyline points="95,415 135,385 175,345 215,305 255,265" fill="none" stroke="#00D4FF" stroke-width="2" opacity="0.70"/>
+      <circle cx="255" cy="265" r="6" fill="#00D4FF" opacity="0.70"/>
       <!-- MZ text -->
-      <text x="200" y="560" text-anchor="middle" fill="#E8F4FF" font-size="80" font-weight="900" font-family="Calibri,sans-serif" opacity="0.08" letter-spacing="10">MZ</text>
-      <text x="200" y="620" text-anchor="middle" fill="#00D4FF" font-size="30" font-weight="700" font-family="Calibri,sans-serif" opacity="0.08" letter-spacing="15">INVESTMENT</text>
+      <text x="200" y="560" text-anchor="middle" fill="#E8F4FF" font-size="80" font-weight="900" font-family="Calibri,sans-serif" opacity="0.20" letter-spacing="10">MZ</text>
+      <text x="200" y="620" text-anchor="middle" fill="#00D4FF" font-size="30" font-weight="700" font-family="Calibri,sans-serif" opacity="0.20" letter-spacing="15">INVESTMENT</text>
     </svg>
   </div>
   <div class="bg-slide" id="bs1" style="position:absolute;inset:0;opacity:0;transition:opacity 2s ease;background:#030B1A">
@@ -447,32 +491,32 @@ input{outline:none;font-family:inherit}
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="800" fill="#030B1A"/>
       <!-- Scattered VIP labels -->
-      <text x="50" y="150" fill="#CD853F" font-size="18" font-weight="900" opacity="0.08">VIP 1 · 33 MT/dia</text>
-      <text x="150" y="250" fill="#FFD700" font-size="20" font-weight="900" opacity="0.08">VIP 3 · 180 MT/dia</text>
-      <text x="30" y="360" fill="#9B59B6" font-size="18" font-weight="900" opacity="0.08">VIP 5 · 900 MT/dia</text>
-      <text x="120" y="470" fill="#E91E63" font-size="20" font-weight="900" opacity="0.08">VIP 8 · 9.000 MT/dia</text>
-      <text x="60" y="580" fill="#00D4FF" font-size="16" font-weight="900" opacity="0.08">Regista-te GRÁTIS</text>
+      <text x="50" y="150" fill="#CD853F" font-size="18" font-weight="900" opacity="0.20">VIP 1 · 33 MT/dia</text>
+      <text x="150" y="250" fill="#FFD700" font-size="20" font-weight="900" opacity="0.20">VIP 3 · 180 MT/dia</text>
+      <text x="30" y="360" fill="#9B59B6" font-size="18" font-weight="900" opacity="0.20">VIP 5 · 900 MT/dia</text>
+      <text x="120" y="470" fill="#E91E63" font-size="20" font-weight="900" opacity="0.20">VIP 8 · 9.000 MT/dia</text>
+      <text x="60" y="580" fill="#00D4FF" font-size="16" font-weight="900" opacity="0.20">Regista-te GRÁTIS</text>
       <!-- Big number -->
-      <text x="200" y="420" text-anchor="middle" fill="#00D4FF" font-size="120" font-weight="900" opacity="0.05">💰</text>
+      <text x="200" y="420" text-anchor="middle" fill="#00D4FF" font-size="120" font-weight="900" opacity="0.12">💰</text>
       <!-- Grid -->
-      <line x1="0" y1="200" x2="400" y2="200" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
-      <line x1="0" y1="400" x2="400" y2="400" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
-      <line x1="0" y1="600" x2="400" y2="600" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
-      <line x1="133" y1="0" x2="133" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
-      <line x1="266" y1="0" x2="266" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+      <line x1="0" y1="200" x2="400" y2="200" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
+      <line x1="0" y1="400" x2="400" y2="400" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
+      <line x1="0" y1="600" x2="400" y2="600" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
+      <line x1="133" y1="0" x2="133" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
+      <line x1="266" y1="0" x2="266" y2="800" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
     </svg>
   </div>
   <div class="bg-slide" id="bs2" style="position:absolute;inset:0;opacity:0;transition:opacity 2s ease;background:#030B1A">
     <!-- Slide 3: Convite -->
     <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="800" fill="#030B1A"/>
-      <text x="200" y="200" text-anchor="middle" fill="#2ECC71" font-size="14" font-weight="900" opacity="0.08">+50 MT por indicação</text>
-      <text x="200" y="270" text-anchor="middle" fill="#2ECC71" font-size="14" font-weight="900" opacity="0.08">+75 MT · +100 MT · +150 MT</text>
-      <text x="200" y="340" text-anchor="middle" fill="#FFD700" font-size="16" font-weight="900" opacity="0.08">+200 MT + Fundo desbloqueado</text>
-      <text x="200" y="500" text-anchor="middle" fill="#00D4FF" font-size="70" opacity="0.06">🤝</text>
-      <text x="200" y="620" text-anchor="middle" fill="#E8F4FF" font-size="22" font-weight="900" opacity="0.06">Convida &amp; Ganha!</text>
-      <circle cx="200" cy="400" r="200" fill="none" stroke="#2ECC71" stroke-width="0.5" opacity="0.07"/>
-      <circle cx="200" cy="400" r="150" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.05"/>
+      <text x="200" y="200" text-anchor="middle" fill="#2ECC71" font-size="14" font-weight="900" opacity="0.20">+50 MT por indicação</text>
+      <text x="200" y="270" text-anchor="middle" fill="#2ECC71" font-size="14" font-weight="900" opacity="0.20">+75 MT · +100 MT · +150 MT</text>
+      <text x="200" y="340" text-anchor="middle" fill="#FFD700" font-size="16" font-weight="900" opacity="0.20">+200 MT + Fundo desbloqueado</text>
+      <text x="200" y="500" text-anchor="middle" fill="#00D4FF" font-size="70" opacity="0.15">🤝</text>
+      <text x="200" y="620" text-anchor="middle" fill="#E8F4FF" font-size="22" font-weight="900" opacity="0.15">Convida &amp; Ganha!</text>
+      <circle cx="200" cy="400" r="200" fill="none" stroke="#2ECC71" stroke-width="0.5" opacity="0.18"/>
+      <circle cx="200" cy="400" r="150" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
     </svg>
   </div>
 </div>
@@ -483,7 +527,7 @@ input{outline:none;font-family:inherit}
     <defs>
       <linearGradient id="g1" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#030B1A"/><stop offset="100%" stop-color="#0D2040"/></linearGradient>
       <linearGradient id="g2" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00D4FF"/><stop offset="100%" stop-color="#0050B0"/></linearGradient>
-      <linearGradient id="g3" x1="0" y1="400" x2="400" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0050B0" stop-opacity="0.3"/><stop offset="100%" stop-color="#00D4FF" stop-opacity="0.8"/></linearGradient>
+      <linearGradient id="g3" x1="0" y1="400" x2="400" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0050B0" stop-opacity="0.70"/><stop offset="100%" stop-color="#00D4FF" stop-opacity="0.8"/></linearGradient>
     </defs>
     <rect width="512" height="512" rx="120" fill="url(#g1)"/>
     <circle cx="256" cy="256" r="230" fill="none" stroke="url(#g2)" stroke-width="8" opacity="0.6"/>

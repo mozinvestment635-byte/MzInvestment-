@@ -47,7 +47,7 @@ input{outline:none;font-family:inherit}
 .ni{flex:1;text-align:center;cursor:pointer;color:#3A5070}.ni.on{color:#00D4FF}
 .ni-ic{font-size:22px}.ni-lb{font-size:9px;margin-top:2px;text-transform:uppercase}
 .ni-dot{width:4px;height:4px;background:#00D4FF;border-radius:50%;margin:2px auto 0;display:none}.ni.on .ni-dot{display:block}
-.tab{display:none;padding:16px}.tab.on{display:block}
+.tab{display:none!important;padding:16px}.tab.on{display:block!important}
 .card{background:rgba(255,255,255,0.05);border:1px solid rgba(0,212,255,0.2);border-radius:14px;padding:14px;margin-bottom:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .ctit{color:#00D4FF;font-size:15px;font-weight:900;margin-bottom:10px}
 .irow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #0D2040;font-size:15px}
@@ -359,14 +359,12 @@ input{outline:none;font-family:inherit}
     <!-- PROPAGANDA BANNER -->
     <div id="promo-banner" style="border-radius:16px;overflow:hidden;margin-bottom:14px;position:relative;height:120px;cursor:pointer" onclick="goTab('t-vips','n-vips')">
       <div id="promo-slide" style="position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 0.8s ease"></div></div>
-    </div>
     <div id="earnings-chart"></div>
     <div class="strow" id="home-stats"></div>
     <div class="alert" id="no-vip" style="display:none">⚠️ Activa um VIP para ganhar. <span onclick="goTab('t-vips','n-vips')">Activar →</span></div>
     <div class="card" onclick="goTab('t-fund','n-none')" style="cursor:pointer;display:flex;align-items:center;gap:12px"><div style="font-size:30px">📈</div><div><div style="font-size:14px;font-weight:900">Fundo de Investimento</div><div style="color:#7090C0;font-size:13px">Retornos até 180%</div></div><div style="color:#00D4FF;margin-left:auto;font-size:20px">›</div></div>
     <div class="hmenu" id="home-menu"></div>
-  </div>
-  <div id="t-videos" class="tab">
+  </div><div id="t-videos" class="tab">
     <div class="card" style="margin-bottom:16px">
       <div style="font-size:17px;font-weight:900;text-align:center;margin-bottom:8px">Lista de tarefas</div>
       <div id="wday-warn" style="display:none;background:#2d1500;border:1px solid #FF8C00;border-radius:10px;padding:10px;color:#FF8C00;font-size:14px;text-align:center;margin-bottom:8px">🔒 Tarefas só Seg–Sex</div>
@@ -1063,51 +1061,60 @@ function openVid(id){
   document.getElementById("pl-title").textContent=v.t;
   document.getElementById("pl-artist").textContent=v.a;
   document.getElementById("pl-done").style.display="none";
-  // Load video with autoplay
-  document.getElementById("pl-iframe").src="https://www.youtube.com/embed/"+v.yt+"?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1";
+  document.getElementById("pl-iframe").src="https://www.youtube.com/embed/"+v.yt+"?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin="+encodeURIComponent(window.location.origin);
   var rwd=Math.floor(U.vip.d/U.vip.v);
   document.getElementById("i-artist").textContent=v.a;
   document.getElementById("i-title").textContent=v.t;
   document.getElementById("i-rwd").textContent="+"+ff(rwd)+" MT";
-  document.getElementById("cd-earn").textContent="+"+ff(rwd)+" MT ao completar";
+  document.getElementById("cd-earn").textContent="A aguardar o vídeo iniciar...";
   document.getElementById("done-amt").textContent="+"+ff(rwd)+" MT creditados!";
   document.getElementById("cd-card").style.display="block";
   document.getElementById("done-card").style.display="none";
   var numEl=document.getElementById("cd-num");
-  numEl.textContent="▶";numEl.style.color="#00D4FF";numEl.style.fontSize="40px";
-  document.getElementById("cd-earn").textContent="A aguardar o vídeo iniciar...";
+  if(numEl){numEl.textContent="▶";numEl.style.fontSize="40px";numEl.style.color="#00D4FF";}
   document.getElementById("player").classList.add("on");
-  if(cdT)clearInterval(cdT);
-  // Wait 3 seconds for video to load, then start countdown
-  var waitT=setTimeout(function(){
+  if(cdT){clearInterval(cdT);cdT=null;}
+  var cdStarted=false;
+  function _start(){
+    if(cdStarted)return;
+    cdStarted=true;
+    window.removeEventListener("message",_ytMsg);
+    var earnEl=document.getElementById("cd-earn");
+    if(earnEl)earnEl.textContent="+"+ff(rwd)+" MT ao completar";
+    if(numEl){numEl.style.fontSize="58px";}
     var t=15;
-    var numEl2=document.getElementById("cd-num");
-    if(numEl2){numEl2.textContent=t;numEl2.style.fontSize="58px";}
-    document.getElementById("cd-earn").textContent="+"+ff(rwd)+" MT ao completar";
+    if(numEl)numEl.textContent=t;
     cdT=setInterval(async function(){
-    t--;
-    var num=document.getElementById("cd-num");
-    if(num){num.textContent=t;num.style.color=t<=5?"#E74C3C":"#00D4FF";}
-    document.getElementById("i-done").textContent=done.length+"/"+(U.vip?U.vip.v:0);
-    document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);
-    if(t<=0){
-      clearInterval(cdT);cdT=null;
-      done.push(id);
-      try{localStorage.setItem("mzd-"+U.phone+"-"+tkey(),JSON.stringify(done));}catch(e){}
-      var th=Object.assign({},U.taskHistory||{});
-      th[tkey()]=(th[tkey()]||0)+rwd;
-      await syncU({balance:U.balance+rwd,totalEarned:U.totalEarned+rwd,taskHistory:th});
-      earn.push({desc:"🎬 "+v.t,a:rwd,date:tod()});
-      document.getElementById("cd-card").style.display="none";
-      document.getElementById("done-card").style.display="block";
-      document.getElementById("pl-done").style.display="block";
+      t--;
+      if(numEl){numEl.textContent=t;numEl.style.color=t<=5?"#E74C3C":"#00D4FF";}
       document.getElementById("i-done").textContent=done.length+"/"+(U.vip?U.vip.v:0);
       document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);
-      renderVideos();
-      toast("+"+ff(rwd)+" MT ganhos! 💰");
-    }
-  },1000);
-  },3000); // end waitT - countdown starts 3s after video loads
+      if(t<=0){
+        clearInterval(cdT);cdT=null;
+        done.push(id);
+        try{localStorage.setItem("mzd-"+U.phone+"-"+tkey(),JSON.stringify(done));}catch(e){}
+        var th=Object.assign({},U.taskHistory||{});
+        th[tkey()]=(th[tkey()]||0)+rwd;
+        await syncU({balance:U.balance+rwd,totalEarned:U.totalEarned+rwd,taskHistory:th});
+        earn.push({desc:"🎬 "+v.t,a:rwd,date:tod()});
+        document.getElementById("cd-card").style.display="none";
+        document.getElementById("done-card").style.display="block";
+        document.getElementById("pl-done").style.display="block";
+        document.getElementById("i-done").textContent=done.length+"/"+(U.vip?U.vip.v:0);
+        document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);
+        renderVideos();
+        toast("+"+ff(rwd)+" MT ganhos! 💰");
+      }
+    },1000);
+  }
+  function _ytMsg(e){
+    try{
+      var d=JSON.parse(e.data);
+      if(d&&d.info&&(d.info.playerState===1||d.info.currentTime>0)){_start();}
+    }catch(ex){}
+  }
+  window.addEventListener("message",_ytMsg);
+  setTimeout(function(){_start();},4500);
 }
 
 function closePlayer(){if(cdT){clearInterval(cdT);cdT=null;}document.getElementById("player").classList.remove("on");document.getElementById("pl-iframe").src="";}

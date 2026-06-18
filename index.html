@@ -353,7 +353,11 @@ input{outline:none;font-family:inherit}
       <div><div class="greeting" id="greeting">Olá 👋</div><div id="vip-sm" style="font-size:12px;margin-top:2px"></div></div>
       <button class="btn-out" onclick="logout()">Sair</button>
     </div>
-    <div class="bal-card"><div class="bal-lbl">Saldo (MZN)</div><div class="bal-num" id="hdr-bal">0</div></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <div class="stcard" style="flex:2;text-align:left;padding:8px 12px"><div style="color:#7090C0;font-size:11px">VIP activo</div><div id="vip-sm-hdr" style="font-size:13px;font-weight:900;margin-top:2px">—</div></div>
+      <div class="stcard" style="flex:1;text-align:center;cursor:pointer" onclick="goTab('t-videos','n-videos')"><div style="font-size:18px">🎬</div><div style="color:#7090C0;font-size:10px;margin-top:2px">Tarefas</div></div>
+      <div class="stcard" style="flex:1;text-align:center;cursor:pointer" onclick="goTab('t-vips','n-vips')"><div style="font-size:18px">💎</div><div style="color:#7090C0;font-size:10px;margin-top:2px">VIP</div></div>
+    </div>
   </div>
   <div id="t-home" class="tab on">
     <!-- PROPAGANDA BANNER -->
@@ -382,7 +386,8 @@ input{outline:none;font-family:inherit}
     <div id="vip-list"></div>
   </div>
   <div id="t-wallet" class="tab">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-size:17px;font-weight:900">Retirada</div><div style="color:#00D4FF;font-size:14px;cursor:pointer" onclick="showWdHist()">Histórico</div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-size:17px;font-weight:900">Levantamento</div><div style="color:#00D4FF;font-size:14px;cursor:pointer" onclick="showWdHist()">Histórico</div></div>
+    <div class="bal-card" style="margin-bottom:16px;text-align:center;padding:20px"><div class="bal-lbl">💰 Saldo Disponível (MZN)</div><div class="bal-num" id="hdr-bal" style="font-size:38px;color:#00D4FF">0</div></div>
     <div style="background:#0D2040;border-radius:14px;padding:13px 16px;display:flex;justify-content:space-between;margin-bottom:18px;font-size:15px"><span>e-Mola</span><span id="w-ph">—</span></div>
     <div style="text-align:center;margin-bottom:14px"><div style="color:#7090C0;font-size:13px">Saldo disponível</div><div style="color:#00D4FF;font-size:36px;font-weight:900" id="w-bal">0 MZN</div></div>
     <div class="wd-banner" id="wd-banner">🔒 A verificar...</div>
@@ -535,7 +540,7 @@ input{outline:none;font-family:inherit}
     <div class="ni on" id="n-home" onclick="goTab('t-home','n-home')"><div class="ni-ic">🏠</div><div class="ni-lb">Lar</div><div class="ni-dot"></div></div>
     <div class="ni" id="n-videos" onclick="goTab('t-videos','n-videos')"><div class="ni-ic">📋</div><div class="ni-lb">Tarefa</div><div class="ni-dot"></div></div>
     <div class="ni" id="n-vips" onclick="goTab('t-vips','n-vips')"><div class="ni-ic">💎</div><div class="ni-lb">VIP</div><div class="ni-dot"></div></div>
-    <div class="ni" id="n-wallet" onclick="goTab('t-wallet','n-wallet')"><div class="ni-ic">💰</div><div class="ni-lb">Lucro</div><div class="ni-dot"></div></div>
+    <div class="ni" id="n-wallet" onclick="goTab('t-wallet','n-wallet')"><div class="ni-ic">💰</div><div class="ni-lb">Levantar</div><div class="ni-dot"></div></div>
     <div class="ni" id="n-profile" onclick="goTab('t-profile','n-profile')"><div class="ni-ic">👤</div><div class="ni-lb">Eu</div><div class="ni-dot"></div></div>
   </nav>
 </div>
@@ -569,6 +574,7 @@ input{outline:none;font-family:inherit}
     <div class="atab" onclick="admTab('users')">👥 Utilizadores</div>
     <div class="atab" onclick="admTab('reports')">📊 Relatórios</div>
     <div class="atab" onclick="admTab('promo')">🎁 Promos</div>
+    <div class="atab" onclick="admTab('fundos')">📈 Fundos</div>
   </div>
   <div class="adm-body">
     <div id="adm-dash"></div>
@@ -578,6 +584,7 @@ input{outline:none;font-family:inherit}
     <div id="adm-users" style="display:none"></div>
     <div id="adm-reports" style="display:none"></div>
     <div id="adm-promo" style="display:none"></div>
+    <div id="adm-fundos" style="display:none"></div>
   </div>
 </div>
 
@@ -632,7 +639,8 @@ var db=null;try{db=supabase.createClient(SU,SK);}catch(e){}
 var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze"},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata"},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro"},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina"},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante"},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi"},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda"},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite"}];
 var RB=[0,50,75,100,150,200];
 var FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:12,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:25,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:70,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:180,icon:"💰",desc:"Máximo lucro"}];
-var FP=FUNDS.map(function(f){return Object.assign({},f,{cur:Math.floor(Math.random()*60+20)});});
+var _savedFunds=null;try{var _sf=localStorage.getItem("mz-adm-funds");if(_sf)_savedFunds=JSON.parse(_sf);}catch(e){}
+var FP=(_savedFunds||FUNDS).map(function(f){return Object.assign({},f,{cur:Math.floor(Math.random()*60+20)});});
 var VDS=[{id:1,t:"Blinding Lights",a:"The Weeknd",yt:"4NRXx6U8ABQ",th:"https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg"},{id:2,t:"Shape of You",a:"Ed Sheeran",yt:"JGwWNGJdvx8",th:"https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg"},{id:3,t:"Believer",a:"Imagine Dragons",yt:"7wtfhZwyrcc",th:"https://i.ytimg.com/vi/7wtfhZwyrcc/hqdefault.jpg"},{id:4,t:"Levitating",a:"Dua Lipa",yt:"TUVcZfQe-Kw",th:"https://i.ytimg.com/vi/TUVcZfQe-Kw/hqdefault.jpg"},{id:5,t:"Love Yourself",a:"Justin Bieber",yt:"oyEuk8j8imI",th:"https://i.ytimg.com/vi/oyEuk8j8imI/hqdefault.jpg"},{id:6,t:"Save Your Tears",a:"The Weeknd",yt:"LIIDh-qI9oI",th:"https://i.ytimg.com/vi/LIIDh-qI9oI/hqdefault.jpg"},{id:7,t:"Bad Habits",a:"Ed Sheeran",yt:"orJSJGHjBLI",th:"https://i.ytimg.com/vi/orJSJGHjBLI/hqdefault.jpg"},{id:8,t:"Butter",a:"BTS",yt:"WMweEpGlu_U",th:"https://i.ytimg.com/vi/WMweEpGlu_U/hqdefault.jpg"},{id:9,t:"Dynamite",a:"BTS",yt:"gdZLi9oWNZg",th:"https://i.ytimg.com/vi/gdZLi9oWNZg/hqdefault.jpg"},{id:10,t:"STAY",a:"The Kid LAROI",yt:"hCuMWrfXG4E",th:"https://i.ytimg.com/vi/hCuMWrfXG4E/hqdefault.jpg"},{id:11,t:"drivers license",a:"Olivia Rodrigo",yt:"ZmDBbnmKpqQ",th:"https://i.ytimg.com/vi/ZmDBbnmKpqQ/hqdefault.jpg"},{id:12,t:"Easy On Me",a:"Adele",yt:"U3ASj1L6_sY",th:"https://i.ytimg.com/vi/U3ASj1L6_sY/hqdefault.jpg"},{id:13,t:"As It Was",a:"Harry Styles",yt:"H5v3kku4y6Q",th:"https://i.ytimg.com/vi/H5v3kku4y6Q/hqdefault.jpg"},{id:14,t:"Anti-Hero",a:"Taylor Swift",yt:"b1kbLwvqugk",th:"https://i.ytimg.com/vi/b1kbLwvqugk/hqdefault.jpg"},{id:15,t:"Flowers",a:"Miley Cyrus",yt:"G7KNmW9a75Y",th:"https://i.ytimg.com/vi/G7KNmW9a75Y/hqdefault.jpg"},{id:16,t:"Heat Waves",a:"Glass Animals",yt:"mRD0-GxqHVo",th:"https://i.ytimg.com/vi/mRD0-GxqHVo/hqdefault.jpg"},{id:17,t:"Yaba Buluku",a:"Dj Tarico",yt:"vqoiN5KMrOs",th:"https://i.ytimg.com/vi/vqoiN5KMrOs/hqdefault.jpg"},{id:18,t:"Jerusalema",a:"Master KG",yt:"HGMDMFTMNkE",th:"https://i.ytimg.com/vi/HGMDMFTMNkE/hqdefault.jpg"},{id:19,t:"Cruel Summer",a:"Taylor Swift",yt:"ic8j13piAhQ",th:"https://i.ytimg.com/vi/ic8j13piAhQ/hqdefault.jpg"},{id:20,t:"Calm Down",a:"Rema",yt:"WXmmgQpCbSE",th:"https://i.ytimg.com/vi/WXmmgQpCbSE/hqdefault.jpg"}];
 var U=null,done=[],wdAmt=null,depVip=null,fp=null,myInv=[],earn=[];
 // UTILS
@@ -920,12 +928,15 @@ async function checkVipExpiry(){
 function updateUI(){
   if(!U)return;
   document.getElementById("greeting").textContent="Olá, "+U.name.split(" ")[0]+" 👋";
-  document.getElementById("hdr-bal").textContent=fmt(U.balance);
+  var vsmhdr=document.getElementById("vip-sm-hdr");
+  if(vsmhdr)vsmhdr.textContent=U.vip?U.vip.n+" ("+U.vip.l+")":"Sem VIP";
+  if(vsmhdr)vsmhdr.style.color=U.vip?U.vip.c:"#5070A0";
   var vs=document.getElementById("vip-sm");
   if(U.vip){var dl=U.vipDaysLeft?" · "+U.vipDaysLeft+"d":"";vs.textContent="VIP "+U.vip.l+" – "+U.vip.n+dl;vs.style.color=U.vipDaysLeft&&U.vipDaysLeft<=5?"#FF6B6B":U.vip.c;}
   else{vs.textContent="Sem VIP activo";vs.style.color="#4A7FFF";}
   document.getElementById("w-ph").textContent=U.phone;
-  document.getElementById("w-bal").textContent=fmt(U.balance)+" MZN";
+  var wbal=document.getElementById("w-bal");if(wbal)wbal.textContent=fmt(U.balance)+" MZN";
+  var hdbal=document.getElementById("hdr-bal");if(hdbal)hdbal.textContent=fmt(U.balance);
   document.getElementById("p-ph").textContent=U.phone;
   document.getElementById("p-bal").textContent=fmt(U.balance);
   var pvt=document.getElementById("p-vip-tag");if(pvt)pvt.innerHTML=U.vip?'<div style="background:'+U.vip.c+';border-radius:6px;padding:2px 10px;font-size:12px;font-weight:900;color:#000;display:inline-block;margin-top:4px">T'+U.vip.l+'</div>':"";
@@ -1172,7 +1183,7 @@ function showAbout(){openModal("ℹ️ Sobre a MZInvestment","<div style='text-a
 // ADMIN
 var aU=[],aTx=[];
 async function loadAdmin(){aU=await DB.all();aTx=await DB.txAll();var p=aTx.filter(function(t){return t.status==="pending";}).length;var b=document.getElementById("adm-badge");b.textContent=p;b.style.display=p>0?"flex":"none";admTab("dash");}
-function admTab(tab){document.querySelectorAll(".atab").forEach(function(el,i){el.classList.toggle("on",["dash","deps","wds","credit","users","reports","promo"][i]===tab);});["dash","deps","wds","credit","users","reports","promo"].forEach(function(t){var el=document.getElementById("adm-"+t);if(el)el.style.display=t===tab?"block":"none";});if(tab==="dash")admDash();else if(tab==="deps")admDeps();else if(tab==="wds")admWds();else if(tab==="credit")admCredit();else if(tab==="users")admUsers();else if(tab==="reports")admReports();else if(tab==="promo")admPromo();}
+function admTab(tab){document.querySelectorAll(".atab").forEach(function(el,i){el.classList.toggle("on",["dash","deps","wds","credit","users","reports","promo","fundos"][i]===tab);});["dash","deps","wds","credit","users","reports","promo","fundos"].forEach(function(t){var el=document.getElementById("adm-"+t);if(el)el.style.display=t===tab?"block":"none";});if(tab==="dash")admDash();else if(tab==="deps")admDeps();else if(tab==="wds")admWds();else if(tab==="credit")admCredit();else if(tab==="users")admUsers();else if(tab==="reports")admReports();else if(tab==="promo")admPromo();else if(tab==="fundos")admFundos();}
 function admDash(){var pd=aTx.filter(function(t){return t.type==="deposit"&&t.status==="pending";});var pw=aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="pending";});var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);document.getElementById("adm-dash").innerHTML='<div style="display:flex;gap:8px;margin-bottom:16px"><div class="stcard"><div class="stv" style="color:#C8A0FF">'+aU.length+'</div><div class="stl">Utilizadores</div></div><div class="stcard"><div class="stv" style="color:'+((pd.length+pw.length)>0?"#E74C3C":"#2ECC71")+'">'+((pd.length+pw.length))+'</div><div class="stl">Pendentes</div></div><div class="stcard"><div class="stv" style="color:#2ECC71;font-size:12px">'+fmt(td)+'</div><div class="stl">Total dep.</div></div></div>'+(pd.length>0?'<div class="pcard pending"><div style="color:#FFD700;font-weight:900;margin-bottom:10px">Depósitos pendentes</div>'+pd.map(function(d){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0D2040"><div><div style="font-weight:900;font-size:14px">'+(d.user_name||"—")+'</div><div style="color:#7090C0;font-size:12px">'+ff(d.amount)+' · VIP '+(d.vip_level||"?")+'</div></div><div style="display:flex;gap:6px"><button style="background:#1A6B3A;border:1px solid #2ECC71;border-radius:8px;color:#2ECC71;font-size:12px;padding:6px 10px" onclick="appDep(\''+d.id+'\',\''+d.phone+'\','+d.amount+','+(d.vip_level||1)+',\''+d.user_name+'\')">✅</button><button style="background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:6px 10px" onclick="rejTx(\''+d.id+'\',\''+d.phone+'\',\'dep\',\''+d.user_name+'\','+d.amount+')">❌</button></div></div>';}).join("")+'</div>':"")+(pw.length>0?'<div class="pcard pending" style="border-color:#00D4FF44"><div style="color:#00D4FF;font-weight:900;margin-bottom:10px">Levantamentos pendentes</div>'+pw.map(function(w){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0D2040"><div><div style="font-weight:900;font-size:14px">'+(w.user_name||"—")+'</div><div style="color:#7090C0;font-size:12px">'+ff(w.amount)+'</div></div><div style="display:flex;gap:6px"><button style="background:#1A6B3A;border:1px solid #2ECC71;border-radius:8px;color:#2ECC71;font-size:12px;padding:6px 10px" onclick="appWd(\''+w.id+'\',\''+w.phone+'\','+w.amount+',\''+w.user_name+'\')">✅</button><button style="background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:6px 10px" onclick="rejTx(\''+w.id+'\',\''+w.phone+'\',\'wd\',\''+w.user_name+'\','+w.amount+')">❌</button></div></div>';}).join("")+'</div>':"")+ ((pd.length+pw.length)===0?'<div class="card" style="text-align:center;padding:24px"><div style="font-size:34px">✅</div><div style="color:#5070A0;margin-top:8px">Sem pedidos pendentes</div></div>':"");}
 function admDeps(){var deps=aTx.filter(function(t){return t.type==="deposit";});document.getElementById("adm-deps").innerHTML=deps.length===0?'<div class="empty">Sem depósitos</div>':deps.map(function(d){return '<div class="pcard '+d.status+'"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900">'+(d.user_name||"—")+'</div><span style="font-size:11px;font-weight:700;color:'+(d.status==="pending"?"#FFD700":d.status==="approved"?"#2ECC71":"#E74C3C")+'">'+(d.status==="pending"?"⏳":d.status==="approved"?"✅":"❌")+'</span></div><div class="irow"><span class="ilbl">Número</span><span class="ival">'+(d.phone||"—")+'</span></div><div class="irow" style="border:none"><span class="ilbl">Valor</span><span class="ival" style="color:#FFD700">'+ff(parseFloat(d.amount)||0)+'</span></div>'+(d.status==="pending"?'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="appDep(\''+d.id+'\',\''+d.phone+'\','+d.amount+','+(d.vip_level||1)+',\''+d.user_name+'\')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejTx(\''+d.id+'\',\''+d.phone+'\',\'dep\',\''+d.user_name+'\','+d.amount+')">❌ Rejeitar</button></div>':"")+'</div>';}).join("");}
 function admWds(){var wds=aTx.filter(function(t){return t.type==="withdrawal";});document.getElementById("adm-wds").innerHTML=wds.length===0?'<div class="empty">Sem levantamentos</div>':wds.map(function(w){return '<div class="pcard '+w.status+'"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900">'+(w.user_name||"—")+'</div><span style="font-size:11px;font-weight:700;color:'+(w.status==="pending"?"#FFD700":w.status==="approved"?"#2ECC71":"#E74C3C")+'">'+(w.status==="pending"?"⏳":w.status==="approved"?"✅":"❌")+'</span></div><div class="irow" style="border:none"><span class="ilbl">Valor</span><span class="ival" style="color:#00D4FF">'+ff(parseFloat(w.amount)||0)+'</span></div>'+(w.status==="pending"?'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="appWd(\''+w.id+'\',\''+w.phone+'\','+w.amount+',\''+w.user_name+'\')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejTx(\''+w.id+'\',\''+w.phone+'\',\'wd\',\''+w.user_name+'\','+w.amount+')">❌ Rejeitar</button></div>':"")+'</div>';}).join("");}
@@ -1245,6 +1256,93 @@ function renderVipHist(){
 }
 
 
+
+
+// ─── ADMIN FUNDOS ────────────────────────────────────────
+function admFundos(){
+  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+  var el=document.getElementById("adm-fundos");if(!el)return;
+  el.innerHTML='<div class="card" style="border-color:#00D4FF44"><div class="ctit" style="color:#00D4FF">📈 Gerir Fundos de Investimento</div>'
+    +'<div style="color:#7090C0;font-size:13px;margin-bottom:16px">Edita os planos existentes ou cria novos fundos.</div>'
+    +'<div id="fund-list-adm"></div>'
+    +'<div class="card" style="border-color:#2ECC7144;margin-top:16px"><div style="color:#2ECC71;font-weight:900;margin-bottom:12px">➕ Novo Fundo</div>'
+    +'<div class="fld"><label>Nome (ex: 60 Dias)</label><input type="text" id="nf-label" placeholder="Ex: 45 Dias"/></div>'
+    +'<div class="fld"><label>Duração (dias)</label><input type="number" id="nf-days" placeholder="Ex: 45"/></div>'
+    +'<div class="fld"><label>Retorno (%)</label><input type="number" id="nf-rate" placeholder="Ex: 50"/></div>'
+    +'<div class="fld"><label>Ícone (emoji)</label><input type="text" id="nf-icon" placeholder="Ex: 🌟" maxlength="2"/></div>'
+    +'<div class="fld"><label>Descrição</label><input type="text" id="nf-desc" placeholder="Ex: Retorno médio"/></div>'
+    +'<button style="width:100%;padding:13px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:900;cursor:pointer" onclick="createFund()">✅ Criar Fundo</button>'
+    +'</div></div>';
+  renderAdmFundList(funds);
+}
+
+function renderAdmFundList(funds){
+  var el=document.getElementById("fund-list-adm");if(!el)return;
+  el.innerHTML=funds.map(function(f,i){
+    return '<div class="card" style="border-color:#00D4FF33;margin-bottom:10px">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+      +'<div style="font-size:28px">'+f.icon+'</div>'
+      +'<div style="flex:1"><div style="font-weight:900">'+f.label+'</div><div style="color:#5070A0;font-size:13px">ID: '+f.id+'</div></div>'
+      +'<div style="color:#2ECC71;font-size:20px;font-weight:900">+'+f.rate+'%</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:900">'+f.days+'d</div><div style="color:#5070A0;font-size:10px">Prazo</div></div>'
+      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:900;color:#00D4FF">+'+f.rate+'%</div><div style="color:#5070A0;font-size:10px">Retorno</div></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:10px">'
+      +'<button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="editFund('+i+')">✏️ Editar</button>'
+      +'<button style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C44;border-radius:10px;color:#E74C3C;font-size:13px;font-weight:900;cursor:pointer" onclick="deleteFund(this.dataset.id)" data-id="'+f.id+'">Remover</button>'
+      +'</div></div>';
+  }).join("");
+}
+
+function editFund(i){
+  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+  var f=funds[i];
+  var newRate=prompt("Editar retorno de "+f.label+". Actual: +"+f.rate+"%. Novo retorno (%): ");
+  if(newRate===null)return;
+  var newLabel=prompt("Novo nome (actual: "+f.label+"). Deixa vazio para manter:");
+  if(newLabel===null)return;
+  funds[i].rate=parseInt(newRate)||f.rate;
+  funds[i].label=newLabel||f.label;
+  localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
+  // Update global FP
+  FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
+  toast("Fundo actualizado! ✅");
+  admFundos();
+}
+
+function deleteFund(id){
+  showConfirm("Remover este fundo?",function(){
+    var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+    funds=funds.filter(function(f){return f.id!==id;});
+    localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
+    FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
+    toast("Fundo removido!","e");
+    admFundos();
+  });
+}
+
+function createFund(){
+  var label=document.getElementById("nf-label").value.trim();
+  var days=parseInt(document.getElementById("nf-days").value||0);
+  var rate=parseInt(document.getElementById("nf-rate").value||0);
+  var icon=document.getElementById("nf-icon").value.trim()||"💼";
+  var desc=document.getElementById("nf-desc").value.trim()||"Novo plano";
+  if(!label||!days||!rate){toast("Preenche todos os campos","e");return;}
+  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+  var newFund={id:"f"+days+"_"+Date.now(),days:days,label:label,rate:rate,icon:icon,desc:desc};
+  funds.push(newFund);
+  localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
+  FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
+  toast("Fundo '"+label+"' criado! ✅");
+  document.getElementById("nf-label").value="";
+  document.getElementById("nf-days").value="";
+  document.getElementById("nf-rate").value="";
+  document.getElementById("nf-icon").value="";
+  document.getElementById("nf-desc").value="";
+  admFundos();
+}
 
 </script>
 </body>

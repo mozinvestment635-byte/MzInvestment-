@@ -707,7 +707,23 @@ var _iv=setInterval(function(){
     var ref=null;
     try{var params=new URLSearchParams(window.location.search);ref=params.get("ref");if(ref)ref=ref.toUpperCase();}catch(e){}
     setTimeout(function(){
-      if(ref){pg("pg-register");setTimeout(function(){var el=document.getElementById("r-ref");if(el){el.value=ref;el.style.borderColor="#00D4FF";}var tg=document.getElementById("reg-tag");if(tg)tg.textContent="Convidado com código: "+ref+" 🎁";},150);}
+      if(ref){
+        var promos0=JSON.parse(localStorage.getItem("mz-promos")||"{}");
+        var isPromo=!!promos0[ref];
+        if(isPromo){
+          // Admin promo code: store pending, send existing users to LOGIN to claim immediately
+          try{localStorage.setItem("mz-pending-promo",ref);}catch(e){}
+          pg("pg-login");
+          setTimeout(function(){
+            var lerr=document.getElementById("l-err");
+            if(lerr){lerr.textContent="🎁 Código "+ref+" detectado! Entra para receberes o bónus, ou regista-te se for a primeira vez.";lerr.style.display="block";lerr.style.color="#FFD700";lerr.style.background="#1a1500";lerr.style.borderColor="#FFD700";}
+          },150);
+        } else {
+          // Personal referral code: send to REGISTER as before
+          pg("pg-register");
+          setTimeout(function(){var el=document.getElementById("r-ref");if(el){el.value=ref;el.style.borderColor="#00D4FF";}var tg=document.getElementById("reg-tag");if(tg)tg.textContent="Convidado com código: "+ref+" 🎁";},150);
+        }
+      }
       else pg("pg-login");
     },400);
   }
@@ -779,7 +795,8 @@ function mapU(u){
   if(typeof n==="string")try{n=JSON.parse(n);}catch(e){n=[];}
   if(typeof th==="string")try{th=JSON.parse(th);}catch(e){th={};}
   if(typeof tm==="string")try{tm=JSON.parse(tm);}catch(e){tm=[];}
-  return Object.assign({},u,{vip:u.vip_level?VIPS[u.vip_level-1]:null,balance:parseFloat(u.balance)||0,referrals:u.referrals||0,totalEarned:parseFloat(u.total_earned)||0,refCode:u.ref_code,notifications:n,taskHistory:th,teamMembers:tm});
+  var rp=u.redeemed_promos||[];if(typeof rp==="string")try{rp=JSON.parse(rp);}catch(e){rp=[];}
+  return Object.assign({},u,{vip:u.vip_level?VIPS[u.vip_level-1]:null,balance:parseFloat(u.balance)||0,referrals:u.referrals||0,totalEarned:parseFloat(u.total_earned)||0,refCode:u.ref_code,notifications:n,taskHistory:th,teamMembers:tm,redeemed_promos:rp});
 }
 // ─── SUPABASE BACKUP CHECK ────────────────────────────────
 async function backupUserLocal(){
@@ -800,6 +817,7 @@ async function syncU(patch){
   if(patch.taskHistory!==undefined)d.task_history=patch.taskHistory;
   if(patch.pin!==undefined)d.pin=patch.pin;
   if(patch.photo!==undefined)d.photo=patch.photo;
+  if(patch.redeemed_promos!==undefined)d.redeemed_promos=patch.redeemed_promos;
   if(Object.keys(d).length>0)await DB.upd(U.phone,d);
   backupUserLocal();
   updateUI();
@@ -820,6 +838,7 @@ async function doLogin(){
   if(u.blocked){err.textContent="Conta bloqueada. Contacta: +258 86 437 8323";err.style.display="block";return;}
   U=mapU(u);try{done=JSON.parse(localStorage.getItem("mzd-"+U.phone+"-"+tkey())||"[]");}catch(e){done=[];}
   loadMain();pg("pg-main");
+  applyPendingPromo();
 }
 // ─── VERIFICATION ────────────────────────────────────────
 function showVerification(ph, vcode){
@@ -880,6 +899,7 @@ async function doRegister(){
 var patch={team_members:tm,notifications:nn};
 await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}}}catch(e){}}
   U=mapU(sv);done=[];
+  try{localStorage.removeItem("mz-pending-promo");}catch(e){}
   // Send verification code via WhatsApp
   var vcode=Math.floor(1000+Math.random()*9000);
   localStorage.setItem("mz-vcode-"+ph,vcode);
@@ -1464,6 +1484,31 @@ function showDeleteAccount(){
 
 function showVersionInfo(){
   openModal("ℹ️ Sobre a Versão","<div style='text-align:center;margin-bottom:20px'><div style='font-size:48px;margin-bottom:8px'>📈</div><div style='font-size:20px;font-weight:900'>MZ<span style='color:#00D4FF'>INVESTMENT</span></div><div style='color:#3A6090;font-size:12px;letter-spacing:4px;margin-top:4px'>MOÇAMBIQUE</div></div><div class='irow'><span class='ilbl'>Versão</span><span class='ival' style='color:#00D4FF'>2.0.0</span></div><div class='irow'><span class='ilbl'>Última actualização</span><span class='ival'>Junho 2026</span></div><div class='irow'><span class='ilbl'>Plataforma</span><span class='ival'>Web App (PWA)</span></div><div class='irow' style='border:none'><span class='ilbl'>Idioma</span><span class='ival'>Português (Moçambique)</span></div><div style='color:#5070A0;font-size:12px;text-align:center;margin-top:16px'>© 2026 MZInvestment · Todos os direitos reservados</div>");
+}
+
+
+async function applyPendingPromo(){
+  if(!U)return;
+  var pending=null;
+  try{pending=localStorage.getItem("mz-pending-promo");}catch(e){}
+  if(!pending)return;
+  try{localStorage.removeItem("mz-pending-promo");}catch(e){}
+  var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");
+  var info=promos[pending];
+  if(!info)return; // code no longer exists
+  if((info.used||0)>=info.max){toast("Código "+pending+" esgotado.","e");return;}
+  var redeemed=U.redeemed_promos||[];
+  if(typeof redeemed==="string")try{redeemed=JSON.parse(redeemed);}catch(e){redeemed=[];}
+  if(redeemed.indexOf(pending)>=0){return;} // already used by this account
+  // Apply bonus
+  var bonus=info.bonus||0;
+  redeemed.push(pending);
+  info.used=(info.used||0)+1;
+  promos[pending]=info;
+  localStorage.setItem("mz-promos",JSON.stringify(promos));
+  var nn=(U.notifications||[]).concat([{id:Date.now(),msg:"🎁 Código promocional "+pending+" aplicado! +"+ff(bonus)+" creditados.",time:n2(),date:tod(),read:false}]);
+  await syncU({balance:(U.balance||0)+bonus,totalEarned:(U.totalEarned||0)+bonus,notifications:nn,redeemed_promos:redeemed});
+  toast("🎁 +"+ff(bonus)+" creditados pelo código "+pending+"!");
 }
 
 </script>

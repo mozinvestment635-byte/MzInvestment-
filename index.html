@@ -1297,7 +1297,7 @@ function admUsers(filter){
         +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-bal="'+(u.balance||0)+'" onclick="editBal(this.dataset.ph,this.dataset.nm,this.dataset.bal)" style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer">Saldo</button>'
         +'</div>'
         +'<div style="display:flex;gap:8px;margin-top:8px">'
-        +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-unl="'+(fundUnlocked?"0":"1")+'" onclick="tgFundUnlock(this.dataset.ph,this.dataset.nm,this.dataset.unl===\'1\')" style="flex:1;padding:10px;background:#0D2040;border:1px solid #9B59B644;border-radius:10px;color:#C8A0FF;font-size:13px;font-weight:900;cursor:pointer">'+(fundUnlocked?"Bloquear Fundo":"Desbloquear Fundo")+'</button>'
+        +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-unl="'+(fundUnlocked?"1":"0")+'" onclick="tgFundUnlock(this.dataset.ph,this.dataset.nm,this.dataset.unl===\'1\')" style="flex:1;padding:10px;background:#0D2040;border:1px solid #9B59B644;border-radius:10px;color:#C8A0FF;font-size:13px;font-weight:900;cursor:pointer">'+(fundUnlocked?"Bloquear Fundo":"Desbloquear Fundo")+'</button>'
         +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="confirmDeleteUser(this.dataset.ph,this.dataset.nm)" style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C;border-radius:10px;color:#FF6B6B;font-size:13px;font-weight:900;cursor:pointer">Eliminar Conta</button>'
         +'</div>'
         +'</div>';

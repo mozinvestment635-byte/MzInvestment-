@@ -1032,7 +1032,6 @@ async function activVip(l){
   }else{
     depVip=v;
     document.getElementById("dep-vip-box").innerHTML='<div class="vip-card" style="border-color:'+v.c+';margin-bottom:14px"><div style="color:'+v.c+';font-size:15px;font-weight:900;margin-bottom:8px">VIP '+v.l+' – '+v.n+'</div><div class="irow" style="border:none"><span class="ilbl">Valor</span><span class="ival" style="color:#FFD700">'+ff(v.p)+'</span></div></div>';
-    document.getElementById("dep-wa-btn").href="https://wa.me/"+SUP+"?text="+encodeURIComponent("Olá! Quero depositar para VIP "+v.l+" ("+ff(v.p)+")\nNome: "+U.name+"\nNúmero: +258 "+U.phone);
     goTab("t-deposit","n-none");
   }
 }

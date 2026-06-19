@@ -796,7 +796,7 @@ function mapU(u){
   if(typeof th==="string")try{th=JSON.parse(th);}catch(e){th={};}
   if(typeof tm==="string")try{tm=JSON.parse(tm);}catch(e){tm=[];}
   var rp=u.redeemed_promos||[];if(typeof rp==="string")try{rp=JSON.parse(rp);}catch(e){rp=[];}
-  return Object.assign({},u,{vip:u.vip_level?VIPS[u.vip_level-1]:null,balance:parseFloat(u.balance)||0,referrals:u.referrals||0,totalEarned:parseFloat(u.total_earned)||0,refCode:u.ref_code,notifications:n,taskHistory:th,teamMembers:tm,redeemed_promos:rp});
+  return Object.assign({},u,{vip:u.vip_level?VIPS[u.vip_level-1]:null,balance:parseFloat(u.balance)||0,referrals:u.referrals||0,totalEarned:parseFloat(u.total_earned)||0,refCode:u.ref_code,notifications:n,taskHistory:th,teamMembers:tm,redeemed_promos:rp,fund_unlocked:u.fund_unlocked===true});
 }
 // ─── SUPABASE BACKUP CHECK ────────────────────────────────
 async function backupUserLocal(){
@@ -1026,22 +1026,8 @@ async function activVip(l){
   if((U.balance||0)>=v.p){
     await syncU({balance:U.balance-v.p,vip:v});
     earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" activado",a:-v.p,date:tod()});
-    // Increment referrer's referrals count when VIP is activated
-    if(U.invited_by&&db){
-      try{
-        var refr=await db.from("users").select("*").eq("ref_code",U.invited_by).single();
-        if(refr.data){
-          var rfu=refr.data;
-          var newRefCount=(rfu.referrals||0)+1;
-          var refBonus=RB[newRefCount]||0;
-          var refNn=(rfu.notifications||[]).concat([{id:Date.now(),msg:"🎉 "+U.name+" activou VIP "+v.l+"! "+newRefCount+"/5."+(refBonus>0?" Bónus de "+ff(refBonus)+" creditado! 💰":""),time:n2(),date:tod(),read:false}]);
-          var refPatch={referrals:newRefCount,notifications:refNn};
-          if(refBonus>0){refPatch.balance=(parseFloat(rfu.balance)||0)+refBonus;refPatch.total_earned=(parseFloat(rfu.total_earned)||0)+refBonus;}
-          await DB.upd(rfu.phone,refPatch);
-        }
-      }catch(e){}
-    }
-    if(U.invited_by&&db){try{var gr=await db.from("users").select("*").eq("ref_code",U.invited_by).single();if(gr.data&&gr.data.invited_by){var gp=await db.from("users").select("*").eq("ref_code",gr.data.invited_by).single();if(gp.data){var gb=Math.floor(v.p*0.02);var gpnn=(gp.data.notifications||[]).concat([{id:Date.now(),msg:"Bónus nível 2: +"+ff(gb)+" (indicado activou VIP "+v.l+")",time:n2(),date:tod(),read:false}]);await DB.upd(gp.data.phone,{balance:(parseFloat(gp.data.balance)||0)+gb,total_earned:(parseFloat(gp.data.total_earned)||0)+gb,notifications:gpnn});}}}catch(e){}}
+    // Credit referrer (shared logic, also used when admin approves deposit)
+    await creditReferrerOnVip(U.invited_by,U.name,v.l,v.p);
     toast("VIP "+v.l+" "+v.n+" activado! 🚀");renderVips();goTab("t-home","n-home");
   }else{
     depVip=v;
@@ -1172,7 +1158,7 @@ function openDepWA(){
 
 async function submitDep(){if(!depVip)return;await DB.txSave({user_id:U.phone,user_name:U.name,phone:U.phone,amount:depVip.p,type:"deposit",vip_level:depVip.l,wallet:"e-Mola",status:"pending"});window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💳 DEPÓSITO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+depVip.p+" MT\n💎 VIP "+depVip.l+"\n🕐 "+n2()),"_blank");toast("Pedido enviado! ✅");depVip=null;goTab("t-home","n-home");}
 function renderFund(){
-  var ul=(U.referrals||0)>=5;
+  var ul=(U.referrals||0)>=5||U.fund_unlocked===true;
   if(!ul){
     var pct=Math.min(((U.referrals||0)/5)*100,100);
     var lockHtml='<div style="background:#1a0a00;border:2px solid #FF8C00;border-radius:16px;padding:20px;text-align:center">'
@@ -1262,13 +1248,102 @@ function admTab(tab){document.querySelectorAll(".atab").forEach(function(el,i){e
 function admDash(){var pd=aTx.filter(function(t){return t.type==="deposit"&&t.status==="pending";});var pw=aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="pending";});var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);document.getElementById("adm-dash").innerHTML='<div style="display:flex;gap:8px;margin-bottom:16px"><div class="stcard"><div class="stv" style="color:#C8A0FF">'+aU.length+'</div><div class="stl">Utilizadores</div></div><div class="stcard"><div class="stv" style="color:'+((pd.length+pw.length)>0?"#E74C3C":"#2ECC71")+'">'+((pd.length+pw.length))+'</div><div class="stl">Pendentes</div></div><div class="stcard"><div class="stv" style="color:#2ECC71;font-size:12px">'+fmt(td)+'</div><div class="stl">Total dep.</div></div></div>'+(pd.length>0?'<div class="pcard pending"><div style="color:#FFD700;font-weight:900;margin-bottom:10px">Depósitos pendentes</div>'+pd.map(function(d){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0D2040"><div><div style="font-weight:900;font-size:14px">'+(d.user_name||"—")+'</div><div style="color:#7090C0;font-size:12px">'+ff(d.amount)+' · VIP '+(d.vip_level||"?")+'</div></div><div style="display:flex;gap:6px"><button style="background:#1A6B3A;border:1px solid #2ECC71;border-radius:8px;color:#2ECC71;font-size:12px;padding:6px 10px" onclick="appDep(\''+d.id+'\',\''+d.phone+'\','+d.amount+','+(d.vip_level||1)+',\''+d.user_name+'\')">✅</button><button style="background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:6px 10px" onclick="rejTx(\''+d.id+'\',\''+d.phone+'\',\'dep\',\''+d.user_name+'\','+d.amount+')">❌</button></div></div>';}).join("")+'</div>':"")+(pw.length>0?'<div class="pcard pending" style="border-color:#00D4FF44"><div style="color:#00D4FF;font-weight:900;margin-bottom:10px">Levantamentos pendentes</div>'+pw.map(function(w){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0D2040"><div><div style="font-weight:900;font-size:14px">'+(w.user_name||"—")+'</div><div style="color:#7090C0;font-size:12px">'+ff(w.amount)+'</div></div><div style="display:flex;gap:6px"><button style="background:#1A6B3A;border:1px solid #2ECC71;border-radius:8px;color:#2ECC71;font-size:12px;padding:6px 10px" onclick="appWd(\''+w.id+'\',\''+w.phone+'\','+w.amount+',\''+w.user_name+'\')">✅</button><button style="background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:6px 10px" onclick="rejTx(\''+w.id+'\',\''+w.phone+'\',\'wd\',\''+w.user_name+'\','+w.amount+')">❌</button></div></div>';}).join("")+'</div>':"")+ ((pd.length+pw.length)===0?'<div class="card" style="text-align:center;padding:24px"><div style="font-size:34px">✅</div><div style="color:#5070A0;margin-top:8px">Sem pedidos pendentes</div></div>':"");}
 function admDeps(){var deps=aTx.filter(function(t){return t.type==="deposit";});document.getElementById("adm-deps").innerHTML=deps.length===0?'<div class="empty">Sem depósitos</div>':deps.map(function(d){return '<div class="pcard '+d.status+'"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900">'+(d.user_name||"—")+'</div><span style="font-size:11px;font-weight:700;color:'+(d.status==="pending"?"#FFD700":d.status==="approved"?"#2ECC71":"#E74C3C")+'">'+(d.status==="pending"?"⏳":d.status==="approved"?"✅":"❌")+'</span></div><div class="irow"><span class="ilbl">Número</span><span class="ival">'+(d.phone||"—")+'</span></div><div class="irow" style="border:none"><span class="ilbl">Valor</span><span class="ival" style="color:#FFD700">'+ff(parseFloat(d.amount)||0)+'</span></div>'+(d.status==="pending"?'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="appDep(\''+d.id+'\',\''+d.phone+'\','+d.amount+','+(d.vip_level||1)+',\''+d.user_name+'\')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejTx(\''+d.id+'\',\''+d.phone+'\',\'dep\',\''+d.user_name+'\','+d.amount+')">❌ Rejeitar</button></div>':"")+'</div>';}).join("");}
 function admWds(){var wds=aTx.filter(function(t){return t.type==="withdrawal";});document.getElementById("adm-wds").innerHTML=wds.length===0?'<div class="empty">Sem levantamentos</div>':wds.map(function(w){return '<div class="pcard '+w.status+'"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900">'+(w.user_name||"—")+'</div><span style="font-size:11px;font-weight:700;color:'+(w.status==="pending"?"#FFD700":w.status==="approved"?"#2ECC71":"#E74C3C")+'">'+(w.status==="pending"?"⏳":w.status==="approved"?"✅":"❌")+'</span></div><div class="irow" style="border:none"><span class="ilbl">Valor</span><span class="ival" style="color:#00D4FF">'+ff(parseFloat(w.amount)||0)+'</span></div>'+(w.status==="pending"?'<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-app-f" onclick="appWd(\''+w.id+'\',\''+w.phone+'\','+w.amount+',\''+w.user_name+'\')">✅ Aprovar</button><button class="btn-rej-f" onclick="rejTx(\''+w.id+'\',\''+w.phone+'\',\'wd\',\''+w.user_name+'\','+w.amount+')">❌ Rejeitar</button></div>':"")+'</div>';}).join("");}
-async function appDep(id,phone,amount,vl,name){await DB.txUpd(id,{status:"approved"});var u=aU.find(function(x){return x.phone==phone;});if(u){var nb=(parseFloat(u.balance)||0)+parseFloat(amount);var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Depósito de "+ff(amount)+" aprovado! VIP "+vl+" activado!",time:n2(),date:tod(),read:false}]);await DB.upd(phone,{balance:nb,vip_level:parseInt(vl),total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:tod(),notifications:nn});}push("MZInvestment","Depósito de "+ff(amount)+" aprovado! VIP "+vl+" activado.");window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n💰 "+amount+" MT\n💎 VIP "+vl+" activado"),"_blank");toast("Aprovado! ✅");await loadAdmin();}
+async function appDep(id,phone,amount,vl,name){
+  await DB.txUpd(id,{status:"approved"});
+  var u=aU.find(function(x){return x.phone==phone;});
+  if(u){
+    var nb=(parseFloat(u.balance)||0)+parseFloat(amount);
+    var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Depósito de "+ff(amount)+" aprovado! VIP "+vl+" activado!",time:n2(),date:tod(),read:false}]);
+    await DB.upd(phone,{balance:nb,vip_level:parseInt(vl),total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:tod(),notifications:nn});
+    // FIX: credit the referrer too (this was missing before!)
+    if(u.invited_by){
+      var vipObj=VIPS[parseInt(vl)-1];
+      await creditReferrerOnVip(u.invited_by,name,parseInt(vl),vipObj?vipObj.p:0);
+    }
+  }
+  push("MZInvestment","Depósito de "+ff(amount)+" aprovado! VIP "+vl+" activado.");
+  window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n💰 "+amount+" MT\n💎 VIP "+vl+" activado"),"_blank");
+  toast("Aprovado! ✅");
+  await loadAdmin();
+}
 async function appWd(id,phone,amount,name){await DB.txUpd(id,{status:"approved"});var u=aU.find(function(x){return x.phone==phone;});if(u){var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Verifica o teu e-Mola.",time:n2(),date:tod(),read:false}]);await DB.upd(phone,{notifications:nn});}push("MZInvestment","Levantamento de "+ff(amount)+" aprovado!");window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n💰 "+amount+" MT"),"_blank");toast("Aprovado! ✅");await loadAdmin();}
 async function rejTx(id,phone,type,name,amount){await DB.txUpd(id,{status:"rejected"});var u=aU.find(function(x){return x.phone==phone;});if(u){var m=type==="dep"?"❌ Depósito rejeitado.":"❌ Levantamento rejeitado. Saldo devolvido.";var nn=(u.notifications||[]).concat([{id:Date.now(),msg:m,time:n2(),date:tod(),read:false}]);var patch={notifications:nn};if(type==="wd")patch.balance=(parseFloat(u.balance)||0)+parseFloat(amount);await DB.upd(phone,patch);}toast("Rejeitado","e");await loadAdmin();}
 function admCredit(){document.getElementById("adm-credit").innerHTML='<div class="card" style="border-color:#2ECC7144"><div class="ctit" style="color:#2ECC71">➕ Creditar Saldo</div><div class="fld"><label>Número</label><input type="tel" id="cr-ph" placeholder="Ex: 840000001" oninput="chkCr()"/><div id="cr-info" style="font-size:12px;margin-top:4px"></div></div><div class="fld"><label>Valor (MT)</label><input type="number" id="cr-amt" placeholder="Ex: 1500"/></div><div class="fld"><label>Nota</label><input type="text" id="cr-note" placeholder="Ex: Depósito VIP 2"/></div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px" onclick="doCredit()">✅ Confirmar</button></div>';}
 async function chkCr(){var ph=document.getElementById("cr-ph").value;var el=document.getElementById("cr-info");if(!el)return;var u=aU.find(function(x){return x.phone==ph;});el.textContent=u?"✅ "+u.name:ph.length>=9?"❌ Não encontrado":"";el.style.color=u?"#2ECC71":"#E74C3C";}
 async function doCredit(){var ph=document.getElementById("cr-ph").value,a=parseInt(document.getElementById("cr-amt").value||0),note=document.getElementById("cr-note").value||"Crédito manual";if(!ph||!a||a<=0){toast("Preenche todos os campos","e");return;}var u=aU.find(function(x){return x.phone==ph;});if(!u){toast("Não encontrado","e");return;}var nb=(parseFloat(u.balance)||0)+a;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"💰 "+ff(a)+" creditados. "+note,time:n2(),date:tod(),read:false}]);await DB.upd(ph,{balance:nb,total_earned:(parseFloat(u.total_earned)||0)+a,notifications:nn});await DB.txSave({user_id:ph,user_name:u.name,phone:ph,amount:a,type:"manual_credit",status:"approved",note:note});toast(ff(a)+" creditados! ✅");await loadAdmin();admTab("dash");}
-function admUsers(filter){filter=filter||"";var filtered=filter?aU.filter(function(u){return (u.name||"").toLowerCase().includes(filter.toLowerCase())||u.phone.includes(filter);}):aU;document.getElementById("adm-users").innerHTML='<div style="margin-bottom:14px"><input type="text" placeholder="🔍 Pesquisar..." style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:10px 14px;color:#C8D8F0;font-size:14px" oninput="admUsers(this.value)" value="'+filter+'"/></div>'+(filtered.length===0?'<div class="empty">Nenhum encontrado</div>':filtered.map(function(u){return '<div class="ucard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:900;font-size:15px;color:'+(u.blocked?"#FF6B6B":"#E8F4FF")+'">'+u.name+(u.blocked?" 🚫":"")+'</div>'+(u.vip_level?'<div style="background:'+(VIPS[u.vip_level-1]?VIPS[u.vip_level-1].c:"#fff")+';border-radius:8px;padding:3px 8px;font-size:12px;font-weight:900;color:#000">VIP '+u.vip_level+'</div>':'<div style="color:#5070A0;font-size:13px">Sem VIP</div>')+'</div><div class="irow"><span class="ilbl">Número</span><span class="ival">'+u.phone+'</span></div><div class="irow"><span class="ilbl">Saldo</span><span class="ival" style="color:#00D4FF">'+ff(parseFloat(u.balance)||0)+'</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:15px;border-bottom:1px solid #0D2040"><span class="ilbl">PIN</span><div style="display:flex;align-items:center;gap:10px"><span id="pin-'+u.phone+'" style="color:#FFD700;font-family:monospace;letter-spacing:3px">••••</span><button style="background:#0D2040;border:1px solid #1E3060;border-radius:8px;color:#00D4FF;font-size:12px;padding:4px 10px;cursor:pointer" onclick="tgPin(\''+u.phone+'\',\''+u.pin+'\')">👁️</button></div></div><div style="display:flex;gap:8px;margin-top:12px">'+(u.blocked?'<button class="btn-app-f" onclick="tgBlock(\''+u.phone+'\',false,\''+u.name+'\')">✅ Desbloquear</button>':'<button class="btn-rej-f" onclick="tgBlock(\''+u.phone+'\',true,\''+u.name+'\')">🚫 Bloquear</button>')+'<button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="editBal(\''+u.phone+'\',\''+u.name+'\','+(u.balance||0)+')">✏️ Saldo</button></div></div>';}).join(""));}
+function admUsers(filter){
+  filter=filter||"";
+  var filtered=filter?aU.filter(function(u){return (u.name||"").toLowerCase().includes(filter.toLowerCase())||u.phone.includes(filter);}):aU;
+  var html4='<div style="margin-bottom:14px"><input type="text" placeholder="Pesquisar..." style="width:100%;background:#0D2040;border:1px solid #1A3A60;border-radius:12px;padding:10px 14px;color:#C8D8F0;font-size:14px" oninput="admUsers(this.value)" value="'+filter+'"/></div>';
+  if(filtered.length===0){
+    html4+='<div class="empty">Nenhum encontrado</div>';
+  } else {
+    filtered.forEach(function(u){
+      var fundUnlocked=(u.fund_unlocked===true)||((u.referrals||0)>=5);
+      var adminUnlocked=u.fund_unlocked===true&&(u.referrals||0)<5;
+      html4+='<div class="ucard">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+        +'<div style="font-weight:900;font-size:15px;color:'+(u.blocked?"#FF6B6B":"#E8F4FF")+'">'+u.name+(u.blocked?" (bloqueado)":"")+'</div>'
+        +(u.vip_level?'<div style="background:'+(VIPS[u.vip_level-1]?VIPS[u.vip_level-1].c:"#fff")+';border-radius:8px;padding:3px 8px;font-size:12px;font-weight:900;color:#000">VIP '+u.vip_level+'</div>':'<div style="color:#5070A0;font-size:13px">Sem VIP</div>')
+        +'</div>'
+        +'<div class="irow"><span class="ilbl">Número</span><span class="ival">'+u.phone+'</span></div>'
+        +'<div class="irow"><span class="ilbl">Saldo</span><span class="ival" style="color:#00D4FF">'+ff(parseFloat(u.balance)||0)+'</span></div>'
+        +'<div class="irow"><span class="ilbl">Indicações</span><span class="ival">'+(u.referrals||0)+'/5</span></div>'
+        +'<div class="irow" style="border:none"><span class="ilbl">Fundo</span><span class="ival" style="color:'+(fundUnlocked?"#2ECC71":"#5070A0")+'">'+(fundUnlocked?(adminUnlocked?"Desbloqueado (admin)":"Desbloqueado"):"Bloqueado")+'</span></div>'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:15px;border-top:1px solid #0D2040;margin-top:6px"><span class="ilbl">PIN</span><div style="display:flex;align-items:center;gap:10px"><span id="pin-'+u.phone+'" style="color:#FFD700;font-family:monospace;letter-spacing:3px">****</span><button data-ph="'+u.phone+'" data-pin="'+u.pin+'" onclick="tgPin(this.dataset.ph,this.dataset.pin)" style="background:#0D2040;border:1px solid #1E3060;border-radius:8px;color:#00D4FF;font-size:12px;padding:4px 10px;cursor:pointer">Ver</button></div></div>'
+        +'<div style="display:flex;gap:8px;margin-top:10px">'
+        +(u.blocked
+          ?'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="tgBlock(this.dataset.ph,false,this.dataset.nm)" class="btn-app-f">Desbloquear</button>'
+          :'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="tgBlock(this.dataset.ph,true,this.dataset.nm)" class="btn-rej-f">Bloquear</button>')
+        +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-bal="'+(u.balance||0)+'" onclick="editBal(this.dataset.ph,this.dataset.nm,this.dataset.bal)" style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer">Saldo</button>'
+        +'</div>'
+        +'<div style="display:flex;gap:8px;margin-top:8px">'
+        +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-unl="'+(fundUnlocked?"0":"1")+'" onclick="tgFundUnlock(this.dataset.ph,this.dataset.nm,this.dataset.unl===\'1\')" style="flex:1;padding:10px;background:#0D2040;border:1px solid #9B59B644;border-radius:10px;color:#C8A0FF;font-size:13px;font-weight:900;cursor:pointer">'+(fundUnlocked?"Bloquear Fundo":"Desbloquear Fundo")+'</button>'
+        +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="confirmDeleteUser(this.dataset.ph,this.dataset.nm)" style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C;border-radius:10px;color:#FF6B6B;font-size:13px;font-weight:900;cursor:pointer">Eliminar Conta</button>'
+        +'</div>'
+        +'</div>';
+    });
+  }
+  document.getElementById("adm-users").innerHTML=html4;
+}
+
+function tgFundUnlock(phone,name,currentlyUnlocked){
+  var u=aU.find(function(x){return x.phone==phone;});
+  if(!u)return;
+  var willUnlock=!currentlyUnlocked;
+  var msg=willUnlock?"Desbloquear o Fundo de Investimento para "+name+"?":"Bloquear o Fundo de Investimento para "+name+"? (Se tiver 5+ indicações, continuará desbloqueado)";
+  showConfirm(msg,async function(){
+    await DB.upd(phone,{fund_unlocked:willUnlock});
+    if(willUnlock){
+      var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"🔓 O administrador desbloqueou o Fundo de Investimento na tua conta!",time:n2(),date:tod(),read:false}]);
+      await DB.upd(phone,{notifications:nn});
+    }
+    toast(willUnlock?"Fundo desbloqueado para "+name:"Fundo bloqueado para "+name);
+    await loadAdmin();admTab("users");
+  });
+}
+
+function confirmDeleteUser(phone,name){
+  var u=aU.find(function(x){return x.phone==phone;});
+  if(!u)return;
+  var bal=parseFloat(u.balance)||0;
+  var warnBal=bal>0?" ATENCAO: Esta conta tem "+ff(bal)+" de saldo nao levantado!":"";
+  showConfirm("Eliminar PERMANENTEMENTE a conta de "+name+" ("+phone+")?"+warnBal+" Esta accao nao pode ser desfeita.",function(){
+    showConfirm("Tens MESMO a certeza? Escreve para confirmar: esta accao elimina todos os dados de "+name+" para sempre.",async function(){
+      try{
+        if(db)await db.from("users").delete().eq("phone",phone);
+      }catch(e){}
+      var lu=JSON.parse(localStorage.getItem("mz-lu")||"[]");
+      lu=lu.filter(function(x){return x.phone!==phone;});
+      localStorage.setItem("mz-lu",JSON.stringify(lu));
+      var delCount=parseInt(localStorage.getItem("mz-del-count")||"0")+1;
+      localStorage.setItem("mz-del-count",String(delCount));
+      toast("Conta de "+name+" eliminada.","e");
+      await loadAdmin();admTab("users");
+    });
+  });
+}
+
 function tgPin(ph,pin){var el=document.getElementById("pin-"+ph);if(el)el.textContent=el.textContent==="••••"?pin:"••••";}
 async function tgBlock(ph,block,name){var u=aU.find(function(x){return x.phone==ph;});if(!u)return;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:block?"🚫 Conta bloqueada.":"✅ Conta desbloqueada!",time:n2(),date:tod(),read:false}]);await DB.upd(ph,{blocked:block,notifications:nn});toast(block?"Bloqueado":"Desbloqueado! ✅",block?"e":"s");await loadAdmin();admTab("users");}
 function editBal(phone,name,cur){var nv=prompt("Editar saldo de "+name+"\nActual: "+ff(cur)+"\n\nNovo saldo (MT):");if(nv===null||nv==="")return;var val=parseFloat(nv);if(isNaN(val)||val<0){toast("Valor inválido","e");return;}showConfirm("Alterar saldo de "+name+" para "+ff(val)+"?",async function(){await DB.upd(phone,{balance:val});toast("Saldo actualizado! ✅");await loadAdmin();admTab("users");});}
@@ -1509,6 +1584,35 @@ async function applyPendingPromo(){
   var nn=(U.notifications||[]).concat([{id:Date.now(),msg:"🎁 Código promocional "+pending+" aplicado! +"+ff(bonus)+" creditados.",time:n2(),date:tod(),read:false}]);
   await syncU({balance:(U.balance||0)+bonus,totalEarned:(U.totalEarned||0)+bonus,notifications:nn,redeemed_promos:redeemed});
   toast("🎁 +"+ff(bonus)+" creditados pelo código "+pending+"!");
+}
+
+
+// ─── SHARED: Credit referrer when ANY VIP gets activated (direct OR via deposit approval) ───
+async function creditReferrerOnVip(invitedByCode, activatorName, vipLevel, vipPrice){
+  if(!invitedByCode||!db)return;
+  try{
+    var refr=await db.from("users").select("*").eq("ref_code",invitedByCode).single();
+    if(refr.data){
+      var rfu=refr.data;
+      var newRefCount=(rfu.referrals||0)+1;
+      var refBonus=RB[newRefCount]||0;
+      var refNn=(rfu.notifications||[]).concat([{id:Date.now(),msg:"🎉 "+activatorName+" activou VIP "+vipLevel+"! "+newRefCount+"/5."+(refBonus>0?" Bónus de "+ff(refBonus)+" creditado! 💰":""),time:n2(),date:tod(),read:false}]);
+      var refPatch={referrals:newRefCount,notifications:refNn};
+      if(refBonus>0){refPatch.balance=(parseFloat(rfu.balance)||0)+refBonus;refPatch.total_earned=(parseFloat(rfu.total_earned)||0)+refBonus;}
+      await DB.upd(rfu.phone,refPatch);
+      // Level 2 bonus
+      if(rfu.invited_by){
+        try{
+          var gp=await db.from("users").select("*").eq("ref_code",rfu.invited_by).single();
+          if(gp.data){
+            var gb=Math.floor(vipPrice*0.02);
+            var gpnn=(gp.data.notifications||[]).concat([{id:Date.now(),msg:"🎁 Bónus nível 2: +"+ff(gb)+" (indicado activou VIP "+vipLevel+")",time:n2(),date:tod(),read:false}]);
+            await DB.upd(gp.data.phone,{balance:(parseFloat(gp.data.balance)||0)+gb,total_earned:(parseFloat(gp.data.total_earned)||0)+gb,notifications:gpnn});
+          }
+        }catch(e){}
+      }
+    }
+  }catch(e){}
 }
 
 </script>

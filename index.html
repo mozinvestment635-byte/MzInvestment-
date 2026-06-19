@@ -638,7 +638,7 @@ var AP="864378323",APIN="3545",SUP="258864378323",BASE="https://mzinvestment.onr
 var db=null;try{db=supabase.createClient(SU,SK);}catch(e){}
 var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze"},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata"},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro"},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina"},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante"},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi"},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda"},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite"}];
 var RB=[0,50,75,100,150,200];
-var FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:12,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:25,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:70,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:180,icon:"💰",desc:"Máximo lucro"}];
+var FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:3,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:5,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:10,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:16,icon:"💰",desc:"Máximo lucro"}];
 var _savedFunds=null;try{var _sf=localStorage.getItem("mz-adm-funds");if(_sf)_savedFunds=JSON.parse(_sf);}catch(e){}
 var FP=(_savedFunds||FUNDS).map(function(f){return Object.assign({},f,{cur:Math.floor(Math.random()*60+20)});});
 var VDS=[{id:1,t:"Blinding Lights",a:"The Weeknd",yt:"4NRXx6U8ABQ",th:"https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg"},{id:2,t:"Shape of You",a:"Ed Sheeran",yt:"JGwWNGJdvx8",th:"https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg"},{id:3,t:"Believer",a:"Imagine Dragons",yt:"7wtfhZwyrcc",th:"https://i.ytimg.com/vi/7wtfhZwyrcc/hqdefault.jpg"},{id:4,t:"Levitating",a:"Dua Lipa",yt:"TUVcZfQe-Kw",th:"https://i.ytimg.com/vi/TUVcZfQe-Kw/hqdefault.jpg"},{id:5,t:"Love Yourself",a:"Justin Bieber",yt:"oyEuk8j8imI",th:"https://i.ytimg.com/vi/oyEuk8j8imI/hqdefault.jpg"},{id:6,t:"Save Your Tears",a:"The Weeknd",yt:"LIIDh-qI9oI",th:"https://i.ytimg.com/vi/LIIDh-qI9oI/hqdefault.jpg"},{id:7,t:"Bad Habits",a:"Ed Sheeran",yt:"orJSJGHjBLI",th:"https://i.ytimg.com/vi/orJSJGHjBLI/hqdefault.jpg"},{id:8,t:"Butter",a:"BTS",yt:"WMweEpGlu_U",th:"https://i.ytimg.com/vi/WMweEpGlu_U/hqdefault.jpg"},{id:9,t:"Dynamite",a:"BTS",yt:"gdZLi9oWNZg",th:"https://i.ytimg.com/vi/gdZLi9oWNZg/hqdefault.jpg"},{id:10,t:"STAY",a:"The Kid LAROI",yt:"hCuMWrfXG4E",th:"https://i.ytimg.com/vi/hCuMWrfXG4E/hqdefault.jpg"},{id:11,t:"drivers license",a:"Olivia Rodrigo",yt:"ZmDBbnmKpqQ",th:"https://i.ytimg.com/vi/ZmDBbnmKpqQ/hqdefault.jpg"},{id:12,t:"Easy On Me",a:"Adele",yt:"U3ASj1L6_sY",th:"https://i.ytimg.com/vi/U3ASj1L6_sY/hqdefault.jpg"},{id:13,t:"As It Was",a:"Harry Styles",yt:"H5v3kku4y6Q",th:"https://i.ytimg.com/vi/H5v3kku4y6Q/hqdefault.jpg"},{id:14,t:"Anti-Hero",a:"Taylor Swift",yt:"b1kbLwvqugk",th:"https://i.ytimg.com/vi/b1kbLwvqugk/hqdefault.jpg"},{id:15,t:"Flowers",a:"Miley Cyrus",yt:"G7KNmW9a75Y",th:"https://i.ytimg.com/vi/G7KNmW9a75Y/hqdefault.jpg"},{id:16,t:"Heat Waves",a:"Glass Animals",yt:"mRD0-GxqHVo",th:"https://i.ytimg.com/vi/mRD0-GxqHVo/hqdefault.jpg"},{id:17,t:"Yaba Buluku",a:"Dj Tarico",yt:"vqoiN5KMrOs",th:"https://i.ytimg.com/vi/vqoiN5KMrOs/hqdefault.jpg"},{id:18,t:"Jerusalema",a:"Master KG",yt:"HGMDMFTMNkE",th:"https://i.ytimg.com/vi/HGMDMFTMNkE/hqdefault.jpg"},{id:19,t:"Cruel Summer",a:"Taylor Swift",yt:"ic8j13piAhQ",th:"https://i.ytimg.com/vi/ic8j13piAhQ/hqdefault.jpg"},{id:20,t:"Calm Down",a:"Rema",yt:"WXmmgQpCbSE",th:"https://i.ytimg.com/vi/WXmmgQpCbSE/hqdefault.jpg"}];
@@ -1158,14 +1158,74 @@ function openDepWA(){
 async function submitDep(){if(!depVip)return;await DB.txSave({user_id:U.phone,user_name:U.name,phone:U.phone,amount:depVip.p,type:"deposit",vip_level:depVip.l,wallet:"e-Mola",status:"pending"});window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💳 DEPÓSITO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+depVip.p+" MT\n💎 VIP "+depVip.l+"\n🕐 "+n2()),"_blank");toast("Pedido enviado! ✅");depVip=null;goTab("t-home","n-home");}
 function renderFund(){
   var ul=(U.referrals||0)>=5;
-  if(!ul){var pct=Math.min(((U.referrals||0)/5)*100,100);document.getElementById("f-browse").innerHTML='<div class="flocked"><div style="font-size:36px;margin-bottom:8px">🔒</div><div style="color:#FF8C00;font-size:17px;font-weight:900;margin-bottom:8px">Acesso Restrito</div><div style="color:#C8A070;font-size:14px;line-height:1.8;margin-bottom:12px">Precisas de <strong style="color:#FFD700">5 amigos</strong> com VIP activo.</div><div style="background:#0D2040;border-radius:12px;padding:12px;margin-bottom:12px;text-align:center"><div style="color:#00D4FF;font-size:26px;font-weight:900">'+(U.referrals||0)+' / 5</div><div style="background:#1a2a40;border-radius:10px;height:8px;overflow:hidden;margin-top:6px"><div style="height:100%;background:linear-gradient(90deg,#004080,#00D4FF);border-radius:10px;width:'+pct+'%"></div></div></div><button style="width:100%;padding:13px;background:linear-gradient(135deg,#128C7E,#25D366);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:900;cursor:pointer" onclick="goTab(\'t-invite\',\'n-none\')">Convidar amigos</button></div>';return;}
-  document.getElementById("f-browse").innerHTML='<div class="card" style="border-color:#2ECC7155;margin-bottom:12px"><div style="color:#2ECC71;font-size:14px;font-weight:900">✅ Fundo desbloqueado!</div></div>'+FP.map(function(p){return '<div class="fcard"><div class="fhd"><div style="font-size:30px">'+p.icon+'</div><div><div style="font-size:15px;font-weight:900">'+p.label+'</div><div style="font-size:13px;color:#3A6090">'+p.desc+'</div></div><div class="frate">+'+p.rate+'%</div></div><div class="ptrack"><div class="pfill" style="width:'+p.cur+'%"></div></div><div style="display:flex;gap:8px;margin-bottom:12px"><div style="flex:1;background:#0D2040;border-radius:10px;padding:7px;text-align:center"><div style="font-size:13px;font-weight:900">'+p.days+'d</div><div style="color:#5070A0;font-size:10px">Prazo</div></div><div style="flex:1;background:#0D2040;border-radius:10px;padding:7px;text-align:center"><div style="font-size:13px;font-weight:900;color:#00D4FF">+'+p.rate+'%</div><div style="color:#5070A0;font-size:10px">Retorno</div></div><div style="flex:1;background:#0D2040;border-radius:10px;padding:7px;text-align:center"><div style="font-size:12px;font-weight:900">500</div><div style="color:#5070A0;font-size:10px">Mín. MT</div></div></div><button class="btn-p" style="margin-top:0" onclick="selFund(\''+p.id+'\')">Investir →</button></div>';}).join("");
+  if(!ul){
+    var pct=Math.min(((U.referrals||0)/5)*100,100);
+    var lockHtml='<div style="background:#1a0a00;border:2px solid #FF8C00;border-radius:16px;padding:20px;text-align:center">'
+      +'<div style="font-size:40px;margin-bottom:10px">&#128274;</div>'
+      +'<div style="color:#FF8C00;font-size:17px;font-weight:900;margin-bottom:8px">Acesso Restrito</div>'
+      +'<div style="color:#C8A070;font-size:14px;line-height:1.8;margin-bottom:12px">Precisas de 5 amigos com VIP activo.</div>'
+      +'<div style="background:#0D2040;border-radius:12px;padding:12px;margin-bottom:12px;text-align:center">'
+      +'<div style="color:#00D4FF;font-size:26px;font-weight:900">'+(U.referrals||0)+' / 5</div>'
+      +'<div style="background:#1a2a40;border-radius:10px;height:8px;overflow:hidden;margin-top:6px">'
+      +'<div style="height:100%;background:linear-gradient(90deg,#004080,#00D4FF);border-radius:10px;width:'+pct+'%"></div></div></div>'
+      +'<button style="width:100%;padding:13px;background:linear-gradient(135deg,#128C7E,#25D366);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:900;cursor:pointer" onclick="goTab(\'t-invite\',\'n-none\')">Convidar amigos</button>'
+      +'</div>';
+    document.getElementById("f-browse").innerHTML=lockHtml;
+    return;
+  }
+  var html2='<div class="card" style="border-color:#2ECC7155;margin-bottom:12px"><div style="color:#2ECC71;font-size:14px;font-weight:900">Fundo desbloqueado!</div></div>';
+  FP.forEach(function(p){
+    var subscribers=Math.floor(p.cur*0.8+10);
+    var capColor=p.cur>=90?"#E74C3C":p.cur>=70?"#FFD700":"#2ECC71";
+    var capSt=p.cur>=90?"Quase cheio":p.cur>=70?"Alta procura":"Disponivel";
+    html2+='<div class="fcard">'
+      +'<div class="fhd"><div style="font-size:28px">'+p.icon+'</div>'
+      +'<div><div style="font-size:15px;font-weight:900">'+p.label+'</div><div style="font-size:13px;color:#3A6090">'+p.desc+'</div></div>'
+      +'<div style="color:#2ECC71;font-size:22px;font-weight:900">+'+p.rate+'%</div></div>'
+      +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">'
+      +'<span style="color:#7090C0">Taxa de adesao</span>'
+      +'<span style="color:'+capColor+';font-weight:900">'+capSt+' ('+p.cur+'%)</span></div>'
+      +'<div class="ptrack" style="margin-bottom:4px"><div class="pfill" style="width:'+p.cur+'%;background:'+capColor+'"></div></div>'
+      +'<div style="color:#5070A0;font-size:11px;margin-bottom:12px">'+subscribers+' investidores activos</div>'
+      +'<div style="display:flex;gap:8px;margin-bottom:12px">'
+      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:900">'+p.days+'d</div><div style="color:#5070A0;font-size:10px;margin-top:2px">Prazo</div></div>'
+      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:900;color:#2ECC71">+'+p.rate+'%</div><div style="color:#5070A0;font-size:10px;margin-top:2px">Retorno</div></div>'
+      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:900">500 MT</div><div style="color:#5070A0;font-size:10px;margin-top:2px">Minimo</div></div>'
+      +'</div>'
+      +'<div style="background:#071828;border:1px solid rgba(0,212,255,0.2);border-radius:12px;padding:12px;margin-bottom:12px">'
+      +'<div style="color:#00D4FF;font-size:13px;font-weight:900;margin-bottom:8px">Simulador de Retorno</div>'
+      +'<input type="number" id="sim-'+p.id+'" placeholder="Insere o valor (MT)" min="500" style="width:100%;background:#0D2040;border:1px solid rgba(0,212,255,0.25);border-radius:8px;padding:9px 12px;color:#E8F4FF;font-size:14px;outline:none;margin-bottom:8px" oninput="simFund(this.dataset.pid,this.dataset.rate)" data-pid="'+p.id+'" data-rate="'+p.rate+'">'
+      +'<div id="sim-result-'+p.id+'" style="display:none;background:#0A2010;border-radius:8px;padding:10px;border:1px solid rgba(46,204,113,0.2)">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:#7090C0;font-size:12px">Capital investido</span><span id="sim-cap-'+p.id+'" style="color:#E8F4FF;font-size:13px;font-weight:900"></span></div>'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:#7090C0;font-size:12px">Lucro (+'+p.rate+'%)</span><span id="sim-luc-'+p.id+'" style="color:#2ECC71;font-size:13px;font-weight:900"></span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(46,204,113,0.2)"><span style="color:#00D4FF;font-size:13px;font-weight:900">Total apos '+p.days+' dias</span><span id="sim-tot-'+p.id+'" style="color:#00D4FF;font-size:16px;font-weight:900"></span></div>'
+      +'</div></div>'
+      +'<button class="btn-p" style="margin-top:0;background:linear-gradient(135deg,#1A6B3A,#2ECC71)" onclick="selFund(this.dataset.fid)" data-fid="'+p.id+'">Investir agora</button>'
+      +'</div>';
+  });
+  document.getElementById("f-browse").innerHTML=html2;
   renderMyInv();
 }
+
 function selFund(id){fp=null;for(var i=0;i<FP.length;i++){if(FP[i].id===id){fp=FP[i];break;}}var p=fp;document.getElementById("f-invest").innerHTML='<div class="fcard"><div class="fhd"><div style="font-size:30px">'+p.icon+'</div><div><div style="font-size:15px;font-weight:900">'+p.label+' · +'+p.rate+'%</div></div></div></div><div class="fld" style="margin-top:12px"><label>Valor (mín. 500 MT)</label><input type="number" id="fa" placeholder="Ex: 1000" oninput="fundPv()"/></div><div id="f-pv" style="display:none" class="card"></div><div style="color:#5070A0;font-size:14px;margin-bottom:12px">Saldo: <strong style="color:#fff">'+ff(U.balance)+'</strong></div><button class="btn-p" onclick="doInvest()">Confirmar 📈</button>';switchFT("invest");}
 function fundPv(){var a=parseInt(document.getElementById("fa").value||0),pv=document.getElementById("f-pv");if(!pv||!fp)return;if(a>=500){var pr=Math.round(a*fp.rate/100);pv.style.display="block";pv.innerHTML='<div class="irow"><span class="ilbl">Capital</span><span class="ival">'+ff(a)+'</span></div><div class="irow"><span class="ilbl">Retorno</span><span class="ival" style="color:#2ECC71">'+ff(pr)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Total</span><span class="ival" style="color:#00D4FF">'+ff(a+pr)+'</span></div>';}else pv.style.display="none";}
 async function doInvest(){var a=parseInt(document.getElementById("fa").value||0);if(!fp||a<500){toast("Mínimo: 500 MT","e");return;}if(a>U.balance){toast("Saldo insuficiente","e");return;}var pr=Math.round(a*fp.rate/100),mt=new Date();mt.setDate(mt.getDate()+fp.days);await syncU({balance:U.balance-a});myInv.push({plan:fp,amount:a,profit:pr,total:a+pr,date:tod(),maturity:mt.toLocaleDateString("pt-MZ")});earn.push({desc:"Fundo "+fp.label,a:-a,date:tod()});toast("Investimento confirmado! 📈");fp=null;renderMyInv();switchFT("mine");}
 function renderMyInv(){document.getElementById("f-mine").innerHTML=myInv.length===0?'<div class="empty">Sem investimentos activos</div>':myInv.map(function(iv){return '<div class="fcard"><div class="fhd"><div style="font-size:30px">'+iv.plan.icon+'</div><div><div style="font-size:15px;font-weight:900">'+iv.plan.label+' · +'+iv.plan.rate+'%</div><div style="font-size:13px;color:#3A6090">'+iv.date+'</div></div><div style="color:#2ECC71;font-size:18px">✅</div></div><div class="irow"><span class="ilbl">Capital</span><span class="ival">'+ff(iv.amount)+'</span></div><div class="irow"><span class="ilbl">Lucro</span><span class="ival" style="color:#2ECC71">'+ff(iv.profit)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Vence</span><span class="ival">'+iv.maturity+'</span></div></div>';}).join("");}
+function simFund(planId, rate){
+  planId=String(planId); rate=parseInt(rate)||0;
+  var el=document.getElementById("sim-"+planId);
+  var resEl=document.getElementById("sim-result-"+planId);
+  if(!el||!resEl)return;
+  var val=parseFloat(el.value||0);
+  if(val<500){resEl.style.display="none";return;}
+  var lucro=Math.round(val*rate/100);
+  var total=val+lucro;
+  resEl.style.display="block";
+  document.getElementById("sim-cap-"+planId).textContent=ff(val);
+  document.getElementById("sim-luc-"+planId).textContent="+"+ff(lucro);
+  document.getElementById("sim-tot-"+planId).textContent=ff(total);
+}
+
 function switchFT(tab){["browse","invest","mine"].forEach(function(t){var el=document.getElementById("ft-"+t);if(el)el.classList.toggle("on",t===tab);var d=document.getElementById("f-"+t);if(d)d.style.display=t===tab?"block":"none";});}
 function renderNotifs(){var ns=U?U.notifications||[]:[];document.getElementById("notif-list").innerHTML=ns.length===0?'<div class="empty">Sem notificações</div>':ns.slice().reverse().map(function(n){return '<div style="border-radius:14px;padding:14px;margin-bottom:10px;background:'+(n.read?"#071828":"#071830")+';border:1px solid '+(n.read?"#0D2A4A":"#00D4FF44")+'">'+(!n.read?'<div style="width:8px;height:8px;background:#00D4FF;border-radius:50%;margin-bottom:6px"></div>':"")+'<div style="font-size:14px;line-height:1.6">'+n.msg+'</div><div style="color:#3A5070;font-size:11px;margin-top:4px">'+n.date+' '+n.time+'</div></div>';}).join("");}
 async function markRead(){var ns=(U.notifications||[]).map(function(n){return Object.assign({},n,{read:true});});await syncU({notifications:ns});renderNotifs();}

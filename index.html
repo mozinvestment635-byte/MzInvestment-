@@ -1253,7 +1253,49 @@ function tgPin(ph,pin){var el=document.getElementById("pin-"+ph);if(el)el.textCo
 async function tgBlock(ph,block,name){var u=aU.find(function(x){return x.phone==ph;});if(!u)return;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:block?"🚫 Conta bloqueada.":"✅ Conta desbloqueada!",time:n2(),date:tod(),read:false}]);await DB.upd(ph,{blocked:block,notifications:nn});toast(block?"Bloqueado":"Desbloqueado! ✅",block?"e":"s");await loadAdmin();admTab("users");}
 function editBal(phone,name,cur){var nv=prompt("Editar saldo de "+name+"\nActual: "+ff(cur)+"\n\nNovo saldo (MT):");if(nv===null||nv==="")return;var val=parseFloat(nv);if(isNaN(val)||val<0){toast("Valor inválido","e");return;}showConfirm("Alterar saldo de "+name+" para "+ff(val)+"?",async function(){await DB.upd(phone,{balance:val});toast("Saldo actualizado! ✅");await loadAdmin();admTab("users");});}
 function admReports(){var av=aU.filter(function(u){return u.vip_level;}).length;var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);var tw=aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);document.getElementById("adm-reports").innerHTML='<div class="card" style="border-color:#9B59B644"><div class="ctit" style="color:#C8A0FF">📊 Relatório Geral</div><div class="irow"><span class="ilbl">Total utilizadores</span><span class="ival" style="color:#C8A0FF">'+aU.length+'</span></div><div class="irow"><span class="ilbl">Com VIP activo</span><span class="ival" style="color:#FFD700">'+av+'</span></div><div class="irow"><span class="ilbl">Total depositado</span><span class="ival" style="color:#2ECC71">'+ff(td)+'</span></div><div class="irow"><span class="ilbl">Total levantado</span><span class="ival" style="color:#FF6B6B">'+ff(tw)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Em plataforma</span><span class="ival" style="color:#FFD700">'+ff(td-tw)+'</span></div></div>';}
-function admPromo(){var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}"),list=Object.entries(promos);document.getElementById("adm-promo").innerHTML='<div class="card" style="border-color:#FFD70044"><div class="ctit" style="color:#FFD700">🎁 Códigos Promocionais</div><div class="fld"><label>Código</label><input type="text" id="pc" placeholder="Ex: BEMVINDO50" style="text-transform:uppercase"/></div><div class="fld"><label>Bónus (MT)</label><input type="number" id="pb" placeholder="Ex: 50"/></div><div class="fld"><label>Usos máximos</label><input type="number" id="pu" placeholder="Ex: 100"/></div><button style="width:100%;padding:13px;background:linear-gradient(135deg,#B8860B,#FFD700);border:none;border-radius:14px;color:#000;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:16px" onclick="createPromo()">✅ Criar Código</button></div>'+(list.length>0?'<div class="card"><div class="ctit">Códigos activos</div>'+list.map(function(e){return '<div class="tx-row"><div><div style="font-size:14px;font-weight:900;color:#FFD700">'+e[0]+'</div><div style="color:#5070A0;font-size:12px">Bónus: '+ff(e[1].bonus)+' · Usos: '+(e[1].used||0)+'/'+e[1].max+'</div></div><button style="background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:4px 10px;cursor:pointer" onclick="delPromo(\''+e[0]+'\')">🗑️</button></div>';}).join("")+'</div>':'<div class="empty">Sem códigos ainda</div>');}
+function admPromo(){
+  var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}"),list=Object.entries(promos);
+  var html3='<div class="card" style="border-color:#FFD70044"><div class="ctit" style="color:#FFD700">🎁 Códigos Promocionais</div>'
+    +'<div style="color:#7090C0;font-size:13px;margin-bottom:14px">Cria um código e partilha o link gerado. Quem se registar por esse link recebe o bónus automaticamente.</div>'
+    +'<div class="fld"><label>Código</label><input type="text" id="pc" placeholder="Ex: BEMVINDO50" style="text-transform:uppercase"/></div>'
+    +'<div class="fld"><label>Bónus (MT)</label><input type="number" id="pb" placeholder="Ex: 50"/></div>'
+    +'<div class="fld"><label>Usos máximos</label><input type="number" id="pu" placeholder="Ex: 100"/></div>'
+    +'<button style="width:100%;padding:13px;background:linear-gradient(135deg,#B8860B,#FFD700);border:none;border-radius:14px;color:#000;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:16px" onclick="createPromo()">Criar Código</button>'
+    +'</div>';
+  if(list.length>0){
+    html3+='<div class="card"><div class="ctit">Códigos activos</div>';
+    list.forEach(function(e){
+      var code=e[0],info=e[1];
+      var link=BASE+"?ref="+code;
+      var usagePct=Math.min(((info.used||0)/info.max)*100,100);
+      html3+='<div style="background:#0D2040;border-radius:12px;padding:14px;margin-bottom:10px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+        +'<div style="font-size:16px;font-weight:900;color:#FFD700">'+code+'</div>'
+        +'<button data-code="'+code+'" onclick="delPromo(this.dataset.code)" style="background:#2d0a0a;border:1px solid #E74C3C;border-radius:8px;color:#E74C3C;font-size:12px;padding:4px 10px;cursor:pointer">Remover</button>'
+        +'</div>'
+        +'<div style="color:#7090C0;font-size:12px;margin-bottom:8px">Bónus: '+ff(info.bonus)+' &middot; Usos: '+(info.used||0)+'/'+info.max+' ('+Math.round(usagePct)+'%)</div>'
+        +'<div style="background:#071828;border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px">'
+        +'<div style="flex:1;color:#00D4FF;font-size:12px;font-weight:700;word-break:break-all;overflow:hidden;text-overflow:ellipsis">'+link+'</div>'
+        +'<button data-link="'+link+'" onclick="copyPromoLink(this.dataset.link)" style="background:#0050B0;border:none;border-radius:8px;color:#fff;font-size:12px;padding:6px 12px;cursor:pointer;white-space:nowrap">Copiar</button>'
+        +'</div>'
+        +'<a href="https://wa.me/?text='+encodeURIComponent("🎁 Codigo promocional: "+code+" - ganha "+info.bonus+" MT de bonus ao registar-te! "+link)+'" target="_blank" style="display:block;text-align:center;text-decoration:none;margin-top:8px;padding:9px;background:linear-gradient(135deg,#128C7E,#25D366);border-radius:8px;color:#fff;font-size:12px;font-weight:900">Partilhar via WhatsApp</a>'
+        +'</div>';
+    });
+    html3+='</div>';
+  } else {
+    html3+='<div class="empty">Sem códigos ainda</div>';
+  }
+  document.getElementById("adm-promo").innerHTML=html3;
+}
+
+function copyPromoLink(link){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(link).then(function(){toast("Link copiado!");}).catch(function(){toast("Link: "+link);});
+  } else {
+    toast("Link: "+link);
+  }
+}
+
 function createPromo(){var code=document.getElementById("pc").value.trim().toUpperCase(),bonus=parseInt(document.getElementById("pb").value||0),uses=parseInt(document.getElementById("pu").value||100);if(!code||!bonus){toast("Preenche código e bónus","e");return;}var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");promos[code]={bonus:bonus,max:uses,used:0,created:tod()};localStorage.setItem("mz-promos",JSON.stringify(promos));toast("Código "+code+" criado! ✅");admPromo();}
 function delPromo(code){var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");delete promos[code];localStorage.setItem("mz-promos",JSON.stringify(promos));toast("Removido","e");admPromo();}
 

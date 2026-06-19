@@ -353,11 +353,7 @@ input{outline:none;font-family:inherit}
       <div><div class="greeting" id="greeting">Olá 👋</div><div id="vip-sm" style="font-size:12px;margin-top:2px"></div></div>
       <button class="btn-out" onclick="logout()">Sair</button>
     </div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <div class="stcard" style="flex:2;text-align:left;padding:8px 12px"><div style="color:#7090C0;font-size:11px">VIP activo</div><div id="vip-sm-hdr" style="font-size:13px;font-weight:900;margin-top:2px">—</div></div>
-      <div class="stcard" style="flex:1;text-align:center;cursor:pointer" onclick="goTab('t-videos','n-videos')"><div style="font-size:18px">🎬</div><div style="color:#7090C0;font-size:10px;margin-top:2px">Tarefas</div></div>
-      <div class="stcard" style="flex:1;text-align:center;cursor:pointer" onclick="goTab('t-vips','n-vips')"><div style="font-size:18px">💎</div><div style="color:#7090C0;font-size:10px;margin-top:2px">VIP</div></div>
-    </div>
+
   </div>
   <div id="t-home" class="tab on">
     <!-- PROPAGANDA BANNER -->
@@ -928,9 +924,6 @@ async function checkVipExpiry(){
 function updateUI(){
   if(!U)return;
   document.getElementById("greeting").textContent="Olá, "+U.name.split(" ")[0]+" 👋";
-  var vsmhdr=document.getElementById("vip-sm-hdr");
-  if(vsmhdr)vsmhdr.textContent=U.vip?U.vip.n+" ("+U.vip.l+")":"Sem VIP";
-  if(vsmhdr)vsmhdr.style.color=U.vip?U.vip.c:"#5070A0";
   var vs=document.getElementById("vip-sm");
   if(U.vip){var dl=U.vipDaysLeft?" · "+U.vipDaysLeft+"d":"";vs.textContent="VIP "+U.vip.l+" – "+U.vip.n+dl;vs.style.color=U.vipDaysLeft&&U.vipDaysLeft<=5?"#FF6B6B":U.vip.c;}
   else{vs.textContent="Sem VIP activo";vs.style.color="#4A7FFF";}
@@ -989,9 +982,11 @@ function updateUI(){
   }
 }
 function renderHome(){
-  var items=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-deposit','n-none')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
-  var h=items.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
-  document.getElementById("home-menu").innerHTML=h;document.getElementById("p-menu").innerHTML=h;
+  var homeItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-deposit','n-none')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
+  var profileItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["📲","Verificar Número","showVerifyNow()"],["🔑","Alterar PIN","goTab('t-pinfo','n-none')"],["📋","Termos","showTerms()"],["🔒","Privacidade","showPrivacy()"],["⭐","Avaliar App","showRateApp()"],["🎫","Meus Tickets","goTab('t-suporte','n-none');switchSupport('mytickets')"],["🗑️","Eliminar Conta","showDeleteAccount()"],["ℹ️","Sobre a Versão","showVersionInfo()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["🚪","Sair","logout()"]];
+  var h=homeItems.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
+  var hp=profileItems.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
+  document.getElementById("home-menu").innerHTML=h;document.getElementById("p-menu").innerHTML=hp;
 }
 function renderVips(){
   document.getElementById("vip-list").innerHTML=VIPS.map(function(v){
@@ -1402,6 +1397,31 @@ function createFund(){
   document.getElementById("nf-icon").value="";
   document.getElementById("nf-desc").value="";
   admFundos();
+}
+
+
+// ─── PROFILE EXTRA FEATURES ──────────────────────────────
+function showVerifyNow(){
+  if(!U)return;
+  if(isVerified()){
+    toast("✅ O teu número já está verificado!");
+    return;
+  }
+  var vcode=Math.floor(1000+Math.random()*9000);
+  localStorage.setItem("mz-vcode-"+U.phone,vcode);
+  showVerification(U.phone,vcode);
+}
+
+function showRateApp(){
+  openModal("⭐ Avaliar a Plataforma","<div style='text-align:center;margin-bottom:20px'><div style='font-size:50px;margin-bottom:12px'>⭐⭐⭐⭐⭐</div><div style='color:#E8F4FF;font-size:16px;font-weight:900;margin-bottom:8px'>Gostas da MZInvestment?</div><div style='color:#7090C0;font-size:14px;line-height:1.7'>Ajuda-nos a crescer recomendando a plataforma aos teus amigos e familiares!</div></div><a href='https://wa.me/?text="+encodeURIComponent("Estou a usar a MZInvestment e recomendo! Regista-te: "+BASE)+"' target='_blank' style='display:block;text-align:center;text-decoration:none;padding:14px;background:linear-gradient(135deg,#128C7E,#25D366);border-radius:14px;color:#fff;font-size:15px;font-weight:900;margin-bottom:10px'>💬 Recomendar via WhatsApp</a><div style='color:#5070A0;font-size:12px;text-align:center;margin-top:8px'>O teu feedback ajuda-nos a melhorar!</div>");
+}
+
+function showDeleteAccount(){
+  openModal("🗑️ Eliminar Conta","<div style='background:#2d0a0a;border:1px solid #E74C3C;border-radius:14px;padding:16px;margin-bottom:16px'><div style='color:#FF6B6B;font-weight:900;font-size:15px;margin-bottom:8px'>⚠️ Atenção: Acção Irreversível</div><div style='color:#E8B8B8;font-size:14px;line-height:1.7'>Ao eliminar a tua conta, perdes permanentemente: saldo actual, histórico de transacções, nível VIP, indicações e todos os dados associados.</div></div><div style='color:#C8D8F0;font-size:14px;line-height:1.8;margin-bottom:16px'>Para eliminar a tua conta, contacta o suporte directamente via WhatsApp com o pedido. Por segurança, eliminamos contas apenas após confirmação manual.</div><a href='https://wa.me/258864378323?text="+encodeURIComponent("Olá, quero eliminar permanentemente a minha conta MZInvestment. Número: +258 ")+"' target='_blank' style='display:block;text-align:center;text-decoration:none;padding:14px;background:linear-gradient(135deg,#7d0000,#E74C3C);border-radius:14px;color:#fff;font-size:15px;font-weight:900'>📩 Pedir Eliminação via WhatsApp</a>");
+}
+
+function showVersionInfo(){
+  openModal("ℹ️ Sobre a Versão","<div style='text-align:center;margin-bottom:20px'><div style='font-size:48px;margin-bottom:8px'>📈</div><div style='font-size:20px;font-weight:900'>MZ<span style='color:#00D4FF'>INVESTMENT</span></div><div style='color:#3A6090;font-size:12px;letter-spacing:4px;margin-top:4px'>MOÇAMBIQUE</div></div><div class='irow'><span class='ilbl'>Versão</span><span class='ival' style='color:#00D4FF'>2.0.0</span></div><div class='irow'><span class='ilbl'>Última actualização</span><span class='ival'>Junho 2026</span></div><div class='irow'><span class='ilbl'>Plataforma</span><span class='ival'>Web App (PWA)</span></div><div class='irow' style='border:none'><span class='ilbl'>Idioma</span><span class='ival'>Português (Moçambique)</span></div><div style='color:#5070A0;font-size:12px;text-align:center;margin-top:16px'>© 2026 MZInvestment · Todos os direitos reservados</div>");
 }
 
 </script>

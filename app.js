@@ -431,6 +431,21 @@ async function resolveTicket(id){
   await loadAdmin();admTab("tickets");
 }
 
+
+async function adminLiberFee(phone,name){
+  var u=aU.find(function(x){return x.phone==phone;});
+  if(!u)return;
+  showConfirm("Liberar a taxa mensal de "+name+" por mais 30 dias?",async function(){
+    var due=new Date();
+    try{var cur=new Date(u.fee_paid_until);if(cur>due)due=cur;}catch(e){}
+    due.setDate(due.getDate()+30);
+    var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ A tua taxa mensal foi liberada pelo administrador! Válida até "+due.toLocaleDateString("pt-MZ")+".",time:n2(),date:tod(),read:false}]);
+    await DB.upd(phone,{fee_paid_until:due.toISOString(),notifications:nn});
+    toast("Taxa mensal liberada para "+name+"! ✅");
+    await loadAdmin();admTab("users");
+  });
+}
+
 function showPinRec(){var ph=document.getElementById("l-ph").value.trim();var w=document.getElementById("pin-rec-wa");if(w&&ph)w.href="https://wa.me/258864378323?text="+encodeURIComponent("Olá, esqueci o PIN. Número: +258 "+ph);document.getElementById("pin-rec").style.display="flex";}
 // MAIN
 function loadMain(){
@@ -933,6 +948,10 @@ function admUsers(filter){
         +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-unl="'+(fundUnlocked?"1":"0")+'" onclick="tgFundUnlock(this.dataset.ph,this.dataset.nm,this.dataset.unl===\'1\')" style="flex:1;padding:10px;background:#0D2040;border:1px solid #9B59B644;border-radius:10px;color:#C8A0FF;font-size:13px;font-weight:900;cursor:pointer">'+(fundUnlocked?"Bloquear Fundo":"Desbloquear Fundo")+'</button>'
         +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="confirmDeleteUser(this.dataset.ph,this.dataset.nm)" style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C;border-radius:10px;color:#FF6B6B;font-size:13px;font-weight:900;cursor:pointer">Eliminar Conta</button>'
         +'</div>'
+        +'<div style="display:flex;gap:8px;margin-top:8px">'
+        +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="adminLiberFee(this.dataset.ph,this.dataset.nm)" style="flex:1;padding:10px;background:#0D2040;border:1px solid #FFD70044;border-radius:10px;color:#FFD700;font-size:13px;font-weight:900;cursor:pointer">💳 Liberar Taxa Mensal (+30d)</button>'
+        +'</div>'
+        +(u.fee_paid_until?'<div style="color:#5070A0;font-size:11px;margin-top:6px;text-align:center">Taxa paga até '+new Date(u.fee_paid_until).toLocaleDateString("pt-MZ")+'</div>':'')
         +'</div>';
     });
   }

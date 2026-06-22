@@ -526,7 +526,7 @@ function updateUI(){
   }
 }
 function renderHome(){
-  var homeItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-deposit','n-none')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
+  var homeItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-vips','n-vips')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
   var profileItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Taxa Mensal","showMonthlyFee()"],["📲","Verificar Número","showVerifyNow()"],["🔑","Alterar PIN","goTab('t-pinfo','n-none')"],["📋","Termos","showTerms()"],["🔒","Privacidade","showPrivacy()"],["⭐","Avaliar App","showRateApp()"],["🎫","Meus Tickets","goTab('t-suporte','n-none');switchSupport('mytickets')"],["🗑️","Eliminar Conta","showDeleteAccount()"],["ℹ️","Sobre a Versão","showVersionInfo()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["🚪","Sair","logout()"]];
   var h=homeItems.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
   var hp=profileItems.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
@@ -687,14 +687,22 @@ async function submitWd(){
 function showWdHist(){var h=earn.filter(function(e){return e.a<0;});document.getElementById("wd-hist").innerHTML=h.length===0?'<div class="empty">Sem retiradas ainda</div>':h.slice().reverse().map(function(e){return '<div class="tx-row"><div><div style="font-size:13px;color:#C8D8F0">'+e.desc+'</div><div style="font-size:11px;color:#3A5070">'+e.date+'</div></div><div style="color:#FF6B6B;font-weight:900">'+ff(Math.abs(e.a))+'</div></div>';}).join("");goTab("t-wdhist","n-none");}
 function renderTxHist(){document.getElementById("tx-hist-list").innerHTML=earn.length===0?'<div class="empty">Sem transacções ainda</div>':earn.slice().reverse().map(function(e){return '<div style="background:#071828;border:1px solid #0D2A4A;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:900">'+e.desc+'</div><div style="color:#5070A0;font-size:12px">'+e.date+'</div></div><div style="font-size:16px;font-weight:900;color:'+(e.a>0?"#2ECC71":"#FF6B6B")+'">'+(e.a>0?"+":"")+ff(e.a)+'</div></div>';}).join("");}
 function openDepWA(){
-  var vipInfo=depVip?"VIP "+depVip.l+" – "+depVip.n+" ("+ff(depVip.p)+")":"depósito";
+  if(!depVip){toast("Escolhe primeiro um VIP para depositar!","e");goTab("t-vips","n-vips");return;}
+  var vipInfo="VIP "+depVip.l+" – "+depVip.n+" ("+ff(depVip.p)+")";
   var name=U?U.name:"";
   var phone=U?"+258 "+U.phone:"";
   var msg="Olá MZInvestment!%0A%0AQuero efectuar um depósito para activar o "+vipInfo+".%0A%0A👤 Nome: "+name+"%0A📱 Número: "+phone+"%0A%0ASegue em anexo o comprovativo de pagamento via e-Mola.";
   window.open("https://wa.me/258864378323?text="+msg,"_blank");
 }
 
-async function submitDep(){if(!depVip)return;await DB.txSave({user_id:U.phone,user_name:U.name,phone:U.phone,amount:depVip.p,type:"deposit",vip_level:depVip.l,wallet:"e-Mola",status:"pending"});window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💳 DEPÓSITO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+depVip.p+" MT\n💎 VIP "+depVip.l+"\n🕐 "+n2()),"_blank");toast("Pedido enviado! ✅");depVip=null;goTab("t-home","n-home");}
+async function submitDep(){
+  if(!depVip){toast("Escolhe primeiro um VIP para depositar!","e");goTab("t-vips","n-vips");return;}
+  await DB.txSave({user_id:U.phone,user_name:U.name,phone:U.phone,amount:depVip.p,type:"deposit",vip_level:depVip.l,wallet:"e-Mola",status:"pending"});
+  window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💳 DEPÓSITO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+depVip.p+" MT\n💎 VIP "+depVip.l+"\n🕐 "+n2()),"_blank");
+  toast("Pedido enviado! ✅");
+  depVip=null;
+  goTab("t-home","n-home");
+}
 function renderFund(){
   var ul=(U.referrals||0)>=5||U.fund_unlocked===true;
   if(!ul){
@@ -1035,14 +1043,34 @@ function submitTicket(){
   switchSupport("mytickets");
 }
 
-function renderMyTickets(){
-  var tickets=JSON.parse(localStorage.getItem("mz-tickets-"+(U?U.phone:""))||"[]");
+async function renderMyTickets(){
   var el=document.getElementById("my-tickets-list");if(!el)return;
+  el.innerHTML='<div class="empty">A carregar...</div>';
+  var tickets=[];
+  // Try to fetch live status from Supabase (source of truth for status)
+  if(db&&U){
+    try{
+      var r=await db.from("transactions").select("*").eq("phone",U.phone).eq("type","ticket").order("created_at",{ascending:false});
+      if(r.data){
+        tickets=r.data.map(function(t){
+          var parts=(t.note||"").split(": ");
+          var subj=parts.length>1?parts[0]:"Suporte";
+          var desc=parts.length>1?parts.slice(1).join(": "):(t.note||"");
+          var dt=t.created_at?new Date(t.created_at):null;
+          return {subject:subj,desc:desc,status:t.status||"pending",date:dt?dt.toLocaleDateString("pt-MZ"):"—",time:dt?dt.toLocaleTimeString("pt-MZ",{hour:"2-digit",minute:"2-digit"}):"",id:t.id};
+        });
+      }
+    }catch(e){}
+  }
+  // Fallback to local copy if no DB or empty
+  if(tickets.length===0){
+    tickets=JSON.parse(localStorage.getItem("mz-tickets-"+(U?U.phone:""))||"[]");
+  }
   if(tickets.length===0){el.innerHTML='<div class="empty">Sem tickets ainda</div>';return;}
-  el.innerHTML=tickets.slice().reverse().map(function(t){
+  el.innerHTML=tickets.map(function(t){
     var sCol=t.status==="resolved"?"#2ECC71":t.status==="pending"?"#FFD700":"#00D4FF";
     var sLbl=t.status==="resolved"?"✅ Resolvido":t.status==="pending"?"⏳ Pendente":"💬 Em análise";
-    return '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:14px">'+t.subject+'</div><span style="font-size:12px;font-weight:900;color:'+sCol+'">'+sLbl+'</span></div><div style="color:#7090C0;font-size:13px;line-height:1.6;margin-bottom:8px">'+t.desc+'</div><div style="color:#3A5070;font-size:11px">'+t.date+' '+t.time+' · 🆔 '+t.id+'</div></div>';
+    return '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:14px">'+t.subject+'</div><span style="font-size:12px;font-weight:900;color:'+sCol+'">'+sLbl+'</span></div><div style="color:#7090C0;font-size:13px;line-height:1.6;margin-bottom:8px">'+t.desc+'</div><div style="color:#3A5070;font-size:11px">'+t.date+' '+t.time+'</div></div>';
   }).join("");
 }
 

@@ -196,6 +196,7 @@ async function syncU(patch){
   if(patch.photo!==undefined)d.photo=patch.photo;
   if(patch.redeemed_promos!==undefined)d.redeemed_promos=patch.redeemed_promos;
   if(patch.fee_paid_until!==undefined)d.fee_paid_until=patch.fee_paid_until;
+  if(patch.max_vip_level!==undefined)d.max_vip_level=patch.max_vip_level;
   if(Object.keys(d).length>0)await DB.upd(U.phone,d);
   backupUserLocal();
   updateUI();
@@ -533,22 +534,33 @@ function renderHome(){
   document.getElementById("home-menu").innerHTML=h;document.getElementById("p-menu").innerHTML=hp;
 }
 function renderVips(){
+  var maxLvl=U.max_vip_level||0;
   document.getElementById("vip-list").innerHTML=VIPS.map(function(v){
     var act=U.vip&&U.vip.l===v.l;
-    return '<div class="vip-card" style="border-color:'+(act?v.c:"#1E3060")+'"><div class="vip-hd"><div class="vip-tag" style="background:'+v.c+'">VIP '+v.l+'</div><div style="color:'+v.c+';font-weight:900">'+v.n+'</div>'+(act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅'+(U.vipDaysLeft?" "+U.vipDaysLeft+"d":"")+'</div>':"")+
+    var locked=!act&&v.l<maxLvl;
+    var btnHtml;
+    if(locked){
+      btnHtml='<button class="btn-vip" style="background:#1E3060;color:#7090C0;cursor:not-allowed" disabled>🔒 Já tiveste um nível superior</button>';
+    } else if(!act){
+      btnHtml='<button class="btn-vip" style="background:'+v.c+'" onclick="activVip('+v.l+')">Activar VIP '+v.l+' – '+ff(v.p)+'</button>';
+    } else {
+      btnHtml='<button class="btn-vip" style="background:'+v.c+';opacity:0.8" onclick="renewVip('+v.l+')">🔄 Renovar – '+ff(v.p)+'</button>';
+    }
+    return '<div class="vip-card" style="border-color:'+(act?v.c:locked?"#3A2050":"#1E3060")+';opacity:'+(locked?"0.55":"1")+'"><div class="vip-hd"><div class="vip-tag" style="background:'+v.c+'">VIP '+v.l+'</div><div style="color:'+v.c+';font-weight:900">'+v.n+'</div>'+(act?'<div style="margin-left:auto;color:#2ECC71;font-size:13px">✅'+(U.vipDaysLeft?" "+U.vipDaysLeft+"d":"")+'</div>':locked?'<div style="margin-left:auto;color:#7090C0;font-size:13px">🔒</div>':"")+
     '</div><div class="irow"><span class="ilbl">Depósito</span><span class="ival">'+ff(v.p)+'</span></div>'+
     '<div class="irow"><span class="ilbl">Ganho/dia</span><span class="ival" style="color:#00D4FF">'+ff(v.d)+'</span></div>'+
     '<div class="irow"><span class="ilbl">Tarefas/dia</span><span class="ival">'+v.v+'</span></div>'+
     '<div class="irow"><span class="ilbl">Por tarefa</span><span class="ival">'+ff(Math.floor(v.d/v.v))+'</span></div>'+
     '<div class="irow" style="border:none"><span class="ilbl">Validade</span><span class="ival" style="color:#FFD700">30 dias úteis</span></div>'+
-    (!act?'<button class="btn-vip" style="background:'+v.c+'" onclick="activVip('+v.l+')">Activar VIP '+v.l+' – '+ff(v.p)+'</button>':
-    '<button class="btn-vip" style="background:'+v.c+';opacity:0.8" onclick="renewVip('+v.l+')">🔄 Renovar – '+ff(v.p)+'</button>')+'</div>';
+    btnHtml+'</div>';
   }).join("");
 }
 async function activVip(l){
   var v=VIPS[l-1];
+  var maxLvl=U.max_vip_level||0;
+  if(l<maxLvl){toast("Já tiveste um nível VIP superior. Só podes subir!","e");return;}
   if((U.balance||0)>=v.p){
-    await syncU({balance:U.balance-v.p,vip:v});
+    await syncU({balance:U.balance-v.p,vip:v,max_vip_level:Math.max(maxLvl,l)});
     earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" activado",a:-v.p,date:tod()});
     // Credit referrer (shared logic, also used when admin approves deposit)
     await creditReferrerOnVip(U.invited_by,U.name,v.l,v.p);
@@ -871,8 +883,9 @@ async function appDep(id,phone,amount,vl,name){
   var u=aU.find(function(x){return x.phone==phone;});
   if(u){
     var nb=(parseFloat(u.balance)||0)+parseFloat(amount);
+    var newMax=Math.max(u.max_vip_level||0,parseInt(vl));
     var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Depósito de "+ff(amount)+" aprovado! VIP "+vl+" activado!",time:n2(),date:tod(),read:false}]);
-    await DB.upd(phone,{balance:nb,vip_level:parseInt(vl),total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:tod(),notifications:nn});
+    await DB.upd(phone,{balance:nb,vip_level:parseInt(vl),max_vip_level:newMax,total_earned:(parseFloat(u.total_earned)||0)+parseFloat(amount),activated_at:tod(),notifications:nn});
     // FIX: credit the referrer too (this was missing before!)
     if(u.invited_by){
       var vipObj=VIPS[parseInt(vl)-1];

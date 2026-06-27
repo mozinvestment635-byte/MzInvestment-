@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Teste de Ligação</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body style="font-family:monospace;font-size:14px;padding:20px;background:#111;color:#0f0">
+<div id="log">A iniciar teste...</div>
+<script>
+var log = document.getElementById("log");
+function add(msg) {
+  log.innerHTML += "<br>" + new Date().toLocaleTimeString() + " - " + msg;
+}
+
+add("Passo 1: A verificar se a biblioteca supabase carregou...");
+if (typeof supabase === "undefined") {
+  add("❌ ERRO: a biblioteca supabase-js não carregou! Problema de rede ou CDN bloqueado.");
+} else {
+  add("✅ Biblioteca carregada.");
+
+  add("Passo 2: A criar cliente Supabase...");
+  var SU = "https://xltsswpobwgjuwebjlsp.supabase.co";
+  var SK = "sb_publishable_xXE3L58X2eJ0QwZ9B9tTPg_vgWq2WDi";
+  var db = null;
+  try {
+    db = supabase.createClient(SU, SK);
+    add("✅ Cliente criado com sucesso.");
+  } catch (e) {
+    add("❌ ERRO ao criar cliente: " + e.message);
+  }
+
+  if (db) {
+    add("Passo 3: A tentar buscar o utilizador de teste (873698492)...");
+    add("(Se isto ficar parado aqui por mais de 10 segundos, o problema é a ligação à base de dados.)");
+
+    var timeout = setTimeout(function() {
+      add("⏱️ PASSARAM 10 SEGUNDOS SEM RESPOSTA. A chamada está pendurada.");
+    }, 10000);
+
+    db.from("users").select("*").eq("phone", "873698492").single().then(function(r) {
+      clearTimeout(timeout);
+      if (r.error) {
+        add("❌ ERRO da base de dados: " + JSON.stringify(r.error));
+      } else if (r.data) {
+        add("✅ SUCESSO! Utilizador encontrado: " + r.data.name + " | saldo: " + r.data.balance);
+      } else {
+        add("⚠️ Sem erro, mas também sem dados (utilizador não existe?).");
+      }
+    }).catch(function(e) {
+      clearTimeout(timeout);
+      add("❌ EXCEPÇÃO: " + e.message);
+    });
+  }
+}
+</script>
+</body>
+</html>

@@ -232,14 +232,23 @@ async function doLogin(){
   localStorage.removeItem(ak);
   if(u.blocked){err.textContent="Conta bloqueada. Contacta: +258 86 437 8323";err.style.display="block";return;}
   U=mapU(u);
+  window.__dbg=["P1:mapU ok"];
   try{
     var dt=u.daily_tasks||{};
     done=dt[tkey()]||[];
   }catch(e){done=[];}
+  window.__dbg.push("P2:daily_tasks ok");
   DB.upd(U.phone,{last_login:new Date().toISOString()});
-  loadMain();pg("pg-main");
+  window.__dbg.push("P3:DB.upd disparado");
+  loadMain();
+  window.__dbg.push("P4:loadMain terminou");
+  pg("pg-main");
+  window.__dbg.push("P5:pg(pg-main) terminou - TUDO OK");
   applyPendingPromo();
+  window.__dbg.push("P6:applyPendingPromo ok");
   checkMonthlyFee();
+  window.__dbg.push("P7:checkMonthlyFee ok");
+  alert(window.__dbg.join("\n"));
 }
 // ─── VERIFICATION ────────────────────────────────────────
 function showVerification(ph, vcode){

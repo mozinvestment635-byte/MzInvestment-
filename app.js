@@ -1,6 +1,22 @@
 // CONFIG
 var SU="https://xltsswpobwgjuwebjlsp.supabase.co";
 var SK="sb_publishable_xXE3L58X2eJ0QwZ9B9tTPg_vgWq2WDi";
+var FN_COMPLETE_TASK=SU+"/functions/v1/complete-task";
+var FN_REQUEST_WITHDRAWAL=SU+"/functions/v1/request-withdrawal";
+var FN_ACTIVATE_VIP=SU+"/functions/v1/activate-vip";
+var FN_RECORD_FP=SU+"/functions/v1/record-signup-fingerprint";
+function getDeviceFp(){
+  try{
+    var fp=localStorage.getItem("mz-dfp");
+    if(fp)return fp;
+    var raw=[navigator.userAgent,navigator.language,screen.width+"x"+screen.height,new Date().getTimezoneOffset()].join("|");
+    var hash=0;
+    for(var i=0;i<raw.length;i++){hash=((hash<<5)-hash+raw.charCodeAt(i))|0;}
+    fp="dfp-"+Math.abs(hash);
+    localStorage.setItem("mz-dfp",fp);
+    return fp;
+  }catch(e){return "dfp-unknown";}
+}
 var AP="864378323",APIN="3545",SUP="258864378323",BASE="https://mzinvestment.onrender.com";
 var db=null;try{db=supabase.createClient(SU,SK);}catch(e){}
 var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",fee:100},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",fee:200},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",fee:300},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",fee:500},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",fee:800},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",fee:1400},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",fee:2400},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",fee:4000},{l:9,p:150000,d:15000,v:27,c:"#FFB300",n:"Topázio",fee:6000},{l:10,p:250000,d:26000,v:28,c:"#2196F3",n:"Safira",fee:9000},{l:11,p:400000,d:44000,v:30,c:"#AB47BC",n:"Ametista",fee:13000},{l:12,p:650000,d:75000,v:31,c:"#ECEFF1",n:"Pérola",fee:18000},{l:13,p:1000000,d:120000,v:32,c:"#78909C",n:"Titânio",fee:25000},{l:14,p:1600000,d:200000,v:33,c:"#DAA520",n:"Coroa",fee:35000},{l:15,p:2500000,d:325000,v:35,c:"#FF6F00",n:"Soberano",fee:50000}];
@@ -215,11 +231,24 @@ async function doLogin(){
   if(!u||u.pin!==pin){var nc=at.c+1;localStorage.setItem(ak,JSON.stringify({c:nc,t:Date.now()}));err.textContent=nc<3?"PIN incorrecto. "+(3-nc)+" tentativa(s).":"Demasiadas tentativas. Aguarda 5 min.";err.style.display="block";return;}
   localStorage.removeItem(ak);
   if(u.blocked){err.textContent="Conta bloqueada. Contacta: +258 86 437 8323";err.style.display="block";return;}
-  U=mapU(u);try{done=JSON.parse(localStorage.getItem("mzd-"+U.phone+"-"+tkey())||"[]");}catch(e){done=[];}
+  U=mapU(u);
+  window.__dbg=["P1:mapU ok"];
+  try{
+    var dt=u.daily_tasks||{};
+    done=dt[tkey()]||[];
+  }catch(e){done=[];}
+  window.__dbg.push("P2:daily_tasks ok");
   DB.upd(U.phone,{last_login:new Date().toISOString()});
-  loadMain();pg("pg-main");
+  window.__dbg.push("P3:DB.upd disparado");
+  loadMain();
+  window.__dbg.push("P4:loadMain terminou");
+  pg("pg-main");
+  window.__dbg.push("P5:pg(pg-main) terminou - TUDO OK");
   applyPendingPromo();
+  window.__dbg.push("P6:applyPendingPromo ok");
   checkMonthlyFee();
+  window.__dbg.push("P7:checkMonthlyFee ok");
+  alert(window.__dbg.join("\n"));
 }
 // ─── VERIFICATION ────────────────────────────────────────
 function showVerification(ph, vcode){
@@ -280,6 +309,9 @@ async function doRegister(){
 var patch={team_members:tm,notifications:nn};
 await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}}}catch(e){}}
   U=mapU(sv);done=[];
+  try{
+    fetch(FN_RECORD_FP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:ph,deviceFp:getDeviceFp()})});
+  }catch(e){}
   try{localStorage.removeItem("mz-pending-promo");}catch(e){}
   // Send verification code via WhatsApp
   var vcode=Math.floor(1000+Math.random()*9000);
@@ -575,11 +607,25 @@ async function activVip(l){
   var maxLvl=U.max_vip_level||0;
   if(l<maxLvl){toast("Já tiveste um nível VIP superior. Só podes subir!","e");return;}
   if((U.balance||0)>=v.p){
-    await syncU({balance:U.balance-v.p,vip:v,max_vip_level:Math.max(maxLvl,l)});
-    earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" activado",a:-v.p,date:tod()});
-    // Credit referrer (shared logic, also used when admin approves deposit)
-    await creditReferrerOnVip(U.invited_by,U.name,v.l,v.p);
-    toast("VIP "+v.l+" "+v.n+" activado! 🚀");renderVips();goTab("t-home","n-home");
+    try{
+      var resp=await fetch(FN_ACTIVATE_VIP,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({phone:U.phone,pin:U.pin,vipLevel:l,deviceFp:getDeviceFp()})
+      });
+      var result=await resp.json();
+      if(!result.ok){
+        toast(result.error||"Não foi possível activar.","e");
+        return;
+      }
+      U.balance=result.newBalance;
+      U.vip=v;
+      U.max_vip_level=Math.max(maxLvl,l);
+      earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" activado",a:-v.p,date:tod()});
+      toast("VIP "+v.l+" "+v.n+" activado! 🚀");renderVips();goTab("t-home","n-home");
+    }catch(e){
+      toast("Erro de ligação. Tenta novamente.","e");
+    }
   }else{
     depVip=v;
     document.getElementById("dep-vip-box").innerHTML='<div class="vip-card" style="border-color:'+v.c+';margin-bottom:14px"><div style="color:'+v.c+';font-size:15px;font-weight:900;margin-bottom:8px">VIP '+v.l+' – '+v.n+'</div><div class="irow" style="border:none"><span class="ilbl">Valor</span><span class="ival" style="color:#FFD700">'+ff(v.p)+'</span></div></div>';
@@ -668,19 +714,35 @@ function openVid(id){
       document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);
       if(t<=0){
         clearInterval(cdT);cdT=null;
-        done.push(id);
-        try{localStorage.setItem("mzd-"+U.phone+"-"+tkey(),JSON.stringify(done));}catch(e){}
-        var th=Object.assign({},U.taskHistory||{});
-        th[tkey()]=(th[tkey()]||0)+rwd;
-        await syncU({balance:U.balance+rwd,totalEarned:U.totalEarned+rwd,taskHistory:th});
-        earn.push({desc:"🎬 "+v.t,a:rwd,date:tod()});
-        document.getElementById("cd-card").style.display="none";
-        document.getElementById("done-card").style.display="block";
-        document.getElementById("pl-done").style.display="block";
-        document.getElementById("i-done").textContent=done.length+"/"+(U.vip?U.vip.v:0);
-        document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);
-        renderVideos();
-        toast("+"+ff(rwd)+" MT ganhos! 💰");
+        document.getElementById("cd-earn").textContent="A confirmar...";
+        try{
+          var resp=await fetch(FN_COMPLETE_TASK,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({phone:U.phone,pin:U.pin,videoId:id})
+          });
+          var result=await resp.json();
+          if(!result.ok){
+            toast(result.error||"Não foi possível confirmar.","e");
+            document.getElementById("player").classList.remove("on");
+            return;
+          }
+          done.push(id);
+          U.balance=result.newBalance;
+          U.totalEarned=(U.totalEarned||0)+result.reward;
+          earn.push({desc:"🎬 "+v.t,a:result.reward,date:tod()});
+          document.getElementById("done-amt").textContent="+"+ff(result.reward)+" MT creditados!";
+          document.getElementById("cd-card").style.display="none";
+          document.getElementById("done-card").style.display="block";
+          document.getElementById("pl-done").style.display="block";
+          document.getElementById("i-done").textContent=result.doneCount+"/"+result.limit;
+          document.getElementById("i-rem").textContent=Math.max(0,result.limit-result.doneCount);
+          renderVideos();
+          toast("+"+ff(result.reward)+" MT ganhos! 💰");
+        }catch(e){
+          toast("Erro de ligação. Tenta novamente.","e");
+          document.getElementById("player").classList.remove("on");
+        }
       }
     },1000);
   }
@@ -699,16 +761,27 @@ function renderWd(){document.getElementById("wd-amts").innerHTML=[100,500,1000,2
 function selWd(a){wdAmt=a;renderWd();}
 async function submitWd(){
   if(!wdAmt){toast("Escolhe um valor","e");return;}
-  var ws=wdSt();if(!ws.ok){toast(ws.msg,"e");return;}
-  if(wdAmt>U.balance){toast("Saldo insuficiente","e");return;}
   if(!U.vip){toast("Precisas de VIP activo!","e");return;}
-  if(localStorage.getItem("mzlw-"+U.phone)===tkey()){toast("Só 1 levantamento por dia!","e");return;}
   var net=Math.floor(wdAmt*0.9);
   showConfirm("Confirmas levantamento de "+ff(wdAmt)+"?\nTaxa 10% → Recebes "+ff(net),async function(){
-    await syncU({balance:U.balance-wdAmt});await DB.txSave({user_id:U.phone,user_name:U.name,phone:U.phone,amount:wdAmt,type:"withdrawal",wallet:"e-Mola",status:"pending"});
-    earn.push({desc:"Levantamento",a:-wdAmt,date:tod()});localStorage.setItem("mzlw-"+U.phone,tkey());
-    window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💸 PEDIDO DE LEVANTAMENTO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+wdAmt+" MT → receberá "+net+" MT\n🏦 e-Mola\n🕐 "+n2()),"_blank");
-    toast("Pedido enviado! ✅");wdAmt=null;renderWd();
+    try{
+      var resp=await fetch(FN_REQUEST_WITHDRAWAL,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({phone:U.phone,pin:U.pin,amount:wdAmt})
+      });
+      var result=await resp.json();
+      if(!result.ok){
+        toast(result.error||"Não foi possível processar.","e");
+        return;
+      }
+      U.balance=result.newBalance;
+      earn.push({desc:"Levantamento",a:-wdAmt,date:tod()});
+      window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💸 PEDIDO DE LEVANTAMENTO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+wdAmt+" MT → receberá "+result.net+" MT\n🏦 e-Mola\n🕐 "+n2()),"_blank");
+      toast("Pedido enviado! ✅");wdAmt=null;renderWd();
+    }catch(e){
+      toast("Erro de ligação. Tenta novamente.","e");
+    }
   });
 }
 function showWdHist(){var h=earn.filter(function(e){return e.a<0;});document.getElementById("wd-hist").innerHTML=h.length===0?'<div class="empty">Sem retiradas ainda</div>':h.slice().reverse().map(function(e){return '<div class="tx-row"><div><div style="font-size:13px;color:#C8D8F0">'+e.desc+'</div><div style="font-size:11px;color:#3A5070">'+e.date+'</div></div><div style="color:#FF6B6B;font-weight:900">'+ff(Math.abs(e.a))+'</div></div>';}).join("");goTab("t-wdhist","n-none");}

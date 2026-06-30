@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Teste Login Real</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body style="font-family:monospace;font-size:14px;padding:20px;background:#111;color:#0f0">
+
+<input id="l-ph" value="873698492" style="display:block;margin-bottom:10px;padding:8px">
+<input id="l-pin" value="3545" style="display:block;margin-bottom:10px;padding:8px">
+<button id="l-btn" onclick="doLogin()" style="padding:10px 20px">Entrar →</button>
+<div id="l-err" style="display:none;color:red"></div>
+
+<div id="log" style="margin-top:20px"></div>
+
+<script>
+var SU="https://xltsswpobwgjuwebjlsp.supabase.co";
+var SK="sb_publishable_xXE3L58X2eJ0QwZ9B9tTPg_vgWq2WDi";
+var AP="864378323",APIN="3545";
+var db=null;try{db=supabase.createClient(SU,SK);}catch(e){}
+var U=null,done=[];
+
+function log(msg){
+  document.getElementById("log").innerHTML += "<br>" + new Date().toLocaleTimeString() + " - " + msg;
+}
+
+function tkey(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Africa/Maputo"}));return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+
+var DB={
+  get:async function(p){
+    log("DB.get: a iniciar...");
+    if(!db){log("❌ db é null!");return null;}
+    try{
+      var r=await db.from("users").select("*").eq("phone",p).single();
+      log("DB.get: resposta recebida. error=" + (r.error?JSON.stringify(r.error):"nenhum"));
+      return r.data||null;
+    }catch(e){
+      log("❌ DB.get excepção: " + e.message);
+      return null;
+    }
+  },
+  upd:async function(p,patch){
+    if(!db)return;
+    try{await db.from("users").update(patch).eq("phone",p);}catch(e){log("erro DB.upd: "+e.message);}
+  }
+};
+
+function mapU(u){
+  return Object.assign({},u,{balance:parseFloat(u.balance)||0});
+}
+
+async function doLogin(){
+  log("=== INÍCIO doLogin ===");
+  var ph=document.getElementById("l-ph").value.trim(),pin=document.getElementById("l-pin").value.trim(),err=document.getElementById("l-err");
+  err.style.display="none";
+  log("Telefone: "+ph+" PIN: "+pin);
+
+  if(ph===AP&&pin===APIN){log("login admin detectado");return;}
+
+  var ak="mz-att-"+ph,at=JSON.parse(localStorage.getItem(ak)||'{"c":0,"t":0}');
+  log("Tentativas anteriores: c="+at.c+" t="+at.t);
+  if(at.c>=3&&(Date.now()-at.t)<300000){
+    log("❌ BLOQUEADO por tentativas! Faltam "+Math.ceil((300000-(Date.now()-at.t))/60000)+" min.");
+    err.textContent="Bloqueado.";err.style.display="block";
+    return;
+  }
+
+  var btn=document.getElementById("l-btn");btn.disabled=true;btn.textContent="A entrar...";
+  log("Botão desactivado, a chamar DB.get...");
+
+  var u=await DB.get(ph);
+  log("DB.get terminou. u="+(u?"ENCONTRADO: "+u.name:"null"));
+
+  if(!u){
+    var lu=JSON.parse(localStorage.getItem("mz-lu")||"[]");
+    u=lu.find(function(x){return x.phone===ph;})||null;
+    log("Fallback localStorage: u="+(u?"encontrado":"null"));
+  }
+
+  btn.disabled=false;btn.textContent="Entrar →";
+  log("Botão reactivado.");
+
+  if(!u||u.pin!==pin){
+    log("❌ PIN não bate certo ou utilizador null. u.pin="+(u?u.pin:"N/A")+" pin enviado="+pin);
+    err.textContent="PIN incorrecto.";err.style.display="block";
+    return;
+  }
+
+  log("✅ Login válido! A prosseguir...");
+  if(u.blocked){log("❌ conta bloqueada");return;}
+
+  U=mapU(u);
+  log("✅✅✅ SUCESSO TOTAL - chegou ao fim do doLogin. Nome: "+U.name+" Saldo: "+U.balance);
+}
+</script>
+</body>
+</html>

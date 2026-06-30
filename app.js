@@ -2,7 +2,12 @@
 var SU="https://xltsswpobwgjuwebjlsp.supabase.co";
 var SK="sb_publishable_xXE3L58X2eJ0QwZ9B9tTPg_vgWq2WDi";
 var AP="864378323",APIN="3545",SUP="258864378323",BASE="https://mzinvestment.onrender.com";
-var db=null;try{db=supabase.createClient(SU,SK);}catch(e){}
+var db=null;
+function getDb(){
+  if(db)return db;
+  try{if(typeof supabase!=="undefined"){db=supabase.createClient(SU,SK);}}catch(e){}
+  return db;
+}
 var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",fee:100},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",fee:200},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",fee:300},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",fee:500},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",fee:800},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",fee:1400},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",fee:2400},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",fee:4000},{l:9,p:150000,d:15000,v:27,c:"#FFB300",n:"Topázio",fee:6000},{l:10,p:250000,d:26000,v:28,c:"#2196F3",n:"Safira",fee:9000},{l:11,p:400000,d:44000,v:30,c:"#AB47BC",n:"Ametista",fee:13000},{l:12,p:650000,d:75000,v:31,c:"#ECEFF1",n:"Pérola",fee:18000},{l:13,p:1000000,d:120000,v:32,c:"#78909C",n:"Titânio",fee:25000},{l:14,p:1600000,d:200000,v:33,c:"#DAA520",n:"Coroa",fee:35000},{l:15,p:2500000,d:325000,v:35,c:"#FF6F00",n:"Soberano",fee:50000}];
 var RB=[0,50,75,100,150,200];
 var FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:3,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:5,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:10,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:16,icon:"💰",desc:"Máximo lucro"}];
@@ -159,13 +164,13 @@ function updPush(){var s=document.getElementById("push-status");var b=document.g
 function push(title,body){if(Notification.permission==="granted")try{new Notification(title,{body:body,tag:"mzinvest"});}catch(e){}}
 // DB
 var DB={
-  get:async function(p){if(!db)return null;try{var r=await db.from("users").select("*").eq("phone",p).single();return r.data||null;}catch(e){return null;}},
-  save:async function(u){if(!db)return null;try{var r=await db.from("users").insert([u]).select().single();return r.data||null;}catch(e){return null;}},
-  upd:async function(p,d){if(!db)return;try{await db.from("users").update(d).eq("phone",p);}catch(e){}},
-  all:async function(){if(!db)return[];try{var r=await db.from("users").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}},
-  txSave:async function(t){if(!db)return;try{await db.from("transactions").insert([t]);}catch(e){}},
-  txUpd:async function(id,d){if(!db)return;try{await db.from("transactions").update(d).eq("id",id);}catch(e){}},
-  txAll:async function(){if(!db)return[];try{var r=await db.from("transactions").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}}
+  get:async function(p){var db=getDb();if(!db)return null;try{var r=await db.from("users").select("*").eq("phone",p).single();return r.data||null;}catch(e){return null;}},
+  save:async function(u){var db=getDb();if(!db)return null;try{var r=await db.from("users").insert([u]).select().single();return r.data||null;}catch(e){return null;}},
+  upd:async function(p,d){var db=getDb();if(!db)return;try{await db.from("users").update(d).eq("phone",p);}catch(e){}},
+  all:async function(){var db=getDb();if(!db)return[];try{var r=await db.from("users").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}},
+  txSave:async function(t){var db=getDb();if(!db)return;try{await db.from("transactions").insert([t]);}catch(e){}},
+  txUpd:async function(id,d){var db=getDb();if(!db)return;try{await db.from("transactions").update(d).eq("id",id);}catch(e){}},
+  txAll:async function(){var db=getDb();if(!db)return[];try{var r=await db.from("transactions").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}}
 };
 function mapU(u){
   var n=u.notifications||[];var th=u.task_history||{};var tm=u.team_members||[];

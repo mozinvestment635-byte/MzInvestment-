@@ -4,6 +4,12 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>MZInvestment - Plataforma de Investimento Digital em Moçambique</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon.jpg"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MzInvest"/>
+<meta name="theme-color" content="#00B4D8"/>
 <meta name="description" content="MZInvestment é a plataforma moçambicana de rendimento digital. Ganha dinheiro assistindo vídeos, investe no Fundo com retornos até 16%, e recebe pagamentos via e-Mola. Regista-te grátis!"/>
 <meta name="keywords" content="MZInvestment, mz investment, investimento Moçambique, ganhar dinheiro online Moçambique, e-Mola, rendimento digital, VIP investimento"/>
 <meta name="robots" content="index, follow"/>
@@ -24,162 +30,7 @@
 
 <div id="offline-bar">📵 Sem ligação à internet.</div>
 <!-- BACKGROUND SLIDESHOW -->
-<div id="bg-slideshow" style="position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden">
-  <div class="bg-slide" id="bs0" style="position:absolute;inset:0;opacity:1;transition:opacity 2.5s ease;display:flex;align-items:center;justify-content:center;background:#030B1A">
-    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="rg1" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#0080C0" stop-opacity="0.55"/><stop offset="100%" stop-color="#030B1A" stop-opacity="0"/></radialGradient>
-        <linearGradient id="bgg1" x1="0" y1="0" x2="400" y2="800" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#041426"/><stop offset="50%" stop-color="#0D2C4D"/><stop offset="100%" stop-color="#04101E"/></linearGradient>
-        <linearGradient id="bgg2" x1="0" y1="0" x2="400" y2="800" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00E8FF" stop-opacity="0.85"/><stop offset="100%" stop-color="#0050B0" stop-opacity="0.35"/></linearGradient>
-      </defs>
-      <rect width="400" height="800" fill="url(#bgg1)"/>
-      <rect width="400" height="800" fill="url(#rg1)"/>
-      <circle cx="263" cy="717" r="2" fill="#00E8FF" opacity="0.35"><animate attributeName="opacity" values="0.35;0.105;0.35" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="131" cy="653" r="6" fill="#00E8FF" opacity="0.24"><animate attributeName="opacity" values="0.24;0.072;0.24" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="162" cy="657" r="3" fill="#00E8FF" opacity="0.38"><animate attributeName="opacity" values="0.38;0.11399999999999999;0.38" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="137" cy="770" r="4" fill="#00E8FF" opacity="0.22"><animate attributeName="opacity" values="0.22;0.066;0.22" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="155" cy="320" r="4" fill="#00E8FF" opacity="0.28"><animate attributeName="opacity" values="0.28;0.084;0.28" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="359" cy="394" r="2" fill="#00E8FF" opacity="0.28"><animate attributeName="opacity" values="0.28;0.084;0.28" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="175" cy="720" r="3" fill="#00E8FF" opacity="0.34"><animate attributeName="opacity" values="0.34;0.10200000000000001;0.34" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="198" cy="342" r="6" fill="#00E8FF" opacity="0.2"><animate attributeName="opacity" values="0.2;0.06;0.2" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="77" cy="656" r="5" fill="#00E8FF" opacity="0.22"><animate attributeName="opacity" values="0.22;0.066;0.22" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="241" cy="428" r="5" fill="#00E8FF" opacity="0.48"><animate attributeName="opacity" values="0.48;0.144;0.48" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="263" cy="595" r="5" fill="#00E8FF" opacity="0.48"><animate attributeName="opacity" values="0.48;0.144;0.48" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="26" cy="210" r="4" fill="#00E8FF" opacity="0.49"><animate attributeName="opacity" values="0.49;0.147;0.49" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="145" cy="248" r="6" fill="#00E8FF" opacity="0.44"><animate attributeName="opacity" values="0.44;0.132;0.44" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="382" cy="388" r="4" fill="#00E8FF" opacity="0.34"><animate attributeName="opacity" values="0.34;0.10200000000000001;0.34" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="200" cy="350" r="180" fill="none" stroke="#00E8FF" stroke-width="1.2" opacity="0.45"><animate attributeName="r" values="180;195;180" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="200" cy="350" r="140" fill="none" stroke="#00E8FF" stroke-width="0.6" opacity="0.30"/>
-      <circle cx="200" cy="350" r="100" fill="url(#bgg2)" opacity="0.6"><animate attributeName="opacity" values="0.6;0.8;0.6" dur="4s" repeatCount="indefinite"/></circle>
-      <rect x="80" y="420" width="30" height="60" rx="4" fill="#00E8FF" opacity="0.40"/>
-      <rect x="120" y="390" width="30" height="90" rx="4" fill="#00E8FF" opacity="0.48"/>
-      <rect x="160" y="350" width="30" height="130" rx="4" fill="#00E8FF" opacity="0.55"/>
-      <rect x="200" y="310" width="30" height="170" rx="4" fill="#00E8FF" opacity="0.62"/>
-      <rect x="240" y="270" width="30" height="210" rx="4" fill="#FFD700" opacity="0.65"/>
-      <polyline points="95,415 135,385 175,345 215,305 255,265" fill="none" stroke="#FFD700" stroke-width="2.5" opacity="0.85"/>
-      <circle cx="255" cy="265" r="7" fill="#FFD700" opacity="0.9"><animate attributeName="r" values="7;10;7" dur="2s" repeatCount="indefinite"/></circle>
-      <text x="200" y="560" text-anchor="middle" fill="#E8F4FF" font-size="80" font-weight="900" font-family="Calibri,sans-serif" opacity="0.28" letter-spacing="10">MZ</text>
-      <text x="200" y="620" text-anchor="middle" fill="#00E8FF" font-size="30" font-weight="700" font-family="Calibri,sans-serif" opacity="0.28" letter-spacing="15">INVESTMENT</text>
-    </svg>
-  </div>
-  <div class="bg-slide" id="bs1" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease;background:#030B1A">
-    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <defs><radialGradient id="rg2" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="#3D1F00" stop-opacity="0.6"/><stop offset="100%" stop-color="#030B1A" stop-opacity="0"/></radialGradient></defs>
-      <rect width="400" height="800" fill="#08101E"/>
-      <rect width="400" height="800" fill="url(#rg2)"/>
-      <circle cx="304" cy="576" r="2" fill="#FFD700" opacity="0.25"><animate attributeName="opacity" values="0.25;0.075;0.25" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="324" cy="141" r="3" fill="#FFD700" opacity="0.36"><animate attributeName="opacity" values="0.36;0.108;0.36" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="54" cy="426" r="4" fill="#FFD700" opacity="0.21"><animate attributeName="opacity" values="0.21;0.063;0.21" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="271" cy="452" r="6" fill="#FFD700" opacity="0.36"><animate attributeName="opacity" values="0.36;0.108;0.36" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="331" cy="240" r="6" fill="#FFD700" opacity="0.27"><animate attributeName="opacity" values="0.27;0.081;0.27" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="28" cy="169" r="4" fill="#FFD700" opacity="0.38"><animate attributeName="opacity" values="0.38;0.11399999999999999;0.38" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="224" cy="360" r="2" fill="#FFD700" opacity="0.2"><animate attributeName="opacity" values="0.2;0.06;0.2" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="34" cy="312" r="3" fill="#FFD700" opacity="0.46"><animate attributeName="opacity" values="0.46;0.138;0.46" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="72" cy="431" r="2" fill="#FFD700" opacity="0.37"><animate attributeName="opacity" values="0.37;0.111;0.37" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="139" cy="511" r="6" fill="#FFD700" opacity="0.49"><animate attributeName="opacity" values="0.49;0.147;0.49" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="320" cy="722" r="3" fill="#FFD700" opacity="0.35"><animate attributeName="opacity" values="0.35;0.105;0.35" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="187" cy="80" r="4" fill="#FFD700" opacity="0.31"><animate attributeName="opacity" values="0.31;0.093;0.31" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="220" cy="330" r="6" fill="#FFD700" opacity="0.25"><animate attributeName="opacity" values="0.25;0.075;0.25" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="241" cy="335" r="6" fill="#FFD700" opacity="0.33"><animate attributeName="opacity" values="0.33;0.099;0.33" dur="3s" repeatCount="indefinite"/></circle>
-      <text x="50" y="150" fill="#CD853F" font-size="20" font-weight="900" opacity="0.55">VIP 1 &#183; 33 MT/dia</text>
-      <text x="150" y="250" fill="#FFD700" font-size="22" font-weight="900" opacity="0.60"><animate attributeName="opacity" values="0.6;0.85;0.6" dur="3s" repeatCount="indefinite"/>VIP 3 &#183; 180 MT/dia</text>
-      <text x="30" y="360" fill="#C792EA" font-size="20" font-weight="900" opacity="0.55">VIP 5 &#183; 900 MT/dia</text>
-      <text x="120" y="470" fill="#FF6FA5" font-size="22" font-weight="900" opacity="0.60">VIP 8 &#183; 9.000 MT/dia</text>
-      <text x="60" y="580" fill="#00E8FF" font-size="18" font-weight="900" opacity="0.55">Regista-te GR&#193;TIS</text>
-      <circle cx="290" cy="640" r="55" fill="#FFD700" opacity="0.18"><animate attributeName="r" values="55;65;55" dur="4s" repeatCount="indefinite"/></circle>
-      <text x="290" y="655" text-anchor="middle" font-size="60" opacity="0.5">&#128176;</text>
-      <line x1="0" y1="200" x2="400" y2="200" stroke="#00E8FF" stroke-width="0.5" opacity="0.15"/>
-      <line x1="0" y1="400" x2="400" y2="400" stroke="#00E8FF" stroke-width="0.5" opacity="0.15"/>
-      <line x1="0" y1="600" x2="400" y2="600" stroke="#00E8FF" stroke-width="0.5" opacity="0.15"/>
-    </svg>
-  </div>
-  <div class="bg-slide" id="bs2" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease;background:#030B1A">
-    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <defs><radialGradient id="rg3" cx="50%" cy="55%" r="65%"><stop offset="0%" stop-color="#0A3D20" stop-opacity="0.6"/><stop offset="100%" stop-color="#030B1A" stop-opacity="0"/></radialGradient></defs>
-      <rect width="400" height="800" fill="#06140E"/>
-      <rect width="400" height="800" fill="url(#rg3)"/>
-      <circle cx="316" cy="150" r="5" fill="#2ECC71" opacity="0.21"><animate attributeName="opacity" values="0.21;0.063;0.21" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="251" cy="288" r="3" fill="#2ECC71" opacity="0.37"><animate attributeName="opacity" values="0.37;0.111;0.37" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="342" cy="538" r="4" fill="#2ECC71" opacity="0.24"><animate attributeName="opacity" values="0.24;0.072;0.24" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="367" cy="88" r="3" fill="#2ECC71" opacity="0.27"><animate attributeName="opacity" values="0.27;0.081;0.27" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="145" cy="194" r="2" fill="#2ECC71" opacity="0.18"><animate attributeName="opacity" values="0.18;0.054;0.18" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="352" cy="663" r="3" fill="#2ECC71" opacity="0.3"><animate attributeName="opacity" values="0.3;0.09;0.3" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="93" cy="686" r="2" fill="#2ECC71" opacity="0.48"><animate attributeName="opacity" values="0.48;0.144;0.48" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="370" cy="215" r="4" fill="#2ECC71" opacity="0.25"><animate attributeName="opacity" values="0.25;0.075;0.25" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="61" cy="251" r="2" fill="#2ECC71" opacity="0.45"><animate attributeName="opacity" values="0.45;0.135;0.45" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="188" cy="217" r="4" fill="#2ECC71" opacity="0.26"><animate attributeName="opacity" values="0.26;0.078;0.26" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="362" cy="94" r="3" fill="#2ECC71" opacity="0.44"><animate attributeName="opacity" values="0.44;0.132;0.44" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="106" cy="657" r="5" fill="#2ECC71" opacity="0.24"><animate attributeName="opacity" values="0.24;0.072;0.24" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="115" cy="152" r="6" fill="#2ECC71" opacity="0.27"><animate attributeName="opacity" values="0.27;0.081;0.27" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="68" cy="717" r="6" fill="#2ECC71" opacity="0.4"><animate attributeName="opacity" values="0.4;0.12;0.4" dur="3s" repeatCount="indefinite"/></circle>
-      <text x="200" y="200" text-anchor="middle" fill="#2ECC71" font-size="17" font-weight="900" opacity="0.55">+50 MT por indica&#231;&#227;o</text>
-      <text x="200" y="270" text-anchor="middle" fill="#2ECC71" font-size="17" font-weight="900" opacity="0.55">+75 MT &#183; +100 MT &#183; +150 MT</text>
-      <text x="200" y="340" text-anchor="middle" fill="#FFD700" font-size="19" font-weight="900" opacity="0.60">+200 MT + Fundo desbloqueado</text>
-      <circle cx="200" cy="500" r="80" fill="#2ECC71" opacity="0.15"><animate attributeName="r" values="80;95;80" dur="5s" repeatCount="indefinite"/></circle>
-      <text x="200" y="520" text-anchor="middle" fill="#00E8FF" font-size="75" opacity="0.45">&#129309;</text>
-      <text x="200" y="630" text-anchor="middle" fill="#E8F4FF" font-size="24" font-weight="900" opacity="0.45">Convida &amp; Ganha!</text>
-      <circle cx="200" cy="400" r="200" fill="none" stroke="#2ECC71" stroke-width="0.6" opacity="0.30"/>
-      <circle cx="200" cy="400" r="150" fill="none" stroke="#00E8FF" stroke-width="0.5" opacity="0.20"/>
-    </svg>
-  </div>
-  <div class="bg-slide" id="bs3" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease;background:#030B1A">
-    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <defs><radialGradient id="rg4" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#3A0A4D" stop-opacity="0.6"/><stop offset="100%" stop-color="#030B1A" stop-opacity="0"/></radialGradient></defs>
-      <rect width="400" height="800" fill="#0C0618"/>
-      <rect width="400" height="800" fill="url(#rg4)"/>
-      <circle cx="304" cy="247" r="2" fill="#C792EA" opacity="0.16"><animate attributeName="opacity" values="0.16;0.048;0.16" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="288" cy="529" r="5" fill="#C792EA" opacity="0.5"><animate attributeName="opacity" values="0.5;0.15;0.5" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="61" cy="522" r="2" fill="#C792EA" opacity="0.47"><animate attributeName="opacity" values="0.47;0.141;0.47" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="197" cy="483" r="2" fill="#C792EA" opacity="0.28"><animate attributeName="opacity" values="0.28;0.084;0.28" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="265" cy="237" r="5" fill="#C792EA" opacity="0.31"><animate attributeName="opacity" values="0.31;0.093;0.31" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="111" cy="713" r="3" fill="#C792EA" opacity="0.33"><animate attributeName="opacity" values="0.33;0.099;0.33" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="240" cy="396" r="6" fill="#C792EA" opacity="0.16"><animate attributeName="opacity" values="0.16;0.048;0.16" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="365" cy="625" r="2" fill="#C792EA" opacity="0.49"><animate attributeName="opacity" values="0.49;0.147;0.49" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="139" cy="612" r="5" fill="#C792EA" opacity="0.22"><animate attributeName="opacity" values="0.22;0.066;0.22" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="245" cy="171" r="2" fill="#C792EA" opacity="0.46"><animate attributeName="opacity" values="0.46;0.138;0.46" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="175" cy="120" r="4" fill="#C792EA" opacity="0.26"><animate attributeName="opacity" values="0.26;0.078;0.26" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="126" cy="402" r="6" fill="#C792EA" opacity="0.41"><animate attributeName="opacity" values="0.41;0.12299999999999998;0.41" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="240" cy="459" r="6" fill="#C792EA" opacity="0.44"><animate attributeName="opacity" values="0.44;0.132;0.44" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="296" cy="429" r="5" fill="#C792EA" opacity="0.35"><animate attributeName="opacity" values="0.35;0.105;0.35" dur="3s" repeatCount="indefinite"/></circle>
-      <text x="200" y="120" text-anchor="middle" fill="#00E8FF" font-size="26" font-weight="900" opacity="0.60">Fundo de Investimento</text>
-      <text x="200" y="250" text-anchor="middle" fill="#2ECC71" font-size="19" font-weight="900" opacity="0.55">&#127793; 15 Dias &#8594; +3%</text>
-      <text x="200" y="330" text-anchor="middle" fill="#00E8FF" font-size="19" font-weight="900" opacity="0.55">&#127807; 30 Dias &#8594; +5%</text>
-      <text x="200" y="410" text-anchor="middle" fill="#FFD700" font-size="19" font-weight="900" opacity="0.55">&#127795; 90 Dias &#8594; +10%</text>
-      <text x="200" y="500" text-anchor="middle" fill="#FF6FA5" font-size="23" font-weight="900" opacity="0.65">&#128176; 210 Dias &#8594; +16%</text>
-      <circle cx="200" cy="620" r="60" fill="#FFD700" opacity="0.15"><animate attributeName="opacity" values="0.15;0.3;0.15" dur="3.5s" repeatCount="indefinite"/></circle>
-      <polyline points="60,700 140,600 200,520 280,420 340,300" fill="none" stroke="#FFD700" stroke-width="2.5" opacity="0.55"/>
-      <circle cx="340" cy="300" r="8" fill="#FFD700" opacity="0.7"><animate attributeName="r" values="8;12;8" dur="2.5s" repeatCount="indefinite"/></circle>
-    </svg>
-  </div>
-  <div class="bg-slide" id="bs4" style="position:absolute;inset:0;opacity:0;transition:opacity 2.5s ease;background:#030B1A">
-    <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <defs><radialGradient id="rg5" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#3D2A00" stop-opacity="0.55"/><stop offset="100%" stop-color="#030B1A" stop-opacity="0"/></radialGradient></defs>
-      <rect width="400" height="800" fill="#0A0805"/>
-      <rect width="400" height="800" fill="url(#rg5)"/>
-      <circle cx="380" cy="295" r="2" fill="#00E8FF" opacity="0.21"><animate attributeName="opacity" values="0.21;0.063;0.21" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="159" cy="639" r="2" fill="#00E8FF" opacity="0.24"><animate attributeName="opacity" values="0.24;0.072;0.24" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="259" cy="178" r="4" fill="#00E8FF" opacity="0.33"><animate attributeName="opacity" values="0.33;0.099;0.33" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="169" cy="615" r="3" fill="#00E8FF" opacity="0.3"><animate attributeName="opacity" values="0.3;0.09;0.3" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="122" cy="89" r="6" fill="#00E8FF" opacity="0.39"><animate attributeName="opacity" values="0.39;0.11699999999999999;0.39" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="279" cy="71" r="5" fill="#00E8FF" opacity="0.42"><animate attributeName="opacity" values="0.42;0.126;0.42" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="206" cy="94" r="5" fill="#00E8FF" opacity="0.36"><animate attributeName="opacity" values="0.36;0.108;0.36" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="304" cy="390" r="4" fill="#00E8FF" opacity="0.46"><animate attributeName="opacity" values="0.46;0.138;0.46" dur="5s" repeatCount="indefinite"/></circle>
-      <circle cx="101" cy="223" r="5" fill="#00E8FF" opacity="0.21"><animate attributeName="opacity" values="0.21;0.063;0.21" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="351" cy="329" r="3" fill="#00E8FF" opacity="0.42"><animate attributeName="opacity" values="0.42;0.126;0.42" dur="6s" repeatCount="indefinite"/></circle>
-      <circle cx="217" cy="333" r="3" fill="#00E8FF" opacity="0.3"><animate attributeName="opacity" values="0.3;0.09;0.3" dur="4s" repeatCount="indefinite"/></circle>
-      <circle cx="195" cy="19" r="4" fill="#00E8FF" opacity="0.29"><animate attributeName="opacity" values="0.29;0.087;0.29" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="285" cy="229" r="6" fill="#00E8FF" opacity="0.37"><animate attributeName="opacity" values="0.37;0.111;0.37" dur="3s" repeatCount="indefinite"/></circle>
-      <circle cx="228" cy="714" r="4" fill="#00E8FF" opacity="0.34"><animate attributeName="opacity" values="0.34;0.10200000000000001;0.34" dur="3s" repeatCount="indefinite"/></circle>
-      <text x="200" y="160" text-anchor="middle" font-size="80" opacity="0.5">&#127482;&#127487;</text>
-      <text x="200" y="300" text-anchor="middle" fill="#E8F4FF" font-size="26" font-weight="900" opacity="0.55">100% MO&#199;AMBICANO</text>
-      <text x="200" y="380" text-anchor="middle" fill="#7090C0" font-size="17" opacity="0.50">Plataforma local de rendimento</text>
-      <text x="200" y="480" text-anchor="middle" fill="#00E8FF" font-size="19" font-weight="900" opacity="0.55">&#128241; Pagamentos via e-Mola</text>
-      <text x="200" y="550" text-anchor="middle" fill="#2ECC71" font-size="19" font-weight="900" opacity="0.55">&#9989; Ganhos di&#225;rios Seg&#8211;Sex</text>
-      <text x="200" y="620" text-anchor="middle" fill="#FFD700" font-size="19" font-weight="900" opacity="0.55">&#128142; 8 N&#237;veis VIP</text>
-      <circle cx="200" cy="430" r="350" fill="none" stroke="#00E8FF" stroke-width="0.5" opacity="0.15"><animate attributeName="r" values="350;370;350" dur="7s" repeatCount="indefinite"/></circle>
-    </svg>
-  </div>
-</div>
+<div id="bg-slideshow" style="position:fixed;inset:0;z-index:-1;background:#030B1A;pointer-events:none"></div>
 
 <!-- SPLASH -->
 <div id="pg-splash" class="pg on">

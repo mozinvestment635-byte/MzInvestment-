@@ -122,18 +122,6 @@ var _iv=setInterval(function(){
 },40);
 // OFFLINE
 // Background slideshow
-(function(){
-  var slides=["bs0","bs1","bs2","bs3","bs4"];
-  var cur=0;
-  setInterval(function(){
-    var prev=cur;
-    cur=(cur+1)%slides.length;
-    var prevEl=document.getElementById(slides[prev]);
-    var curEl=document.getElementById(slides[cur]);
-    if(prevEl)prevEl.style.opacity="0";
-    if(curEl)curEl.style.opacity="1";
-  },6000);
-})();
 
 
 

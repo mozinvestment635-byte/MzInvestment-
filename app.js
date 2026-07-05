@@ -1074,7 +1074,81 @@ function confirmDeleteUser(phone,name){
 function tgPin(ph,pin){var el=document.getElementById("pin-"+ph);if(el)el.textContent=el.textContent==="••••"?pin:"••••";}
 async function tgBlock(ph,block,name){var u=aU.find(function(x){return x.phone==ph;});if(!u)return;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:block?"🚫 Conta bloqueada.":"✅ Conta desbloqueada!",time:n2(),date:tod(),read:false}]);await DB.upd(ph,{blocked:block,notifications:nn});toast(block?"Bloqueado":"Desbloqueado! ✅",block?"e":"s");await loadAdmin();admTab("users");}
 function editBal(phone,name,cur){var nv=prompt("Editar saldo de "+name+"\nActual: "+ff(cur)+"\n\nNovo saldo (MT):");if(nv===null||nv==="")return;var val=parseFloat(nv);if(isNaN(val)||val<0){toast("Valor inválido","e");return;}showConfirm("Alterar saldo de "+name+" para "+ff(val)+"?",async function(){await DB.upd(phone,{balance:val});toast("Saldo actualizado! ✅");await loadAdmin();admTab("users");});}
-function admReports(){var av=aU.filter(function(u){return u.vip_level;}).length;var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);var tw=aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);document.getElementById("adm-reports").innerHTML='<div class="card" style="border-color:#9B59B644"><div class="ctit" style="color:#C8A0FF">📊 Relatório Geral</div><div class="irow"><span class="ilbl">Total utilizadores</span><span class="ival" style="color:#C8A0FF">'+aU.length+'</span></div><div class="irow"><span class="ilbl">Com VIP activo</span><span class="ival" style="color:#FFD700">'+av+'</span></div><div class="irow"><span class="ilbl">Total depositado</span><span class="ival" style="color:#2ECC71">'+ff(td)+'</span></div><div class="irow"><span class="ilbl">Total levantado</span><span class="ival" style="color:#FF6B6B">'+ff(tw)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Em plataforma</span><span class="ival" style="color:#FFD700">'+ff(td-tw)+'</span></div></div>';}
+function admReports(){
+  var av=aU.filter(function(u){return u.vip_level;}).length;
+  var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);
+  var tw=aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);
+  // Calcular semanas (últimas 8)
+  function getWeekKey(dateStr){
+    var d=new Date(dateStr);
+    if(isNaN(d.getTime()))return null;
+    var jan1=new Date(d.getFullYear(),0,1);
+    var week=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
+    return d.getFullYear()+"-W"+String(week).padStart(2,"0");
+  }
+  function getLast8Weeks(){
+    var weeks=[];var d=new Date();
+    for(var i=7;i>=0;i--){
+      var dd=new Date(d);dd.setDate(dd.getDate()-i*7);
+      var jan1=new Date(dd.getFullYear(),0,1);
+      var week=Math.ceil(((dd-jan1)/86400000+jan1.getDay()+1)/7);
+      weeks.push(dd.getFullYear()+"-W"+String(week).padStart(2,"0"));
+    }
+    return weeks;
+  }
+  var weeks=getLast8Weeks();
+  var labels=weeks.map(function(w){return w.split("-W")[1]?"Sem "+w.split("-W")[1]:w;});
+  // Agregar dados por semana
+  function aggByWeek(arr,dateFn,valFn){
+    var map={};weeks.forEach(function(w){map[w]=0;});
+    arr.forEach(function(item){
+      var wk=getWeekKey(dateFn(item));
+      if(wk&&map[wk]!==undefined)map[wk]+=valFn(item);
+    });
+    return weeks.map(function(w){return map[w];});
+  }
+  var depData=aggByWeek(
+    aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}),
+    function(t){return t.created_at||t.approved_at||"";},
+    function(t){return parseFloat(t.amount||0);}
+  );
+  var wdData=aggByWeek(
+    aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="approved";}),
+    function(t){return t.created_at||t.approved_at||"";},
+    function(t){return parseFloat(t.amount||0);}
+  );
+  var usrData=aggByWeek(
+    aU,
+    function(u){return u.created_at||"";},
+    function(){return 1;}
+  );
+  document.getElementById("adm-reports").innerHTML=
+    '<div class="card" style="border-color:#9B59B644;margin-bottom:14px">'+
+    '<div class="ctit" style="color:#C8A0FF">📊 Relatório Geral</div>'+
+    '<div class="irow"><span class="ilbl">Total utilizadores</span><span class="ival" style="color:#C8A0FF">'+aU.length+'</span></div>'+
+    '<div class="irow"><span class="ilbl">Com VIP activo</span><span class="ival" style="color:#FFD700">'+av+'</span></div>'+
+    '<div class="irow"><span class="ilbl">Total depositado</span><span class="ival" style="color:#2ECC71">'+ff(td)+'</span></div>'+
+    '<div class="irow"><span class="ilbl">Total levantado</span><span class="ival" style="color:#FF6B6B">'+ff(tw)+'</span></div>'+
+    '<div class="irow" style="border:none"><span class="ilbl">Em plataforma</span><span class="ival" style="color:#FFD700">'+ff(td-tw)+'</span></div>'+
+    '</div>'+
+    '<div class="card" style="border-color:#2ECC7144;margin-bottom:14px">'+
+    '<div class="ctit" style="color:#2ECC71">📈 Depósitos por Semana (MT)</div>'+
+    '<canvas id="chart-deps" height="160"></canvas></div>'+
+    '<div class="card" style="border-color:#FF6B6B44;margin-bottom:14px">'+
+    '<div class="ctit" style="color:#FF6B6B">📉 Levantamentos por Semana (MT)</div>'+
+    '<canvas id="chart-wds" height="160"></canvas></div>'+
+    '<div class="card" style="border-color:#00B4D844">'+
+    '<div class="ctit" style="color:#00B4D8">👥 Novos Utilizadores por Semana</div>'+
+    '<canvas id="chart-usr" height="160"></canvas></div>';
+  // Renderizar gráficos com Chart.js
+  setTimeout(function(){
+    if(typeof Chart==="undefined")return;
+    var cfg=function(label,data,color){return{type:"bar",data:{labels:labels,datasets:[{label:label,data:data,backgroundColor:color+"88",borderColor:color,borderWidth:2,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#7090C0",font:{size:10}},grid:{color:"#1E3060"}},y:{ticks:{color:"#7090C0",font:{size:10}},grid:{color:"#1E3060"},beginAtZero:true}}}};};
+    new Chart(document.getElementById("chart-deps"),cfg("Depósitos",depData,"#2ECC71"));
+    new Chart(document.getElementById("chart-wds"),cfg("Levantamentos",wdData,"#FF6B6B"));
+    new Chart(document.getElementById("chart-usr"),cfg("Utilizadores",usrData,"#00B4D8"));
+  },100);
+}
 function admPromo(){
   var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}"),list=Object.entries(promos);
   var html3='<div class="card" style="border-color:#FFD70044"><div class="ctit" style="color:#FFD700">🎁 Códigos Promocionais</div>'

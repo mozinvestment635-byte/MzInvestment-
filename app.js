@@ -5,6 +5,8 @@ var FN_COMPLETE_TASK=SU+"/functions/v1/complete-task";
 var FN_REQUEST_WITHDRAWAL=SU+"/functions/v1/request-withdrawal";
 var FN_ACTIVATE_VIP=SU+"/functions/v1/activate-vip";
 var FN_RECORD_FP=SU+"/functions/v1/record-signup-fingerprint";
+var FN_SEND_PUSH=SU+"/functions/v1/send-push";
+var VAPID_PUBLIC_KEY="Z7SsiiWSwpjxYi8hOFO7hXnNfcVDtc38xzNhk5mlcahbpn9Ni2p-DbddGnFdt1ooiO-f-XTe6dmKX7djj_yEwQ";
 function getDeviceFp(){
   try{
     var fp=localStorage.getItem("mz-dfp");
@@ -23,6 +25,20 @@ function getDb(){
   if(db)return db;
   try{if(typeof supabase!=="undefined"){db=supabase.createClient(SU,SK);}}catch(e){}
   return db;
+}
+function urlB64ToUint8Array(b){var p=atob(b.replace(/-/g,'+').replace(/_/g,'/'));var a=new Uint8Array(p.length);for(var i=0;i<p.length;i++)a[i]=p.charCodeAt(i);return a;}
+async function registerPush(){
+  try{
+    if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
+    var reg=await navigator.serviceWorker.ready;
+    var perm=await Notification.requestPermission();
+    if(perm!=='granted')return;
+    var sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8Array(VAPID_PUBLIC_KEY)});
+    if(U&&U.phone){
+      var db2=getDb();if(!db2)return;
+      await db2.from('push_subscriptions').upsert({phone:U.phone,subscription:JSON.parse(JSON.stringify(sub))},{onConflict:'phone'});
+    }
+  }catch(e){}
 }
 var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",fee:100},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",fee:200},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",fee:300},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",fee:500},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",fee:800},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",fee:1400},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",fee:2400},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",fee:4000},{l:9,p:150000,d:15000,v:27,c:"#FFB300",n:"Topázio",fee:6000},{l:10,p:250000,d:26000,v:28,c:"#2196F3",n:"Safira",fee:9000},{l:11,p:400000,d:44000,v:30,c:"#AB47BC",n:"Ametista",fee:13000},{l:12,p:650000,d:75000,v:31,c:"#ECEFF1",n:"Pérola",fee:18000},{l:13,p:1000000,d:120000,v:32,c:"#78909C",n:"Titânio",fee:25000},{l:14,p:1600000,d:200000,v:33,c:"#DAA520",n:"Coroa",fee:35000},{l:15,p:2500000,d:325000,v:35,c:"#FF6F00",n:"Soberano",fee:50000}];
 var RB=[0,50,75,100,150,200];
@@ -230,6 +246,7 @@ async function doLogin(){
     done=dt[tkey()]||[];
   }catch(e){done=[];}
   DB.upd(U.phone,{last_login:new Date().toISOString()});
+  registerPush();
   loadMain();pg("pg-main");
   applyPendingPromo();
   checkMonthlyFee();
@@ -965,12 +982,13 @@ async function appDep(id,phone,amount,vl,name){
       await creditReferrerOnVip(u.invited_by,name,parseInt(vl),vipObj?vipObj.p:0);
     }
   }
-  push("MZInvestment","Depósito de "+ff(amount)+" aprovado! VIP "+vl+" activado.");
-  window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n💰 "+amount+" MT\n💎 VIP "+vl+" activado"),"_blank");
+  push("MZInvestment","Deposito de "+ff(amount)+" aprovado! VIP "+vl+" activado.");
+  try{fetch(FN_SEND_PUSH,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phone,title:"✅ Deposito Aprovado",body:"O teu deposito de "+ff(amount)+" foi aprovado! VIP "+vl+" activo.",url:"/"})});}catch(e){}
+  window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ DEPOSITO APROVADO\n👤 "+name+"\n💰 "+amount+" MT\n💎 VIP "+vl+" activado"),"_blank");
   toast("Aprovado! ✅");
   await loadAdmin();
 }
-async function appWd(id,phone,amount,name){await DB.txUpd(id,{status:"approved"});var u=aU.find(function(x){return x.phone==phone;});if(u){var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Verifica o teu e-Mola.",time:n2(),date:tod(),read:false}]);await DB.upd(phone,{notifications:nn});}push("MZInvestment","Levantamento de "+ff(amount)+" aprovado!");window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n💰 "+amount+" MT"),"_blank");toast("Aprovado! ✅");await loadAdmin();}
+async function appWd(id,phone,amount,name){await DB.txUpd(id,{status:"approved"});var u=aU.find(function(x){return x.phone==phone;});if(u){var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Verifica o teu e-Mola.",time:n2(),date:tod(),read:false}]);await DB.upd(phone,{notifications:nn});}try{fetch(FN_SEND_PUSH,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phone,title:"✅ Levantamento Aprovado",body:"O teu levantamento de "+ff(amount)+" foi processado!",url:"/"})});}catch(e){}push("MZInvestment","Levantamento de "+ff(amount)+" aprovado!");window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n💰 "+amount+" MT"),"_blank");toast("Aprovado! ✅");await loadAdmin();}
 async function rejTx(id,phone,type,name,amount){await DB.txUpd(id,{status:"rejected"});var u=aU.find(function(x){return x.phone==phone;});if(u){var m=type==="dep"?"❌ Depósito rejeitado.":"❌ Levantamento rejeitado. Saldo devolvido.";var nn=(u.notifications||[]).concat([{id:Date.now(),msg:m,time:n2(),date:tod(),read:false}]);var patch={notifications:nn};if(type==="wd")patch.balance=(parseFloat(u.balance)||0)+parseFloat(amount);await DB.upd(phone,patch);}toast("Rejeitado","e");await loadAdmin();}
 function admCredit(){document.getElementById("adm-credit").innerHTML='<div class="card" style="border-color:#2ECC7144"><div class="ctit" style="color:#2ECC71">➕ Creditar Saldo</div><div class="fld"><label>Número</label><input type="tel" id="cr-ph" placeholder="Ex: 840000001" oninput="chkCr()"/><div id="cr-info" style="font-size:12px;margin-top:4px"></div></div><div class="fld"><label>Valor (MT)</label><input type="number" id="cr-amt" placeholder="Ex: 1500"/></div><div class="fld"><label>Nota</label><input type="text" id="cr-note" placeholder="Ex: Depósito VIP 2"/></div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px" onclick="doCredit()">✅ Confirmar</button></div>';}
 async function chkCr(){var ph=document.getElementById("cr-ph").value;var el=document.getElementById("cr-info");if(!el)return;var u=aU.find(function(x){return x.phone==ph;});el.textContent=u?"✅ "+u.name:ph.length>=9?"❌ Não encontrado":"";el.style.color=u?"#2ECC71":"#E74C3C";}

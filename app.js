@@ -40,11 +40,10 @@ async function registerPush(){
     }
   }catch(e){}
 }
-var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",fee:100},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",fee:200},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",fee:300},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",fee:500},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",fee:800},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",fee:1400},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",fee:2400},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",fee:4000},{l:9,p:150000,d:15000,v:27,c:"#FFB300",n:"Topázio",fee:6000},{l:10,p:250000,d:26000,v:28,c:"#2196F3",n:"Safira",fee:9000},{l:11,p:400000,d:44000,v:30,c:"#AB47BC",n:"Ametista",fee:13000},{l:12,p:650000,d:75000,v:31,c:"#ECEFF1",n:"Pérola",fee:18000},{l:13,p:1000000,d:120000,v:32,c:"#78909C",n:"Titânio",fee:25000},{l:14,p:1600000,d:200000,v:33,c:"#DAA520",n:"Coroa",fee:35000},{l:15,p:2500000,d:325000,v:35,c:"#FF6F00",n:"Soberano",fee:50000}];
+var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",fee:125},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",fee:200},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",fee:350},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",fee:500},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",fee:750},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",fee:1000},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",fee:1500},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",fee:2500},{l:9,p:150000,d:15000,v:27,c:"#FFB300",n:"Topázio",fee:3500},{l:10,p:250000,d:26000,v:28,c:"#2196F3",n:"Safira",fee:5000},{l:11,p:400000,d:44000,v:30,c:"#AB47BC",n:"Ametista",fee:7000},{l:12,p:650000,d:75000,v:31,c:"#ECEFF1",n:"Pérola",fee:10000},{l:13,p:1000000,d:120000,v:32,c:"#78909C",n:"Titânio",fee:15000},{l:14,p:1600000,d:200000,v:33,c:"#DAA520",n:"Coroa",fee:20000},{l:15,p:2500000,d:325000,v:35,c:"#FF6F00",n:"Soberano",fee:30000}];
 var RB=[0,50,75,100,150,200];
 var FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:3,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:5,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:10,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:16,icon:"💰",desc:"Máximo lucro"}];
-var _savedFunds=null;try{var _sf=localStorage.getItem("mz-adm-funds");if(_sf)_savedFunds=JSON.parse(_sf);}catch(e){}
-var FP=(_savedFunds||FUNDS).map(function(f){return Object.assign({},f,{cur:Math.floor(Math.random()*60+20)});});
+var FP=[];
 var VDS=[{id:1,t:"Blinding Lights",a:"The Weeknd",yt:"4NRXx6U8ABQ",th:"https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg"},{id:2,t:"Shape of You",a:"Ed Sheeran",yt:"JGwWNGJdvx8",th:"https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg"},{id:3,t:"Believer",a:"Imagine Dragons",yt:"7wtfhZwyrcc",th:"https://i.ytimg.com/vi/7wtfhZwyrcc/hqdefault.jpg"},{id:4,t:"Levitating",a:"Dua Lipa",yt:"TUVcZfQe-Kw",th:"https://i.ytimg.com/vi/TUVcZfQe-Kw/hqdefault.jpg"},{id:5,t:"Love Yourself",a:"Justin Bieber",yt:"oyEuk8j8imI",th:"https://i.ytimg.com/vi/oyEuk8j8imI/hqdefault.jpg"},{id:6,t:"Save Your Tears",a:"The Weeknd",yt:"LIIDh-qI9oI",th:"https://i.ytimg.com/vi/LIIDh-qI9oI/hqdefault.jpg"},{id:7,t:"Bad Habits",a:"Ed Sheeran",yt:"orJSJGHjBLI",th:"https://i.ytimg.com/vi/orJSJGHjBLI/hqdefault.jpg"},{id:8,t:"Butter",a:"BTS",yt:"WMweEpGlu_U",th:"https://i.ytimg.com/vi/WMweEpGlu_U/hqdefault.jpg"},{id:9,t:"Dynamite",a:"BTS",yt:"gdZLi9oWNZg",th:"https://i.ytimg.com/vi/gdZLi9oWNZg/hqdefault.jpg"},{id:10,t:"STAY",a:"The Kid LAROI",yt:"hCuMWrfXG4E",th:"https://i.ytimg.com/vi/hCuMWrfXG4E/hqdefault.jpg"},{id:11,t:"drivers license",a:"Olivia Rodrigo",yt:"ZmDBbnmKpqQ",th:"https://i.ytimg.com/vi/ZmDBbnmKpqQ/hqdefault.jpg"},{id:12,t:"Easy On Me",a:"Adele",yt:"U3ASj1L6_sY",th:"https://i.ytimg.com/vi/U3ASj1L6_sY/hqdefault.jpg"},{id:13,t:"As It Was",a:"Harry Styles",yt:"H5v3kku4y6Q",th:"https://i.ytimg.com/vi/H5v3kku4y6Q/hqdefault.jpg"},{id:14,t:"Anti-Hero",a:"Taylor Swift",yt:"b1kbLwvqugk",th:"https://i.ytimg.com/vi/b1kbLwvqugk/hqdefault.jpg"},{id:15,t:"Flowers",a:"Miley Cyrus",yt:"G7KNmW9a75Y",th:"https://i.ytimg.com/vi/G7KNmW9a75Y/hqdefault.jpg"},{id:16,t:"Heat Waves",a:"Glass Animals",yt:"mRD0-GxqHVo",th:"https://i.ytimg.com/vi/mRD0-GxqHVo/hqdefault.jpg"},{id:17,t:"Yaba Buluku",a:"Dj Tarico",yt:"CXjLmsOQTkA",th:"https://i.ytimg.com/vi/CXjLmsOQTkA/hqdefault.jpg"},{id:18,t:"Jerusalema",a:"Master KG",yt:"fCZVL_8D048",th:"https://i.ytimg.com/vi/fCZVL_8D048/hqdefault.jpg"},{id:19,t:"Cruel Summer",a:"Taylor Swift",yt:"ic8j13piAhQ",th:"https://i.ytimg.com/vi/ic8j13piAhQ/hqdefault.jpg"},{id:20,t:"Calm Down",a:"Rema",yt:"WcIcVapfqXw",th:"https://i.ytimg.com/vi/WcIcVapfqXw/hqdefault.jpg"},{id:21,t:"Despacito",a:"Luis Fonsi",yt:"kJQP7kiw5Fk",th:"https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg"},{id:22,t:"See You Again",a:"Wiz Khalifa",yt:"RgKAFK5djSk",th:"https://i.ytimg.com/vi/RgKAFK5djSk/hqdefault.jpg"},{id:23,t:"Uptown Funk",a:"Mark Ronson",yt:"OPf0YbXqDm0",th:"https://i.ytimg.com/vi/OPf0YbXqDm0/hqdefault.jpg"},{id:24,t:"Roar",a:"Katy Perry",yt:"CevxZvSJLk8",th:"https://i.ytimg.com/vi/CevxZvSJLk8/hqdefault.jpg"},{id:25,t:"Sorry",a:"Justin Bieber",yt:"fRh_vgS2dFE",th:"https://i.ytimg.com/vi/fRh_vgS2dFE/hqdefault.jpg"},{id:26,t:"Counting Stars",a:"OneRepublic",yt:"hT_nvWreIhg",th:"https://i.ytimg.com/vi/hT_nvWreIhg/hqdefault.jpg"},{id:27,t:"Faded",a:"Alan Walker",yt:"60ItHLz5WEA",th:"https://i.ytimg.com/vi/60ItHLz5WEA/hqdefault.jpg"},{id:28,t:"Hello",a:"Adele",yt:"YQHsXMglC9A",th:"https://i.ytimg.com/vi/YQHsXMglC9A/hqdefault.jpg"},{id:29,t:"Closer",a:"The Chainsmokers",yt:"PT2_F-1esPk",th:"https://i.ytimg.com/vi/PT2_F-1esPk/hqdefault.jpg"},{id:30,t:"Thinking Out Loud",a:"Ed Sheeran",yt:"lp-EO5I60KA",th:"https://i.ytimg.com/vi/lp-EO5I60KA/hqdefault.jpg"},{id:31,t:"Sugar",a:"Maroon 5",yt:"09R8_2nJtjg",th:"https://i.ytimg.com/vi/09R8_2nJtjg/hqdefault.jpg"},{id:32,t:"Stay With Me",a:"Sam Smith",yt:"pB-5XG-DbAA",th:"https://i.ytimg.com/vi/pB-5XG-DbAA/hqdefault.jpg"},{id:33,t:"Perfect",a:"Ed Sheeran",yt:"2Vv-BfVoq4g",th:"https://i.ytimg.com/vi/2Vv-BfVoq4g/hqdefault.jpg"},{id:34,t:"Old Town Road",a:"Lil Nas X",yt:"w2Ov5jzm3j8",th:"https://i.ytimg.com/vi/w2Ov5jzm3j8/hqdefault.jpg"},{id:35,t:"Watermelon Sugar",a:"Harry Styles",yt:"E07s5ZYygMg",th:"https://i.ytimg.com/vi/E07s5ZYygMg/hqdefault.jpg"},{id:36,t:"Wrecking Ball",a:"Miley Cyrus",yt:"My2FRPA3Gf8",th:"https://i.ytimg.com/vi/My2FRPA3Gf8/hqdefault.jpg"},{id:37,t:"Lose Yourself",a:"Eminem",yt:"_Yhyp-_hX2s",th:"https://i.ytimg.com/vi/_Yhyp-_hX2s/hqdefault.jpg"},{id:38,t:"Bad Romance",a:"Lady Gaga",yt:"qrO4YZeyl0I",th:"https://i.ytimg.com/vi/qrO4YZeyl0I/hqdefault.jpg"}];
 var U=null,done=[],wdAmt=null,depVip=null,fp=null,myInv=[],earn=[],isSubAdmin=false;
 // UTILS
@@ -382,7 +381,7 @@ function showMonthlyFee(){
     +"<div class='irow'><span class='ilbl'>Válida até</span><span class='ival'>"+dueStr+"</span></div>"
     +"<div class='irow' style='border:none'><span class='ilbl'>Estado</span><span class='ival' style='color:"+statusColor+"'>"+statusTxt+"</span></div>"
     +"</div>"
-    +"<div style='color:#7090C0;font-size:13px;line-height:1.7;margin-bottom:14px'>A taxa mensal mantém a tua conta activa para realizar tarefas. Paga via saldo (se tiveres) ou via depósito e-Mola.</div>"
+    +"<div style='color:#7090C0;font-size:13px;line-height:1.7;margin-bottom:14px'>💡 <strong style='color:#A0C0E0'>O que é a taxa mensal?</strong><br>O pagamento da taxa mensal serve para salvaguardar os seus dados, mantendo-os seguros e confidenciais na nossa plataforma. Garante também a continuidade e estabilidade do serviço, bem como o suporte prioritário à sua conta. Paga via e-Mola e envia o comprovativo.</div>"
     +"<button class='btn-p' onclick='payMonthlyFee()'>💳 Pagar Taxa Mensal — "+ff(fee)+"</button>"
   );
 }
@@ -806,7 +805,7 @@ async function submitDep(){
   depVip=null;
   goTab("t-home","n-home");
 }
-function renderFund(){
+async function renderFund(){
   var ul=(U.referrals||0)>=5||U.fund_unlocked===true;
   if(!ul){
     var pct=Math.min(((U.referrals||0)/5)*100,100);
@@ -823,14 +822,18 @@ function renderFund(){
     document.getElementById("f-browse").innerHTML=lockHtml;
     return;
   }
+  // Carregar fundos activos da base de dados
+  var db2=getDb();if(!db2)return;
+  var r=await db2.from("funds").select("*").eq("active",true).order("days");
+  FP=(r.data||[]).map(function(f){return Object.assign({},f,{cur:Math.floor(Math.random()*60+20)});});
   var html2='<div class="card" style="border-color:#2ECC7155;margin-bottom:12px"><div style="color:#2ECC71;font-size:14px;font-weight:900">Fundo desbloqueado!</div></div>';
   FP.forEach(function(p){
     var subscribers=Math.floor(p.cur*0.8+10);
     var capColor=p.cur>=90?"#E74C3C":p.cur>=70?"#FFD700":"#2ECC71";
     var capSt=p.cur>=90?"Quase cheio":p.cur>=70?"Alta procura":"Disponivel";
     html2+='<div class="fcard">'
-      +'<div class="fhd"><div style="font-size:28px">'+p.icon+'</div>'
-      +'<div><div style="font-size:15px;font-weight:900">'+p.label+'</div><div style="font-size:13px;color:#3A6090">'+p.desc+'</div></div>'
+      +'<div class="fhd"><div style="font-size:28px">'+(p.icon||'💰')+'</div>'
+      +'<div><div style="font-size:15px;font-weight:900">'+p.label+'</div><div style="font-size:13px;color:#3A6090">'+(p.description||'')+'</div></div>'
       +'<div style="color:#2ECC71;font-size:22px;font-weight:900">+'+p.rate+'%</div></div>'
       +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">'
       +'<span style="color:#7090C0">Taxa de adesao</span>'
@@ -857,10 +860,52 @@ function renderFund(){
   renderMyInv();
 }
 
-function selFund(id){fp=null;for(var i=0;i<FP.length;i++){if(FP[i].id===id){fp=FP[i];break;}}var p=fp;document.getElementById("f-invest").innerHTML='<div class="fcard"><div class="fhd"><div style="font-size:30px">'+p.icon+'</div><div><div style="font-size:15px;font-weight:900">'+p.label+' · +'+p.rate+'%</div></div></div></div><div class="fld" style="margin-top:12px"><label>Valor (mín. 500 MT)</label><input type="number" id="fa" placeholder="Ex: 1000" oninput="fundPv()"/></div><div id="f-pv" style="display:none" class="card"></div><div style="color:#5070A0;font-size:14px;margin-bottom:12px">Saldo: <strong style="color:#fff">'+ff(U.balance)+'</strong></div><button class="btn-p" onclick="doInvest()">Confirmar 📈</button>';switchFT("invest");}
+function selFund(id){fp=null;for(var i=0;i<FP.length;i++){if(FP[i].id===id){fp=FP[i];break;}}var p=fp;document.getElementById("f-invest").innerHTML='<div class="fcard"><div class="fhd"><div style="font-size:30px">'+(p.icon||'💰')+'</div><div><div style="font-size:15px;font-weight:900">'+p.label+' · +'+p.rate+'%</div></div></div></div><div class="fld" style="margin-top:12px"><label>Valor (mín. 500 MT)</label><input type="number" id="fa" placeholder="Ex: 1000" oninput="fundPv()"/></div><div id="f-pv" style="display:none" class="card"></div><div style="color:#5070A0;font-size:14px;margin-bottom:12px">Saldo: <strong style="color:#fff">'+ff(U.balance)+'</strong></div><button class="btn-p" onclick="doInvest()">Confirmar 📈</button>';switchFT("invest");}
 function fundPv(){var a=parseInt(document.getElementById("fa").value||0),pv=document.getElementById("f-pv");if(!pv||!fp)return;if(a>=500){var pr=Math.round(a*fp.rate/100);pv.style.display="block";pv.innerHTML='<div class="irow"><span class="ilbl">Capital</span><span class="ival">'+ff(a)+'</span></div><div class="irow"><span class="ilbl">Retorno</span><span class="ival" style="color:#2ECC71">'+ff(pr)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Total</span><span class="ival" style="color:#00D4FF">'+ff(a+pr)+'</span></div>';}else pv.style.display="none";}
-async function doInvest(){var a=parseInt(document.getElementById("fa").value||0);if(!fp||a<500){toast("Mínimo: 500 MT","e");return;}if(a>U.balance){toast("Saldo insuficiente","e");return;}var pr=Math.round(a*fp.rate/100),mt=new Date();mt.setDate(mt.getDate()+fp.days);await syncU({balance:U.balance-a});myInv.push({plan:fp,amount:a,profit:pr,total:a+pr,date:tod(),maturity:mt.toLocaleDateString("pt-MZ")});earn.push({desc:"Fundo "+fp.label,a:-a,date:tod()});toast("Investimento confirmado! 📈");fp=null;renderMyInv();switchFT("mine");}
-function renderMyInv(){document.getElementById("f-mine").innerHTML=myInv.length===0?'<div class="empty">Sem investimentos activos</div>':myInv.map(function(iv){return '<div class="fcard"><div class="fhd"><div style="font-size:30px">'+iv.plan.icon+'</div><div><div style="font-size:15px;font-weight:900">'+iv.plan.label+' · +'+iv.plan.rate+'%</div><div style="font-size:13px;color:#3A6090">'+iv.date+'</div></div><div style="color:#2ECC71;font-size:18px">✅</div></div><div class="irow"><span class="ilbl">Capital</span><span class="ival">'+ff(iv.amount)+'</span></div><div class="irow"><span class="ilbl">Lucro</span><span class="ival" style="color:#2ECC71">'+ff(iv.profit)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Vence</span><span class="ival">'+iv.maturity+'</span></div></div>';}).join("");}
+async function doInvest(){
+  var a=parseInt(document.getElementById("fa").value||0);
+  if(!fp||a<500){toast("Mínimo: 500 MT","e");return;}
+  if(a>U.balance){toast("Saldo insuficiente","e");return;}
+  var pr=Math.round(a*fp.rate/100);
+  var mt=new Date();mt.setDate(mt.getDate()+fp.days);
+  await syncU({balance:U.balance-a});
+  // Guardar investimento na base de dados
+  var db2=getDb();if(db2){
+    await db2.from("investments").insert([{
+      phone:U.phone,user_name:U.name,
+      fund_id:fp.id,fund_label:fp.label,
+      amount:a,rate:fp.rate,
+      return_at:mt.toISOString(),
+      status:"active"
+    }]);
+  }
+  earn.push({desc:"Fundo "+fp.label,a:-a,date:tod()});
+  toast("Investimento confirmado! 📈");fp=null;
+  await renderMyInv();switchFT("mine");
+}
+async function renderMyInv(){
+  var db2=getDb();
+  var invs=[];
+  if(db2){var r=await db2.from("investments").select("*").eq("phone",U.phone).order("invested_at",{ascending:false});invs=r.data||[];}
+  document.getElementById("f-mine").innerHTML=invs.length===0?'<div class="empty">Sem investimentos activos</div>':invs.map(function(iv){
+    var retDate=new Date(iv.return_at);
+    var now=new Date();
+    var daysLeft=Math.ceil((retDate-now)/(1000*60*60*24));
+    var profit=Math.round(iv.amount*iv.rate/100);
+    var statusColor=iv.status==="matured"?"#FFD700":"#2ECC71";
+    var statusTxt=iv.status==="matured"?"✅ Pronto a receber":"⏳ "+Math.max(0,daysLeft)+" dia(s) restantes";
+    return '<div class="fcard">'
+      +'<div class="fhd"><div style="font-size:30px">💰</div>'
+      +'<div><div style="font-size:15px;font-weight:900">'+iv.fund_label+' · +'+iv.rate+'%</div>'
+      +'<div style="font-size:13px;color:#3A6090">'+new Date(iv.invested_at).toLocaleDateString("pt-MZ")+'</div></div>'
+      +'<div style="color:'+statusColor+';font-size:13px;font-weight:900">'+statusTxt+'</div></div>'
+      +'<div class="irow"><span class="ilbl">Capital investido</span><span class="ival">'+ff(iv.amount)+'</span></div>'
+      +'<div class="irow"><span class="ilbl">Lucro esperado</span><span class="ival" style="color:#2ECC71">+'+ff(profit)+'</span></div>'
+      +'<div class="irow"><span class="ilbl">Total ao vencer</span><span class="ival" style="color:#00D4FF">'+ff(iv.amount+profit)+'</span></div>'
+      +'<div class="irow" style="border:none"><span class="ilbl">Data de retorno</span><span class="ival">'+retDate.toLocaleDateString("pt-MZ")+'</span></div>'
+      +'</div>';
+  }).join("");
+}
 function simFund(planId, rate){
   planId=String(planId); rate=parseInt(rate)||0;
   var el=document.getElementById("sim-"+planId);
@@ -1287,12 +1332,11 @@ function renderVipHist(){
 
 
 // ─── ADMIN FUNDOS ────────────────────────────────────────
-function admFundos(){
-  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+async function admFundos(){
   var el=document.getElementById("adm-fundos");if(!el)return;
   el.innerHTML='<div class="card" style="border-color:#00D4FF44"><div class="ctit" style="color:#00D4FF">📈 Gerir Fundos de Investimento</div>'
-    +'<div style="color:#7090C0;font-size:13px;margin-bottom:16px">Edita os planos existentes ou cria novos fundos.</div>'
-    +'<div id="fund-list-adm"></div>'
+    +'<div style="color:#7090C0;font-size:13px;margin-bottom:16px">Abre ou fecha fundos. Fundos fechados desaparecem para utilizadores mas os investimentos activos mantêm-se.</div>'
+    +'<div id="fund-list-adm"><div style="color:#7090C0;text-align:center;padding:20px">A carregar...</div></div>'
     +'<div class="card" style="border-color:#2ECC7144;margin-top:16px"><div style="color:#2ECC71;font-weight:900;margin-bottom:12px">➕ Novo Fundo</div>'
     +'<div class="fld"><label>Nome (ex: 60 Dias)</label><input type="text" id="nf-label" placeholder="Ex: 45 Dias"/></div>'
     +'<div class="fld"><label>Duração (dias)</label><input type="number" id="nf-days" placeholder="Ex: 45"/></div>'
@@ -1301,76 +1345,68 @@ function admFundos(){
     +'<div class="fld"><label>Descrição</label><input type="text" id="nf-desc" placeholder="Ex: Retorno médio"/></div>'
     +'<button style="width:100%;padding:13px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:900;cursor:pointer" onclick="createFund()">✅ Criar Fundo</button>'
     +'</div></div>';
-  renderAdmFundList(funds);
+  await renderAdmFundList();
 }
 
-function renderAdmFundList(funds){
+async function renderAdmFundList(){
   var el=document.getElementById("fund-list-adm");if(!el)return;
-  el.innerHTML=funds.map(function(f,i){
-    return '<div class="card" style="border-color:#00D4FF33;margin-bottom:10px">'
+  var db2=getDb();if(!db2){el.innerHTML='<div style="color:#FF6B6B">Erro de ligação.</div>';return;}
+  var r=await db2.from("funds").select("*").order("days");
+  var funds=r.data||[];
+  if(funds.length===0){el.innerHTML='<div class="empty">Sem fundos criados.</div>';return;}
+  el.innerHTML=funds.map(function(f){
+    var isActive=f.active!==false;
+    return '<div class="card" style="border-color:'+(isActive?"#00D4FF33":"#FF6B6B33")+';margin-bottom:10px">'
       +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
-      +'<div style="font-size:28px">'+f.icon+'</div>'
-      +'<div style="flex:1"><div style="font-weight:900">'+f.label+'</div><div style="color:#5070A0;font-size:13px">ID: '+f.id+'</div></div>'
-      +'<div style="color:#2ECC71;font-size:20px;font-weight:900">+'+f.rate+'%</div>'
+      +'<div style="font-size:28px">'+(f.icon||'💰')+'</div>'
+      +'<div style="flex:1"><div style="font-weight:900">'+f.label+'</div>'
+      +'<div style="color:#5070A0;font-size:13px">'+f.days+' dias · +'+f.rate+'%</div></div>'
+      +'<div style="color:'+(isActive?"#2ECC71":"#FF6B6B")+';font-size:13px;font-weight:900">'+(isActive?"● Aberto":"● Fechado")+'</div>'
       +'</div>'
       +'<div style="display:flex;gap:8px">'
-      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:900">'+f.days+'d</div><div style="color:#5070A0;font-size:10px">Prazo</div></div>'
-      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:900;color:#00D4FF">+'+f.rate+'%</div><div style="color:#5070A0;font-size:10px">Retorno</div></div>'
+      +(isActive
+        ?'<button onclick="closeFund(\''+f.id+'\')" style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C;border-radius:10px;color:#FF6B6B;font-size:13px;font-weight:900;cursor:pointer">🔒 Fechar Fundo</button>'
+        :'<button onclick="reopenFund(\''+f.id+'\')" style="flex:1;padding:10px;background:#0a2d0a;border:1px solid #2ECC71;border-radius:10px;color:#2ECC71;font-size:13px;font-weight:900;cursor:pointer">🔓 Reabrir Fundo</button>')
       +'</div>'
-      +'<div style="display:flex;gap:8px;margin-top:10px">'
-      +'<button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="editFund('+i+')">✏️ Editar</button>'
-      +'<button style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C44;border-radius:10px;color:#E74C3C;font-size:13px;font-weight:900;cursor:pointer" onclick="deleteFund(this.dataset.id)" data-id="'+f.id+'">Remover</button>'
-      +'</div></div>';
+      +'</div>';
   }).join("");
 }
 
-function editFund(i){
-  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
-  var f=funds[i];
-  var newRate=prompt("Editar retorno de "+f.label+". Actual: +"+f.rate+"%. Novo retorno (%): ");
-  if(newRate===null)return;
-  var newLabel=prompt("Novo nome (actual: "+f.label+"). Deixa vazio para manter:");
-  if(newLabel===null)return;
-  funds[i].rate=parseInt(newRate)||f.rate;
-  funds[i].label=newLabel||f.label;
-  localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
-  // Update global FP
-  FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
-  toast("Fundo actualizado! ✅");
-  admFundos();
-}
-
-function deleteFund(id){
-  showConfirm("Remover este fundo?",function(){
-    var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
-    funds=funds.filter(function(f){return f.id!==id;});
-    localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
-    FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
-    toast("Fundo removido!","e");
-    admFundos();
+async function closeFund(id){
+  showConfirm("Fechar este fundo? Deixará de aparecer para novos investidores. Os investimentos activos mantêm-se.",async function(){
+    var db2=getDb();if(!db2)return;
+    await db2.from("funds").update({active:false}).eq("id",id);
+    toast("Fundo fechado! ✅");await renderAdmFundList();
   });
 }
 
-function createFund(){
+async function reopenFund(id){
+  showConfirm("Reabrir este fundo? Voltará a aparecer para todos os utilizadores.",async function(){
+    var db2=getDb();if(!db2)return;
+    await db2.from("funds").update({active:true}).eq("id",id);
+    toast("Fundo reaberto! ✅");await renderAdmFundList();
+  });
+}
+
+async function createFund(){
   var label=document.getElementById("nf-label").value.trim();
   var days=parseInt(document.getElementById("nf-days").value||0);
   var rate=parseInt(document.getElementById("nf-rate").value||0);
   var icon=document.getElementById("nf-icon").value.trim()||"💼";
   var desc=document.getElementById("nf-desc").value.trim()||"Novo plano";
   if(!label||!days||!rate){toast("Preenche todos os campos","e");return;}
-  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
-  var newFund={id:"f"+days+"_"+Date.now(),days:days,label:label,rate:rate,icon:icon,desc:desc};
-  funds.push(newFund);
-  localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
-  FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
+  var db2=getDb();if(!db2)return;
+  var newId="f"+days+"_"+Date.now();
+  await db2.from("funds").insert([{id:newId,days:days,label:label,rate:rate,icon:icon,description:desc,active:true}]);
   toast("Fundo '"+label+"' criado! ✅");
   document.getElementById("nf-label").value="";
   document.getElementById("nf-days").value="";
   document.getElementById("nf-rate").value="";
   document.getElementById("nf-icon").value="";
   document.getElementById("nf-desc").value="";
-  admFundos();
+  await renderAdmFundList();
 }
+
 
 
 // ─── PROFILE EXTRA FEATURES ──────────────────────────────

@@ -235,7 +235,6 @@ async function doLogin(){
   if(at.c>=3&&(Date.now()-at.t)<300000){err.textContent="Bloqueado "+Math.ceil((300000-(Date.now()-at.t))/60000)+" min.";err.style.display="block";return;}
   var btn=document.getElementById("l-btn");btn.disabled=true;btn.textContent="A entrar...";
   var u=await DB.get(ph);
-  if(!u){var lu=JSON.parse(localStorage.getItem("mz-lu")||"[]");u=lu.find(function(x){return x.phone===ph;})||null;}
   btn.disabled=false;btn.textContent="Entrar →";
   if(!u||u.pin!==pin){var nc=at.c+1;localStorage.setItem(ak,JSON.stringify({c:nc,t:Date.now()}));err.textContent=nc<3?"PIN incorrecto. "+(3-nc)+" tentativa(s).":"Demasiadas tentativas. Aguarda 5 min.";err.style.display="block";return;}
   localStorage.removeItem(ak);
@@ -297,8 +296,6 @@ async function doRegister(){
   var pb=0;var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");
   if(ref&&promos[ref]&&(promos[ref].used||0)<promos[ref].max)pb=promos[ref].bonus||0;
   var btn=document.getElementById("r-btn");btn.disabled=true;btn.textContent="A criar conta...";
-  var lu=JSON.parse(localStorage.getItem("mz-lu")||"[]");
-  if(lu.find(function(x){return x.phone===ph;})){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
   var ex=await DB.get(ph);if(ex){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
   var rc="MZ"+Math.floor(100000+Math.random()*900000);
   var notif=[{id:1,msg:"Bem-vindo à MZInvestment! Activa um VIP para começar a ganhar.",time:n2(),date:tod(),read:false}];
@@ -306,7 +303,7 @@ async function doRegister(){
   var nu={phone:ph,pin:pi,name:nm,balance:pb,referrals:0,ref_code:rc,total_earned:pb,activated_at:tod(),photo:"",lang:"pt",blocked:false,task_history:{},notifications:notif,team_members:[],terms_accepted:tod(),terms_accepted_time:n2()};
   if(ref)nu.invited_by=ref;
   var sv=await DB.save(nu);
-  if(!sv){var newU=Object.assign({},nu,{id:"local-"+Date.now()});lu.push(newU);localStorage.setItem("mz-lu",JSON.stringify(lu));sv=newU;}
+  if(!sv){err.textContent="Erro ao criar conta. Tenta novamente.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
   if(ref&&db){try{var rr=await db.from("users").select("*").eq("ref_code",ref).single();if(rr.data){var ru=rr.data,nc=(ru.referrals||0)+1,bonus=RB[nc]||0;var tm=Array.isArray(ru.team_members)?ru.team_members:[];tm.push({name:nm,phone:ph,joined:tod()});var nn=(ru.notifications||[]).concat([{id:Date.now(),msg:"👥 "+nm+" registou-se! "+nc+"/5."+(bonus>0?" Bónus de "+ff(bonus)+" creditado!":""),time:n2(),date:tod(),read:false}]);// Don't increment referrals count yet - only add to team_members list
 var patch={team_members:tm,notifications:nn};
 await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}}}catch(e){}}

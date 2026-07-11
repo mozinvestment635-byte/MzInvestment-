@@ -184,7 +184,7 @@ function push(title,body){if(Notification.permission==="granted")try{new Notific
 // DB
 var DB={
   get:async function(p){var db=getDb();if(!db)return null;try{var r=await db.from("users").select("*").eq("phone",p).single();return r.data||null;}catch(e){return null;}},
-  save:async function(u){var db=getDb();if(!db)return null;try{var r=await db.from("users").insert([u]).select().single();return r.data||null;}catch(e){return null;}},
+  save:async function(u){var db=getDb();if(!db){console.error("DB.save: db is null");return null;}try{var r=await db.from("users").insert([u]).select().single();if(r.error){console.error("DB.save error:",JSON.stringify(r.error));return null;}return r.data||null;}catch(e){console.error("DB.save exception:",e.message);return null;}},
   upd:async function(p,d){var db=getDb();if(!db)return;try{await db.from("users").update(d).eq("phone",p);}catch(e){}},
   all:async function(){var db=getDb();if(!db)return[];try{var r=await db.from("users").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}},
   txSave:async function(t){var db=getDb();if(!db)return;try{await db.from("transactions").insert([t]);}catch(e){}},
@@ -303,7 +303,16 @@ async function doRegister(){
   var nu={phone:ph,pin:pi,name:nm,balance:pb,referrals:0,ref_code:rc,total_earned:pb,activated_at:tod(),photo:"",lang:"pt",blocked:false,task_history:{},notifications:notif,team_members:[],terms_accepted:tod(),terms_accepted_time:n2()};
   if(ref)nu.invited_by=ref;
   var sv=await DB.save(nu);
-  if(!sv){err.textContent="Erro ao criar conta. Tenta novamente.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+  if(!sv){
+    // Tentar perceber o erro real
+    var db2=getDb();
+    var testErr="Sem ligação";
+    if(db2){
+      var testR=await db2.from("users").select("count").limit(1);
+      testErr=testR.error?JSON.stringify(testR.error):"Ligação OK mas INSERT falhou";
+    }
+    err.textContent="Erro: "+testErr;err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;
+  }
   if(ref&&db){try{var rr=await db.from("users").select("*").eq("ref_code",ref).single();if(rr.data){var ru=rr.data,nc=(ru.referrals||0)+1,bonus=RB[nc]||0;var tm=Array.isArray(ru.team_members)?ru.team_members:[];tm.push({name:nm,phone:ph,joined:tod()});var nn=(ru.notifications||[]).concat([{id:Date.now(),msg:"👥 "+nm+" registou-se! "+nc+"/5."+(bonus>0?" Bónus de "+ff(bonus)+" creditado!":""),time:n2(),date:tod(),read:false}]);// Don't increment referrals count yet - only add to team_members list
 var patch={team_members:tm,notifications:nn};
 await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}}}catch(e){}}

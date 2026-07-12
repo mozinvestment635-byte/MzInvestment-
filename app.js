@@ -184,7 +184,24 @@ function push(title,body){if(Notification.permission==="granted")try{new Notific
 // DB
 var DB={
   get:async function(p){var db=getDb();if(!db)return null;try{var r=await db.from("users").select("*").eq("phone",p).single();return r.data||null;}catch(e){return null;}},
-  save:async function(u){var db=getDb();if(!db){console.error("DB.save: db is null");return null;}try{var r=await db.from("users").insert([u]);if(r.error){console.error("DB.save error:",JSON.stringify(r.error));return null;}return u;}catch(e){console.error("DB.save exception:",e.message);return null;}},
+  save:async function(u){
+    try{
+      var r=await fetch(SU+"/rest/v1/users",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":SK,
+          "Authorization":"Bearer "+SK,
+          "Prefer":"return=minimal"
+        },
+        body:JSON.stringify(u)
+      });
+      if(r.ok)return u;
+      var errText=await r.text();
+      console.error("DB.save HTTP error:",r.status,errText);
+      return null;
+    }catch(e){console.error("DB.save exception:",e.message);return null;}
+  },
   upd:async function(p,d){var db=getDb();if(!db)return;try{await db.from("users").update(d).eq("phone",p);}catch(e){}},
   all:async function(){var db=getDb();if(!db)return[];try{var r=await db.from("users").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}},
   txSave:async function(t){var db=getDb();if(!db)return;try{await db.from("transactions").insert([t]);}catch(e){}},

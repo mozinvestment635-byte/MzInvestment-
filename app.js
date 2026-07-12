@@ -1,4 +1,4 @@
-// CONFIG
+// CONFIG v2
 var SU="https://xltsswpobwgjuwebjlsp.supabase.co";
 var SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsdHNzd3BvYndnanV3ZWJqbHNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTE3MDQsImV4cCI6MjA5MzY2NzcwNH0.Q-w7Y1yEoXLnC1a66lszTCkc_YFmoKDcTF6QXQl7bKw";
 var FN_COMPLETE_TASK=SU+"/functions/v1/complete-task";

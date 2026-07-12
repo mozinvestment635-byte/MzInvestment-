@@ -6,6 +6,7 @@ var FN_REQUEST_WITHDRAWAL=SU+"/functions/v1/request-withdrawal";
 var FN_ACTIVATE_VIP=SU+"/functions/v1/activate-vip";
 var FN_RECORD_FP=SU+"/functions/v1/record-signup-fingerprint";
 var FN_SEND_PUSH=SU+"/functions/v1/send-push";
+var FN_REGISTER=SU+"/functions/v1/register-user";
 var VAPID_PUBLIC_KEY="Z7SsiiWSwpjxYi8hOFO7hXnNfcVDtc38xzNhk5mlcahbpn9Ni2p-DbddGnFdt1ooiO-f-XTe6dmKX7djj_yEwQ";
 function getDeviceFp(){
   try{
@@ -313,39 +314,31 @@ async function doRegister(){
   var pb=0;var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");
   if(ref&&promos[ref]&&(promos[ref].used||0)<promos[ref].max)pb=promos[ref].bonus||0;
   var btn=document.getElementById("r-btn");btn.disabled=true;btn.textContent="A criar conta...";
-  var ex=await DB.get(ph);if(ex){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
-  var rc="MZ"+Math.floor(100000+Math.random()*900000);
-  var notif=[{id:1,msg:"Bem-vindo à MZInvestment! Activa um VIP para começar a ganhar.",time:n2(),date:tod(),read:false}];
-  if(pb>0)notif.push({id:2,msg:"Bónus de registo: +"+ff(pb)+" creditado!",time:n2(),date:tod(),read:false});
-  var nu={phone:ph,pin:pi,name:nm,balance:pb,referrals:0,ref_code:rc,total_earned:pb,activated_at:tod(),photo:"",lang:"pt",blocked:false,task_history:{},notifications:notif,team_members:[],terms_accepted:tod(),terms_accepted_time:n2()};
-  if(ref)nu.invited_by=ref;
-  var sv=await DB.save(nu);
-  if(!sv){
-    // Tentar perceber o erro real
-    var db2=getDb();
-    var testErr="Sem ligação";
-    if(db2){
-      var testR=await db2.from("users").select("count").limit(1);
-      testErr=testR.error?JSON.stringify(testR.error):"Ligação OK mas INSERT falhou";
-    }
-    err.textContent="Erro: "+testErr;err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;
-  }
-  if(ref&&db){try{var rr=await db.from("users").select("*").eq("ref_code",ref).single();if(rr.data){var ru=rr.data,nc=(ru.referrals||0)+1,bonus=RB[nc]||0;var tm=Array.isArray(ru.team_members)?ru.team_members:[];tm.push({name:nm,phone:ph,joined:tod()});var nn=(ru.notifications||[]).concat([{id:Date.now(),msg:"👥 "+nm+" registou-se! "+nc+"/5."+(bonus>0?" Bónus de "+ff(bonus)+" creditado!":""),time:n2(),date:tod(),read:false}]);// Don't increment referrals count yet - only add to team_members list
-var patch={team_members:tm,notifications:nn};
-await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}}}catch(e){}}
-  U=mapU(sv);done=[];
   try{
-    fetch(FN_RECORD_FP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:ph,deviceFp:getDeviceFp()})});
-  }catch(e){}
-  try{localStorage.removeItem("mz-pending-promo");}catch(e){}
-  // Send verification code via WhatsApp
-  var vcode=Math.floor(1000+Math.random()*9000);
-  localStorage.setItem("mz-vcode-"+ph,vcode);
-  localStorage.setItem("mz-verified-"+ph,"false");
-  setTimeout(function(){
-    showVerification(ph,vcode);
-  },500);
-  btn.disabled=false;btn.textContent="Criar Conta →";
+    var resp=await fetch(FN_REGISTER,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({phone:ph,pin:pi,name:nm,invited_by:ref||null,promo_balance:pb})
+    });
+    var result=await resp.json();
+    if(!result.ok){
+      err.textContent=result.error||"Erro ao criar conta.";err.style.display="block";
+      btn.disabled=false;btn.textContent="Criar Conta →";return;
+    }
+    var sv=result.user;
+    if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}
+    U=mapU(sv);done=[];
+    try{fetch(FN_RECORD_FP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:ph,deviceFp:getDeviceFp()})});}catch(e){}
+    try{localStorage.removeItem("mz-pending-promo");}catch(e){}
+    var vcode=Math.floor(1000+Math.random()*9000);
+    localStorage.setItem("mz-vcode-"+ph,vcode);
+    localStorage.setItem("mz-verified-"+ph,"false");
+    setTimeout(function(){showVerification(ph,vcode);},500);
+    btn.disabled=false;btn.textContent="Criar Conta →";
+  }catch(e){
+    err.textContent="Erro de ligação. Tenta novamente.";err.style.display="block";
+    btn.disabled=false;btn.textContent="Criar Conta →";
+  }
 }
 function logout(){U=null;done=[];wdAmt=null;earn=[];pg("pg-login");}
 

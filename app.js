@@ -1,13 +1,10 @@
-// CONFIG v2
+// CONFIG
 var SU="https://xltsswpobwgjuwebjlsp.supabase.co";
-var SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsdHNzd3BvYndnanV3ZWJqbHNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTE3MDQsImV4cCI6MjA5MzY2NzcwNH0.Q-w7Y1yEoXLnC1a66lszTCkc_YFmoKDcTF6QXQl7bKw";
+var SK="sb_publishable_xXE3L58X2eJ0QwZ9B9tTPg_vgWq2WDi";
 var FN_COMPLETE_TASK=SU+"/functions/v1/complete-task";
 var FN_REQUEST_WITHDRAWAL=SU+"/functions/v1/request-withdrawal";
 var FN_ACTIVATE_VIP=SU+"/functions/v1/activate-vip";
 var FN_RECORD_FP=SU+"/functions/v1/record-signup-fingerprint";
-var FN_SEND_PUSH=SU+"/functions/v1/send-push";
-var FN_REGISTER=SU+"/functions/v1/register-user";
-var VAPID_PUBLIC_KEY="Z7SsiiWSwpjxYi8hOFO7hXnNfcVDtc38xzNhk5mlcahbpn9Ni2p-DbddGnFdt1ooiO-f-XTe6dmKX7djj_yEwQ";
 function getDeviceFp(){
   try{
     var fp=localStorage.getItem("mz-dfp");
@@ -20,33 +17,15 @@ function getDeviceFp(){
     return fp;
   }catch(e){return "dfp-unknown";}
 }
-var AP="864378323",APIN="3545",AP2="800000002",APIN2="9876",SUP="258864378323",BASE="https://mzinvestment.onrender.com";
-var db=null;
-function getDb(){
-  if(db)return db;
-  try{if(typeof supabase!=="undefined"){db=supabase.createClient(SU,SK);}}catch(e){}
-  return db;
-}
-function urlB64ToUint8Array(b){var p=atob(b.replace(/-/g,'+').replace(/_/g,'/'));var a=new Uint8Array(p.length);for(var i=0;i<p.length;i++)a[i]=p.charCodeAt(i);return a;}
-async function registerPush(){
-  try{
-    if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
-    var reg=await navigator.serviceWorker.ready;
-    var perm=await Notification.requestPermission();
-    if(perm!=='granted')return;
-    var sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64ToUint8Array(VAPID_PUBLIC_KEY)});
-    if(U&&U.phone){
-      var db2=getDb();if(!db2)return;
-      await db2.from('push_subscriptions').upsert({phone:U.phone,subscription:JSON.parse(JSON.stringify(sub))},{onConflict:'phone'});
-    }
-  }catch(e){}
-}
-var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",fee:125},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",fee:200},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",fee:350},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",fee:500},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",fee:750},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",fee:1000},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",fee:1500},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",fee:2500},{l:9,p:150000,d:15000,v:27,c:"#FFB300",n:"Topázio",fee:3500},{l:10,p:250000,d:26000,v:28,c:"#2196F3",n:"Safira",fee:5000},{l:11,p:400000,d:44000,v:30,c:"#AB47BC",n:"Ametista",fee:7000},{l:12,p:650000,d:75000,v:31,c:"#ECEFF1",n:"Pérola",fee:10000},{l:13,p:1000000,d:120000,v:32,c:"#78909C",n:"Titânio",fee:15000},{l:14,p:1600000,d:200000,v:33,c:"#DAA520",n:"Coroa",fee:20000},{l:15,p:2500000,d:325000,v:35,c:"#FF6F00",n:"Soberano",fee:30000}];
+var AP="864378323",APIN="3545",SUP="258864378323",BASE="https://mzinvestment.onrender.com";
+var db=null;try{db=supabase.createClient(SU,SK);}catch(e){}
+var VIPS=[{l:1,p:750,d:33,v:5,c:"#CD853F",n:"Bronze",fee:100},{l:2,p:1500,d:75,v:8,c:"#A8A8C8",n:"Prata",fee:200},{l:3,p:3000,d:180,v:10,c:"#FFD700",n:"Ouro",fee:300},{l:4,p:6000,d:400,v:12,c:"#00CED1",n:"Platina",fee:500},{l:5,p:12000,d:900,v:15,c:"#9B59B6",n:"Diamante",fee:800},{l:6,p:24000,d:1800,v:18,c:"#E74C3C",n:"Rubi",fee:1400},{l:7,p:48000,d:4000,v:20,c:"#2ECC71",n:"Esmeralda",fee:2400},{l:8,p:96000,d:9000,v:25,c:"#E91E63",n:"Elite",fee:4000},{l:9,p:150000,d:15000,v:27,c:"#FFB300",n:"Topázio",fee:6000},{l:10,p:250000,d:26000,v:28,c:"#2196F3",n:"Safira",fee:9000},{l:11,p:400000,d:44000,v:30,c:"#AB47BC",n:"Ametista",fee:13000},{l:12,p:650000,d:75000,v:31,c:"#ECEFF1",n:"Pérola",fee:18000},{l:13,p:1000000,d:120000,v:32,c:"#78909C",n:"Titânio",fee:25000},{l:14,p:1600000,d:200000,v:33,c:"#DAA520",n:"Coroa",fee:35000},{l:15,p:2500000,d:325000,v:35,c:"#FF6F00",n:"Soberano",fee:50000}];
 var RB=[0,50,75,100,150,200];
 var FUNDS=[{id:"f15",days:15,label:"15 Dias",rate:3,icon:"🌱",desc:"Entrada rápida"},{id:"f30",days:30,label:"30 Dias",rate:5,icon:"🌿",desc:"Retorno sólido"},{id:"f90",days:90,label:"90 Dias",rate:10,icon:"🌳",desc:"Alto rendimento"},{id:"f210",days:210,label:"210 Dias",rate:16,icon:"💰",desc:"Máximo lucro"}];
-var FP=[];
+var _savedFunds=null;try{var _sf=localStorage.getItem("mz-adm-funds");if(_sf)_savedFunds=JSON.parse(_sf);}catch(e){}
+var FP=(_savedFunds||FUNDS).map(function(f){return Object.assign({},f,{cur:Math.floor(Math.random()*60+20)});});
 var VDS=[{id:1,t:"Blinding Lights",a:"The Weeknd",yt:"4NRXx6U8ABQ",th:"https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg"},{id:2,t:"Shape of You",a:"Ed Sheeran",yt:"JGwWNGJdvx8",th:"https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg"},{id:3,t:"Believer",a:"Imagine Dragons",yt:"7wtfhZwyrcc",th:"https://i.ytimg.com/vi/7wtfhZwyrcc/hqdefault.jpg"},{id:4,t:"Levitating",a:"Dua Lipa",yt:"TUVcZfQe-Kw",th:"https://i.ytimg.com/vi/TUVcZfQe-Kw/hqdefault.jpg"},{id:5,t:"Love Yourself",a:"Justin Bieber",yt:"oyEuk8j8imI",th:"https://i.ytimg.com/vi/oyEuk8j8imI/hqdefault.jpg"},{id:6,t:"Save Your Tears",a:"The Weeknd",yt:"LIIDh-qI9oI",th:"https://i.ytimg.com/vi/LIIDh-qI9oI/hqdefault.jpg"},{id:7,t:"Bad Habits",a:"Ed Sheeran",yt:"orJSJGHjBLI",th:"https://i.ytimg.com/vi/orJSJGHjBLI/hqdefault.jpg"},{id:8,t:"Butter",a:"BTS",yt:"WMweEpGlu_U",th:"https://i.ytimg.com/vi/WMweEpGlu_U/hqdefault.jpg"},{id:9,t:"Dynamite",a:"BTS",yt:"gdZLi9oWNZg",th:"https://i.ytimg.com/vi/gdZLi9oWNZg/hqdefault.jpg"},{id:10,t:"STAY",a:"The Kid LAROI",yt:"hCuMWrfXG4E",th:"https://i.ytimg.com/vi/hCuMWrfXG4E/hqdefault.jpg"},{id:11,t:"drivers license",a:"Olivia Rodrigo",yt:"ZmDBbnmKpqQ",th:"https://i.ytimg.com/vi/ZmDBbnmKpqQ/hqdefault.jpg"},{id:12,t:"Easy On Me",a:"Adele",yt:"U3ASj1L6_sY",th:"https://i.ytimg.com/vi/U3ASj1L6_sY/hqdefault.jpg"},{id:13,t:"As It Was",a:"Harry Styles",yt:"H5v3kku4y6Q",th:"https://i.ytimg.com/vi/H5v3kku4y6Q/hqdefault.jpg"},{id:14,t:"Anti-Hero",a:"Taylor Swift",yt:"b1kbLwvqugk",th:"https://i.ytimg.com/vi/b1kbLwvqugk/hqdefault.jpg"},{id:15,t:"Flowers",a:"Miley Cyrus",yt:"G7KNmW9a75Y",th:"https://i.ytimg.com/vi/G7KNmW9a75Y/hqdefault.jpg"},{id:16,t:"Heat Waves",a:"Glass Animals",yt:"mRD0-GxqHVo",th:"https://i.ytimg.com/vi/mRD0-GxqHVo/hqdefault.jpg"},{id:17,t:"Yaba Buluku",a:"Dj Tarico",yt:"CXjLmsOQTkA",th:"https://i.ytimg.com/vi/CXjLmsOQTkA/hqdefault.jpg"},{id:18,t:"Jerusalema",a:"Master KG",yt:"fCZVL_8D048",th:"https://i.ytimg.com/vi/fCZVL_8D048/hqdefault.jpg"},{id:19,t:"Cruel Summer",a:"Taylor Swift",yt:"ic8j13piAhQ",th:"https://i.ytimg.com/vi/ic8j13piAhQ/hqdefault.jpg"},{id:20,t:"Calm Down",a:"Rema",yt:"WcIcVapfqXw",th:"https://i.ytimg.com/vi/WcIcVapfqXw/hqdefault.jpg"},{id:21,t:"Despacito",a:"Luis Fonsi",yt:"kJQP7kiw5Fk",th:"https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg"},{id:22,t:"See You Again",a:"Wiz Khalifa",yt:"RgKAFK5djSk",th:"https://i.ytimg.com/vi/RgKAFK5djSk/hqdefault.jpg"},{id:23,t:"Uptown Funk",a:"Mark Ronson",yt:"OPf0YbXqDm0",th:"https://i.ytimg.com/vi/OPf0YbXqDm0/hqdefault.jpg"},{id:24,t:"Roar",a:"Katy Perry",yt:"CevxZvSJLk8",th:"https://i.ytimg.com/vi/CevxZvSJLk8/hqdefault.jpg"},{id:25,t:"Sorry",a:"Justin Bieber",yt:"fRh_vgS2dFE",th:"https://i.ytimg.com/vi/fRh_vgS2dFE/hqdefault.jpg"},{id:26,t:"Counting Stars",a:"OneRepublic",yt:"hT_nvWreIhg",th:"https://i.ytimg.com/vi/hT_nvWreIhg/hqdefault.jpg"},{id:27,t:"Faded",a:"Alan Walker",yt:"60ItHLz5WEA",th:"https://i.ytimg.com/vi/60ItHLz5WEA/hqdefault.jpg"},{id:28,t:"Hello",a:"Adele",yt:"YQHsXMglC9A",th:"https://i.ytimg.com/vi/YQHsXMglC9A/hqdefault.jpg"},{id:29,t:"Closer",a:"The Chainsmokers",yt:"PT2_F-1esPk",th:"https://i.ytimg.com/vi/PT2_F-1esPk/hqdefault.jpg"},{id:30,t:"Thinking Out Loud",a:"Ed Sheeran",yt:"lp-EO5I60KA",th:"https://i.ytimg.com/vi/lp-EO5I60KA/hqdefault.jpg"},{id:31,t:"Sugar",a:"Maroon 5",yt:"09R8_2nJtjg",th:"https://i.ytimg.com/vi/09R8_2nJtjg/hqdefault.jpg"},{id:32,t:"Stay With Me",a:"Sam Smith",yt:"pB-5XG-DbAA",th:"https://i.ytimg.com/vi/pB-5XG-DbAA/hqdefault.jpg"},{id:33,t:"Perfect",a:"Ed Sheeran",yt:"2Vv-BfVoq4g",th:"https://i.ytimg.com/vi/2Vv-BfVoq4g/hqdefault.jpg"},{id:34,t:"Old Town Road",a:"Lil Nas X",yt:"w2Ov5jzm3j8",th:"https://i.ytimg.com/vi/w2Ov5jzm3j8/hqdefault.jpg"},{id:35,t:"Watermelon Sugar",a:"Harry Styles",yt:"E07s5ZYygMg",th:"https://i.ytimg.com/vi/E07s5ZYygMg/hqdefault.jpg"},{id:36,t:"Wrecking Ball",a:"Miley Cyrus",yt:"My2FRPA3Gf8",th:"https://i.ytimg.com/vi/My2FRPA3Gf8/hqdefault.jpg"},{id:37,t:"Lose Yourself",a:"Eminem",yt:"_Yhyp-_hX2s",th:"https://i.ytimg.com/vi/_Yhyp-_hX2s/hqdefault.jpg"},{id:38,t:"Bad Romance",a:"Lady Gaga",yt:"qrO4YZeyl0I",th:"https://i.ytimg.com/vi/qrO4YZeyl0I/hqdefault.jpg"}];
-var U=null,done=[],wdAmt=null,depVip=null,fp=null,myInv=[],earn=[],isSubAdmin=false;
+var U=null,done=[],wdAmt=null,depVip=null,fp=null,myInv=[],earn=[];
 // UTILS
 function fmt(n){return Math.abs(n).toLocaleString("pt-MZ");}
 function ff(n){return fmt(n)+" MT";}
@@ -138,6 +117,18 @@ var _iv=setInterval(function(){
 },40);
 // OFFLINE
 // Background slideshow
+(function(){
+  var slides=["bs0","bs1","bs2","bs3","bs4"];
+  var cur=0;
+  setInterval(function(){
+    var prev=cur;
+    cur=(cur+1)%slides.length;
+    var prevEl=document.getElementById(slides[prev]);
+    var curEl=document.getElementById(slides[cur]);
+    if(prevEl)prevEl.style.opacity="0";
+    if(curEl)curEl.style.opacity="1";
+  },6000);
+})();
 
 
 
@@ -184,30 +175,13 @@ function updPush(){var s=document.getElementById("push-status");var b=document.g
 function push(title,body){if(Notification.permission==="granted")try{new Notification(title,{body:body,tag:"mzinvest"});}catch(e){}}
 // DB
 var DB={
-  get:async function(p){var db=getDb();if(!db)return null;try{var r=await db.from("users").select("*").eq("phone",p).single();return r.data||null;}catch(e){return null;}},
-  save:async function(u){
-    try{
-      var r=await fetch(SU+"/rest/v1/users",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "apikey":SK,
-          "Authorization":"Bearer "+SK,
-          "Prefer":"return=minimal"
-        },
-        body:JSON.stringify(u)
-      });
-      if(r.ok)return u;
-      var errText=await r.text();
-      console.error("DB.save HTTP error:",r.status,errText);
-      return null;
-    }catch(e){console.error("DB.save exception:",e.message);return null;}
-  },
-  upd:async function(p,d){var db=getDb();if(!db)return;try{await db.from("users").update(d).eq("phone",p);}catch(e){}},
-  all:async function(){var db=getDb();if(!db)return[];try{var r=await db.from("users").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}},
-  txSave:async function(t){var db=getDb();if(!db)return;try{await db.from("transactions").insert([t]);}catch(e){}},
-  txUpd:async function(id,d){var db=getDb();if(!db)return;try{await db.from("transactions").update(d).eq("id",id);}catch(e){}},
-  txAll:async function(){var db=getDb();if(!db)return[];try{var r=await db.from("transactions").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}}
+  get:async function(p){if(!db)return null;try{var r=await db.from("users").select("*").eq("phone",p).single();return r.data||null;}catch(e){return null;}},
+  save:async function(u){if(!db)return null;try{var r=await db.from("users").insert([u]).select().single();return r.data||null;}catch(e){return null;}},
+  upd:async function(p,d){if(!db)return;try{await db.from("users").update(d).eq("phone",p);}catch(e){}},
+  all:async function(){if(!db)return[];try{var r=await db.from("users").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}},
+  txSave:async function(t){if(!db)return;try{await db.from("transactions").insert([t]);}catch(e){}},
+  txUpd:async function(id,d){if(!db)return;try{await db.from("transactions").update(d).eq("id",id);}catch(e){}},
+  txAll:async function(){if(!db)return[];try{var r=await db.from("transactions").select("*").order("created_at",{ascending:false});return r.data||[];}catch(e){return[];}}
 };
 function mapU(u){
   var n=u.notifications||[];var th=u.task_history||{};var tm=u.team_members||[];
@@ -247,26 +221,34 @@ async function syncU(patch){
 async function doLogin(){
   var ph=document.getElementById("l-ph").value.trim(),pin=document.getElementById("l-pin").value.trim(),err=document.getElementById("l-err");
   err.style.display="none";
-  if(ph===AP&&pin===APIN){isSubAdmin=false;await loadAdmin();pg("pg-admin");return;}
-  if(ph===AP2&&pin===APIN2){isSubAdmin=true;await loadAdmin();pg("pg-admin");applySubAdminRestrictions();return;}
+  if(ph===AP&&pin===APIN){await loadAdmin();pg("pg-admin");return;}
   var ak="mz-att-"+ph,at=JSON.parse(localStorage.getItem(ak)||'{"c":0,"t":0}');
   if(at.c>=3&&(Date.now()-at.t)<300000){err.textContent="Bloqueado "+Math.ceil((300000-(Date.now()-at.t))/60000)+" min.";err.style.display="block";return;}
   var btn=document.getElementById("l-btn");btn.disabled=true;btn.textContent="A entrar...";
   var u=await DB.get(ph);
+  if(!u){var lu=JSON.parse(localStorage.getItem("mz-lu")||"[]");u=lu.find(function(x){return x.phone===ph;})||null;}
   btn.disabled=false;btn.textContent="Entrar →";
   if(!u||u.pin!==pin){var nc=at.c+1;localStorage.setItem(ak,JSON.stringify({c:nc,t:Date.now()}));err.textContent=nc<3?"PIN incorrecto. "+(3-nc)+" tentativa(s).":"Demasiadas tentativas. Aguarda 5 min.";err.style.display="block";return;}
   localStorage.removeItem(ak);
   if(u.blocked){err.textContent="Conta bloqueada. Contacta: +258 86 437 8323";err.style.display="block";return;}
   U=mapU(u);
+  window.__dbg=["P1:mapU ok"];
   try{
     var dt=u.daily_tasks||{};
     done=dt[tkey()]||[];
   }catch(e){done=[];}
+  window.__dbg.push("P2:daily_tasks ok");
   DB.upd(U.phone,{last_login:new Date().toISOString()});
-  registerPush();
-  loadMain();pg("pg-main");
+  window.__dbg.push("P3:DB.upd disparado");
+  loadMain();
+  window.__dbg.push("P4:loadMain terminou");
+  pg("pg-main");
+  window.__dbg.push("P5:pg(pg-main) terminou - TUDO OK");
   applyPendingPromo();
+  window.__dbg.push("P6:applyPendingPromo ok");
   checkMonthlyFee();
+  window.__dbg.push("P7:checkMonthlyFee ok");
+  alert(window.__dbg.join("\n"));
 }
 // ─── VERIFICATION ────────────────────────────────────────
 function showVerification(ph, vcode){
@@ -308,37 +290,37 @@ async function doRegister(){
   if(!document.getElementById("r-terms").checked){err.textContent="Aceita os Termos para continuar.";err.style.display="block";return;}
   if(!nm){err.textContent="Insere o teu nome.";err.style.display="block";return;}
   if(ph.length!==9){err.textContent="Número deve ter 9 dígitos.";err.style.display="block";return;}
-  if(!/^8[45678]/.test(ph)){err.textContent="Número inválido. Usa um número moçambicano (84, 85, 86, 87 ou 88).";err.style.display="block";return;}
   if(pi.length<4){err.textContent="PIN deve ter 4 dígitos.";err.style.display="block";return;}
   if(pi!==pi2){err.textContent="PINs não coincidem.";err.style.display="block";return;}
   var pb=0;var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}");
   if(ref&&promos[ref]&&(promos[ref].used||0)<promos[ref].max)pb=promos[ref].bonus||0;
   var btn=document.getElementById("r-btn");btn.disabled=true;btn.textContent="A criar conta...";
+  var lu=JSON.parse(localStorage.getItem("mz-lu")||"[]");
+  if(lu.find(function(x){return x.phone===ph;})){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+  var ex=await DB.get(ph);if(ex){err.textContent="Número já registado.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+  var rc="MZ"+Math.floor(100000+Math.random()*900000);
+  var notif=[{id:1,msg:"Bem-vindo à MZInvestment! Activa um VIP para começar a ganhar.",time:n2(),date:tod(),read:false}];
+  if(pb>0)notif.push({id:2,msg:"Bónus de registo: +"+ff(pb)+" creditado!",time:n2(),date:tod(),read:false});
+  var nu={phone:ph,pin:pi,name:nm,balance:pb,referrals:0,ref_code:rc,total_earned:pb,activated_at:tod(),photo:"",lang:"pt",blocked:false,task_history:{},notifications:notif,team_members:[],terms_accepted:tod(),terms_accepted_time:n2()};
+  if(ref)nu.invited_by=ref;
+  var sv=await DB.save(nu);
+  if(!sv){var newU=Object.assign({},nu,{id:"local-"+Date.now()});lu.push(newU);localStorage.setItem("mz-lu",JSON.stringify(lu));sv=newU;}
+  if(ref&&db){try{var rr=await db.from("users").select("*").eq("ref_code",ref).single();if(rr.data){var ru=rr.data,nc=(ru.referrals||0)+1,bonus=RB[nc]||0;var tm=Array.isArray(ru.team_members)?ru.team_members:[];tm.push({name:nm,phone:ph,joined:tod()});var nn=(ru.notifications||[]).concat([{id:Date.now(),msg:"👥 "+nm+" registou-se! "+nc+"/5."+(bonus>0?" Bónus de "+ff(bonus)+" creditado!":""),time:n2(),date:tod(),read:false}]);// Don't increment referrals count yet - only add to team_members list
+var patch={team_members:tm,notifications:nn};
+await DB.upd(ru.phone,patch);if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}}}catch(e){}}
+  U=mapU(sv);done=[];
   try{
-    var resp=await fetch(FN_REGISTER,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({phone:ph,pin:pi,name:nm,invited_by:ref||null,promo_balance:pb})
-    });
-    var result=await resp.json();
-    if(!result.ok){
-      err.textContent=result.error||"Erro ao criar conta.";err.style.display="block";
-      btn.disabled=false;btn.textContent="Criar Conta →";return;
-    }
-    var sv=result.user;
-    if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}
-    U=mapU(sv);done=[];
-    try{fetch(FN_RECORD_FP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:ph,deviceFp:getDeviceFp()})});}catch(e){}
-    try{localStorage.removeItem("mz-pending-promo");}catch(e){}
-    var vcode=Math.floor(1000+Math.random()*9000);
-    localStorage.setItem("mz-vcode-"+ph,vcode);
-    localStorage.setItem("mz-verified-"+ph,"false");
-    setTimeout(function(){showVerification(ph,vcode);},500);
-    btn.disabled=false;btn.textContent="Criar Conta →";
-  }catch(e){
-    err.textContent="Erro de ligação. Tenta novamente.";err.style.display="block";
-    btn.disabled=false;btn.textContent="Criar Conta →";
-  }
+    fetch(FN_RECORD_FP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:ph,deviceFp:getDeviceFp()})});
+  }catch(e){}
+  try{localStorage.removeItem("mz-pending-promo");}catch(e){}
+  // Send verification code via WhatsApp
+  var vcode=Math.floor(1000+Math.random()*9000);
+  localStorage.setItem("mz-vcode-"+ph,vcode);
+  localStorage.setItem("mz-verified-"+ph,"false");
+  setTimeout(function(){
+    showVerification(ph,vcode);
+  },500);
+  btn.disabled=false;btn.textContent="Criar Conta →";
 }
 function logout(){U=null;done=[];wdAmt=null;earn=[];pg("pg-login");}
 
@@ -397,7 +379,7 @@ function showMonthlyFee(){
     +"<div class='irow'><span class='ilbl'>Válida até</span><span class='ival'>"+dueStr+"</span></div>"
     +"<div class='irow' style='border:none'><span class='ilbl'>Estado</span><span class='ival' style='color:"+statusColor+"'>"+statusTxt+"</span></div>"
     +"</div>"
-    +"<div style='color:#7090C0;font-size:13px;line-height:1.7;margin-bottom:14px'>💡 <strong style='color:#A0C0E0'>O que é a taxa mensal?</strong><br>O pagamento da taxa mensal serve para salvaguardar os seus dados, mantendo-os seguros e confidenciais na nossa plataforma. Garante também a continuidade e estabilidade do serviço, bem como o suporte prioritário à sua conta. Paga via e-Mola e envia o comprovativo.</div>"
+    +"<div style='color:#7090C0;font-size:13px;line-height:1.7;margin-bottom:14px'>A taxa mensal mantém a tua conta activa para realizar tarefas. Paga via saldo (se tiveres) ou via depósito e-Mola.</div>"
     +"<button class='btn-p' onclick='payMonthlyFee()'>💳 Pagar Taxa Mensal — "+ff(fee)+"</button>"
   );
 }
@@ -502,7 +484,7 @@ function loadMain(){
   setTimeout(updPush,500);
   checkVipExpiry();
   checkMonthlyFee();
-  renderHome();renderVips();renderVideos();renderWd();renderInvite();updateUI();
+  renderHome();renderVips();renderVideos();renderWd();renderFund();renderInvite();updateUI();
 }
 
 async function checkVipExpiry(){
@@ -592,7 +574,7 @@ function updateUI(){
   }
 }
 function renderHome(){
-  var homeItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-vips','n-vips')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none');renderFund()"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
+  var homeItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Depósito","goTab('t-vips','n-vips')"],["💸","Levantamento","goTab('t-wallet','n-wallet')"],["📈","Equipa","goTab('t-team','n-none');renderTeam()"],["👥","Convidar","goTab('t-invite','n-none')"],["📈","Fundo","goTab('t-fund','n-none')"],["🏆","Ranking","goTab('t-ranking','n-none');renderRanking()"],["📊","Transacções","goTab('t-txhist','n-none');renderTxHist()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["❓","Ajuda","goTab('t-suporte','n-none')"],["🚪","Sair","logout()"]];
   var profileItems=[["👤","Inf. pessoais","goTab('t-pinfo','n-none')"],["💳","Taxa Mensal","showMonthlyFee()"],["📲","Verificar Número","showVerifyNow()"],["🔑","Alterar PIN","goTab('t-pinfo','n-none')"],["📋","Termos","showTerms()"],["🔒","Privacidade","showPrivacy()"],["⭐","Avaliar App","showRateApp()"],["🎫","Meus Tickets","goTab('t-suporte','n-none');switchSupport('mytickets')"],["🗑️","Eliminar Conta","showDeleteAccount()"],["ℹ️","Sobre a Versão","showVersionInfo()"],["💎","Hist. VIP","goTab('t-viphist','n-none');renderVipHist()"],["🚪","Sair","logout()"]];
   var h=homeItems.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
   var hp=profileItems.map(function(x){return '<div class="hmitem" onclick="'+x[2]+'"><div class="hmicon">'+x[0]+'</div><div class="hmlbl">'+x[1]+'</div></div>';}).join("");
@@ -821,7 +803,7 @@ async function submitDep(){
   depVip=null;
   goTab("t-home","n-home");
 }
-async function renderFund(){
+function renderFund(){
   var ul=(U.referrals||0)>=5||U.fund_unlocked===true;
   if(!ul){
     var pct=Math.min(((U.referrals||0)/5)*100,100);
@@ -838,18 +820,14 @@ async function renderFund(){
     document.getElementById("f-browse").innerHTML=lockHtml;
     return;
   }
-  // Carregar fundos activos da base de dados
-  var db2=getDb();if(!db2)return;
-  var r=await db2.from("funds").select("*").eq("active",true).order("days");
-  FP=(r.data||[]).map(function(f){return Object.assign({},f,{cur:Math.floor(Math.random()*60+20)});});
   var html2='<div class="card" style="border-color:#2ECC7155;margin-bottom:12px"><div style="color:#2ECC71;font-size:14px;font-weight:900">Fundo desbloqueado!</div></div>';
   FP.forEach(function(p){
     var subscribers=Math.floor(p.cur*0.8+10);
     var capColor=p.cur>=90?"#E74C3C":p.cur>=70?"#FFD700":"#2ECC71";
     var capSt=p.cur>=90?"Quase cheio":p.cur>=70?"Alta procura":"Disponivel";
     html2+='<div class="fcard">'
-      +'<div class="fhd"><div style="font-size:28px">'+(p.icon||'💰')+'</div>'
-      +'<div><div style="font-size:15px;font-weight:900">'+p.label+'</div><div style="font-size:13px;color:#3A6090">'+(p.description||'')+'</div></div>'
+      +'<div class="fhd"><div style="font-size:28px">'+p.icon+'</div>'
+      +'<div><div style="font-size:15px;font-weight:900">'+p.label+'</div><div style="font-size:13px;color:#3A6090">'+p.desc+'</div></div>'
       +'<div style="color:#2ECC71;font-size:22px;font-weight:900">+'+p.rate+'%</div></div>'
       +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">'
       +'<span style="color:#7090C0">Taxa de adesao</span>'
@@ -876,52 +854,10 @@ async function renderFund(){
   renderMyInv();
 }
 
-function selFund(id){fp=null;for(var i=0;i<FP.length;i++){if(FP[i].id===id){fp=FP[i];break;}}var p=fp;document.getElementById("f-invest").innerHTML='<div class="fcard"><div class="fhd"><div style="font-size:30px">'+(p.icon||'💰')+'</div><div><div style="font-size:15px;font-weight:900">'+p.label+' · +'+p.rate+'%</div></div></div></div><div class="fld" style="margin-top:12px"><label>Valor (mín. 500 MT)</label><input type="number" id="fa" placeholder="Ex: 1000" oninput="fundPv()"/></div><div id="f-pv" style="display:none" class="card"></div><div style="color:#5070A0;font-size:14px;margin-bottom:12px">Saldo: <strong style="color:#fff">'+ff(U.balance)+'</strong></div><button class="btn-p" onclick="doInvest()">Confirmar 📈</button>';switchFT("invest");}
+function selFund(id){fp=null;for(var i=0;i<FP.length;i++){if(FP[i].id===id){fp=FP[i];break;}}var p=fp;document.getElementById("f-invest").innerHTML='<div class="fcard"><div class="fhd"><div style="font-size:30px">'+p.icon+'</div><div><div style="font-size:15px;font-weight:900">'+p.label+' · +'+p.rate+'%</div></div></div></div><div class="fld" style="margin-top:12px"><label>Valor (mín. 500 MT)</label><input type="number" id="fa" placeholder="Ex: 1000" oninput="fundPv()"/></div><div id="f-pv" style="display:none" class="card"></div><div style="color:#5070A0;font-size:14px;margin-bottom:12px">Saldo: <strong style="color:#fff">'+ff(U.balance)+'</strong></div><button class="btn-p" onclick="doInvest()">Confirmar 📈</button>';switchFT("invest");}
 function fundPv(){var a=parseInt(document.getElementById("fa").value||0),pv=document.getElementById("f-pv");if(!pv||!fp)return;if(a>=500){var pr=Math.round(a*fp.rate/100);pv.style.display="block";pv.innerHTML='<div class="irow"><span class="ilbl">Capital</span><span class="ival">'+ff(a)+'</span></div><div class="irow"><span class="ilbl">Retorno</span><span class="ival" style="color:#2ECC71">'+ff(pr)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Total</span><span class="ival" style="color:#00D4FF">'+ff(a+pr)+'</span></div>';}else pv.style.display="none";}
-async function doInvest(){
-  var a=parseInt(document.getElementById("fa").value||0);
-  if(!fp||a<500){toast("Mínimo: 500 MT","e");return;}
-  if(a>U.balance){toast("Saldo insuficiente","e");return;}
-  var pr=Math.round(a*fp.rate/100);
-  var mt=new Date();mt.setDate(mt.getDate()+fp.days);
-  await syncU({balance:U.balance-a});
-  // Guardar investimento na base de dados
-  var db2=getDb();if(db2){
-    await db2.from("investments").insert([{
-      phone:U.phone,user_name:U.name,
-      fund_id:fp.id,fund_label:fp.label,
-      amount:a,rate:fp.rate,
-      return_at:mt.toISOString(),
-      status:"active"
-    }]);
-  }
-  earn.push({desc:"Fundo "+fp.label,a:-a,date:tod()});
-  toast("Investimento confirmado! 📈");fp=null;
-  await renderMyInv();switchFT("mine");
-}
-async function renderMyInv(){
-  var db2=getDb();
-  var invs=[];
-  if(db2){var r=await db2.from("investments").select("*").eq("phone",U.phone).order("invested_at",{ascending:false});invs=r.data||[];}
-  document.getElementById("f-mine").innerHTML=invs.length===0?'<div class="empty">Sem investimentos activos</div>':invs.map(function(iv){
-    var retDate=new Date(iv.return_at);
-    var now=new Date();
-    var daysLeft=Math.ceil((retDate-now)/(1000*60*60*24));
-    var profit=Math.round(iv.amount*iv.rate/100);
-    var statusColor=iv.status==="matured"?"#FFD700":"#2ECC71";
-    var statusTxt=iv.status==="matured"?"✅ Pronto a receber":"⏳ "+Math.max(0,daysLeft)+" dia(s) restantes";
-    return '<div class="fcard">'
-      +'<div class="fhd"><div style="font-size:30px">💰</div>'
-      +'<div><div style="font-size:15px;font-weight:900">'+iv.fund_label+' · +'+iv.rate+'%</div>'
-      +'<div style="font-size:13px;color:#3A6090">'+new Date(iv.invested_at).toLocaleDateString("pt-MZ")+'</div></div>'
-      +'<div style="color:'+statusColor+';font-size:13px;font-weight:900">'+statusTxt+'</div></div>'
-      +'<div class="irow"><span class="ilbl">Capital investido</span><span class="ival">'+ff(iv.amount)+'</span></div>'
-      +'<div class="irow"><span class="ilbl">Lucro esperado</span><span class="ival" style="color:#2ECC71">+'+ff(profit)+'</span></div>'
-      +'<div class="irow"><span class="ilbl">Total ao vencer</span><span class="ival" style="color:#00D4FF">'+ff(iv.amount+profit)+'</span></div>'
-      +'<div class="irow" style="border:none"><span class="ilbl">Data de retorno</span><span class="ival">'+retDate.toLocaleDateString("pt-MZ")+'</span></div>'
-      +'</div>';
-  }).join("");
-}
+async function doInvest(){var a=parseInt(document.getElementById("fa").value||0);if(!fp||a<500){toast("Mínimo: 500 MT","e");return;}if(a>U.balance){toast("Saldo insuficiente","e");return;}var pr=Math.round(a*fp.rate/100),mt=new Date();mt.setDate(mt.getDate()+fp.days);await syncU({balance:U.balance-a});myInv.push({plan:fp,amount:a,profit:pr,total:a+pr,date:tod(),maturity:mt.toLocaleDateString("pt-MZ")});earn.push({desc:"Fundo "+fp.label,a:-a,date:tod()});toast("Investimento confirmado! 📈");fp=null;renderMyInv();switchFT("mine");}
+function renderMyInv(){document.getElementById("f-mine").innerHTML=myInv.length===0?'<div class="empty">Sem investimentos activos</div>':myInv.map(function(iv){return '<div class="fcard"><div class="fhd"><div style="font-size:30px">'+iv.plan.icon+'</div><div><div style="font-size:15px;font-weight:900">'+iv.plan.label+' · +'+iv.plan.rate+'%</div><div style="font-size:13px;color:#3A6090">'+iv.date+'</div></div><div style="color:#2ECC71;font-size:18px">✅</div></div><div class="irow"><span class="ilbl">Capital</span><span class="ival">'+ff(iv.amount)+'</span></div><div class="irow"><span class="ilbl">Lucro</span><span class="ival" style="color:#2ECC71">'+ff(iv.profit)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Vence</span><span class="ival">'+iv.maturity+'</span></div></div>';}).join("");}
 function simFund(planId, rate){
   planId=String(planId); rate=parseInt(rate)||0;
   var el=document.getElementById("sim-"+planId);
@@ -953,18 +889,6 @@ function showFAQ(){openModal("❓ FAQ","<div style='margin-bottom:18px'><div sty
 function showAbout(){openModal("ℹ️ Sobre a MZInvestment","<div style='text-align:center;margin-bottom:20px'><div style='font-size:48px;margin-bottom:8px'>📈</div><div style='font-size:22px;font-weight:900'>MZ<span style=\"color:#00D4FF\">INVESTMENT</span></div><div style='color:#3A6090;font-size:12px;letter-spacing:6px;margin-top:4px'>MOÇAMBIQUE</div></div><div style='color:#C8D8F0;line-height:1.8;margin-bottom:16px'>Plataforma moçambicana de rendimento digital onde ganhas assistindo vídeos musicais e investindo no nosso fundo.</div><div style='margin-bottom:16px'><div style='color:#00D4FF;font-size:15px;font-weight:900;margin-bottom:8px'>Contactos</div>📱 WhatsApp: +258 86 437 8323<br>👤 João Aguiar · Seg–Sex 08h–20h</div><div style='background:#0D2040;border-radius:12px;padding:14px;text-align:center'><div style='color:#5070A0;font-size:12px'>© 2025 MZInvestment · Moçambique</div></div>");}
 // ADMIN
 var aU=[],aTx=[];
-function applySubAdminRestrictions(){
-  // Esconder separadores proibidos para sub-admin (levantamentos, créditos, promos, fundos, actividade, tickets)
-  var hideTabs=["wds","credit","promo","fundos","activity","tickets"];
-  document.querySelectorAll(".atab").forEach(function(el,i){
-    var tabs=["dash","deps","wds","credit","users","reports","promo","fundos","activity","tickets"];
-    if(hideTabs.indexOf(tabs[i])!==-1)el.style.display="none";
-  });
-  // Esconder botões de edição na tab de utilizadores
-  var style=document.createElement("style");
-  style.textContent=".sub-admin-hide{display:none!important}";
-  document.head.appendChild(style);
-}
 async function loadAdmin(){aU=await DB.all();aTx=await DB.txAll();var p=aTx.filter(function(t){return t.status==="pending";}).length;var b=document.getElementById("adm-badge");b.textContent=p;b.style.display=p>0?"flex":"none";admTab("dash");}
 function admTab(tab){var allTabs=["dash","deps","wds","credit","users","reports","promo","fundos","activity","tickets"];document.querySelectorAll(".atab").forEach(function(el,i){el.classList.toggle("on",allTabs[i]===tab);});allTabs.forEach(function(t){var el=document.getElementById("adm-"+t);if(el)el.style.display=t===tab?"block":"none";});if(tab==="dash")admDash();else if(tab==="deps")admDeps();else if(tab==="wds")admWds();else if(tab==="credit")admCredit();else if(tab==="users")admUsers();else if(tab==="reports")admReports();else if(tab==="promo")admPromo();else if(tab==="fundos")admFundos();else if(tab==="activity")admActivity();else if(tab==="tickets")admTickets();}
 function admDash(){
@@ -1056,17 +980,16 @@ async function appDep(id,phone,amount,vl,name){
       await creditReferrerOnVip(u.invited_by,name,parseInt(vl),vipObj?vipObj.p:0);
     }
   }
-  push("MZInvestment","Deposito de "+ff(amount)+" aprovado! VIP "+vl+" activado.");
-  try{fetch(FN_SEND_PUSH,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phone,title:"✅ Deposito Aprovado",body:"O teu deposito de "+ff(amount)+" foi aprovado! VIP "+vl+" activo.",url:"/"})});}catch(e){}
-  window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ DEPOSITO APROVADO\n👤 "+name+"\n💰 "+amount+" MT\n💎 VIP "+vl+" activado"),"_blank");
+  push("MZInvestment","Depósito de "+ff(amount)+" aprovado! VIP "+vl+" activado.");
+  window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ DEPÓSITO APROVADO\n👤 "+name+"\n💰 "+amount+" MT\n💎 VIP "+vl+" activado"),"_blank");
   toast("Aprovado! ✅");
   await loadAdmin();
 }
-async function appWd(id,phone,amount,name){await DB.txUpd(id,{status:"approved"});var u=aU.find(function(x){return x.phone==phone;});if(u){var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Verifica o teu e-Mola.",time:n2(),date:tod(),read:false}]);await DB.upd(phone,{notifications:nn});}try{fetch(FN_SEND_PUSH,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phone,title:"✅ Levantamento Aprovado",body:"O teu levantamento de "+ff(amount)+" foi processado!",url:"/"})});}catch(e){}push("MZInvestment","Levantamento de "+ff(amount)+" aprovado!");window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n💰 "+amount+" MT"),"_blank");toast("Aprovado! ✅");await loadAdmin();}
+async function appWd(id,phone,amount,name){await DB.txUpd(id,{status:"approved"});var u=aU.find(function(x){return x.phone==phone;});if(u){var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"✅ Levantamento de "+ff(amount)+" aprovado! Verifica o teu e-Mola.",time:n2(),date:tod(),read:false}]);await DB.upd(phone,{notifications:nn});}push("MZInvestment","Levantamento de "+ff(amount)+" aprovado!");window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("✅ LEVANTAMENTO APROVADO\n👤 "+name+"\n💰 "+amount+" MT"),"_blank");toast("Aprovado! ✅");await loadAdmin();}
 async function rejTx(id,phone,type,name,amount){await DB.txUpd(id,{status:"rejected"});var u=aU.find(function(x){return x.phone==phone;});if(u){var m=type==="dep"?"❌ Depósito rejeitado.":"❌ Levantamento rejeitado. Saldo devolvido.";var nn=(u.notifications||[]).concat([{id:Date.now(),msg:m,time:n2(),date:tod(),read:false}]);var patch={notifications:nn};if(type==="wd")patch.balance=(parseFloat(u.balance)||0)+parseFloat(amount);await DB.upd(phone,patch);}toast("Rejeitado","e");await loadAdmin();}
 function admCredit(){document.getElementById("adm-credit").innerHTML='<div class="card" style="border-color:#2ECC7144"><div class="ctit" style="color:#2ECC71">➕ Creditar Saldo</div><div class="fld"><label>Número</label><input type="tel" id="cr-ph" placeholder="Ex: 840000001" oninput="chkCr()"/><div id="cr-info" style="font-size:12px;margin-top:4px"></div></div><div class="fld"><label>Valor (MT)</label><input type="number" id="cr-amt" placeholder="Ex: 1500"/></div><div class="fld"><label>Nota</label><input type="text" id="cr-note" placeholder="Ex: Depósito VIP 2"/></div><button style="width:100%;padding:14px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px" onclick="doCredit()">✅ Confirmar</button></div>';}
-async function chkCr(){var ph=document.getElementById("cr-ph").value;var el=document.getElementById("cr-info");if(!el)return;if(ph.length<9){el.textContent="";return;}var db2=getDb();if(!db2)return;var r=await db2.from("users").select("name,phone").eq("phone",ph).single();el.textContent=r.data?"✅ "+r.data.name:"❌ Não encontrado";el.style.color=r.data?"#2ECC71":"#E74C3C";}
-async function doCredit(){var ph=document.getElementById("cr-ph").value,a=parseInt(document.getElementById("cr-amt").value||0),note=document.getElementById("cr-note").value||"Crédito manual";if(!ph||!a||a<=0){toast("Preenche todos os campos","e");return;}var db2=getDb();if(!db2)return;var r=await db2.from("users").select("*").eq("phone",ph).single();var u=r.data;if(!u){toast("Não encontrado","e");return;}var nb=(parseFloat(u.balance)||0)+a;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"💰 "+ff(a)+" creditados. "+note,time:n2(),date:tod(),read:false}]);await DB.upd(ph,{balance:nb,total_earned:(parseFloat(u.total_earned)||0)+a,notifications:nn});await DB.txSave({user_id:ph,user_name:u.name,phone:ph,amount:a,type:"manual_credit",status:"approved",note:note});toast(ff(a)+" creditados! ✅");await loadAdmin();admTab("dash");}
+async function chkCr(){var ph=document.getElementById("cr-ph").value;var el=document.getElementById("cr-info");if(!el)return;var u=aU.find(function(x){return x.phone==ph;});el.textContent=u?"✅ "+u.name:ph.length>=9?"❌ Não encontrado":"";el.style.color=u?"#2ECC71":"#E74C3C";}
+async function doCredit(){var ph=document.getElementById("cr-ph").value,a=parseInt(document.getElementById("cr-amt").value||0),note=document.getElementById("cr-note").value||"Crédito manual";if(!ph||!a||a<=0){toast("Preenche todos os campos","e");return;}var u=aU.find(function(x){return x.phone==ph;});if(!u){toast("Não encontrado","e");return;}var nb=(parseFloat(u.balance)||0)+a;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:"💰 "+ff(a)+" creditados. "+note,time:n2(),date:tod(),read:false}]);await DB.upd(ph,{balance:nb,total_earned:(parseFloat(u.total_earned)||0)+a,notifications:nn});await DB.txSave({user_id:ph,user_name:u.name,phone:ph,amount:a,type:"manual_credit",status:"approved",note:note});toast(ff(a)+" creditados! ✅");await loadAdmin();admTab("dash");}
 function admUsers(filter){
   filter=filter||"";
   var filtered=filter?aU.filter(function(u){return (u.name||"").toLowerCase().includes(filter.toLowerCase())||u.phone.includes(filter);}):aU;
@@ -1089,18 +1012,18 @@ function admUsers(filter){
         +'<div class="irow" style="border:none"><span class="ilbl">Fundo</span><span class="ival" style="color:'+(fundUnlocked?"#2ECC71":"#5070A0")+'">'+(fundUnlocked?(adminUnlocked?"Desbloqueado (admin)":"Desbloqueado"):"Bloqueado")+'</span></div>'
         +'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:15px;border-top:1px solid #0D2040;margin-top:6px"><span class="ilbl">PIN</span><div style="display:flex;align-items:center;gap:10px"><span id="pin-'+u.phone+'" style="color:#FFD700;font-family:monospace;letter-spacing:3px">****</span><button data-ph="'+u.phone+'" data-pin="'+u.pin+'" onclick="tgPin(this.dataset.ph,this.dataset.pin)" style="background:#0D2040;border:1px solid #1E3060;border-radius:8px;color:#00D4FF;font-size:12px;padding:4px 10px;cursor:pointer">Ver</button></div></div>'
         +'<div style="display:flex;gap:8px;margin-top:10px">'
-        +(isSubAdmin?"":(u.blocked
+        +(u.blocked
           ?'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="tgBlock(this.dataset.ph,false,this.dataset.nm)" class="btn-app-f">Desbloquear</button>'
-          :'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="tgBlock(this.dataset.ph,true,this.dataset.nm)" class="btn-rej-f">Bloquear</button>'))
-        +(isSubAdmin?"":'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-bal="'+(u.balance||0)+'" onclick="editBal(this.dataset.ph,this.dataset.nm,this.dataset.bal)" style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer">Saldo</button>')
+          :'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="tgBlock(this.dataset.ph,true,this.dataset.nm)" class="btn-rej-f">Bloquear</button>')
+        +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-bal="'+(u.balance||0)+'" onclick="editBal(this.dataset.ph,this.dataset.nm,this.dataset.bal)" style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer">Saldo</button>'
         +'</div>'
-        +(isSubAdmin?"":'<div style="display:flex;gap:8px;margin-top:8px">'
+        +'<div style="display:flex;gap:8px;margin-top:8px">'
         +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" data-unl="'+(fundUnlocked?"1":"0")+'" onclick="tgFundUnlock(this.dataset.ph,this.dataset.nm,this.dataset.unl===\'1\')" style="flex:1;padding:10px;background:#0D2040;border:1px solid #9B59B644;border-radius:10px;color:#C8A0FF;font-size:13px;font-weight:900;cursor:pointer">'+(fundUnlocked?"Bloquear Fundo":"Desbloquear Fundo")+'</button>'
         +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="confirmDeleteUser(this.dataset.ph,this.dataset.nm)" style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C;border-radius:10px;color:#FF6B6B;font-size:13px;font-weight:900;cursor:pointer">Eliminar Conta</button>'
         +'</div>'
         +'<div style="display:flex;gap:8px;margin-top:8px">'
         +'<button data-ph="'+u.phone+'" data-nm="'+u.name+'" onclick="adminLiberFee(this.dataset.ph,this.dataset.nm)" style="flex:1;padding:10px;background:#0D2040;border:1px solid #FFD70044;border-radius:10px;color:#FFD700;font-size:13px;font-weight:900;cursor:pointer">💳 Liberar Taxa Mensal (+30d)</button>'
-        +'</div>')
+        +'</div>'
         +(u.fee_paid_until?'<div style="color:#5070A0;font-size:11px;margin-top:6px;text-align:center">Taxa paga até '+new Date(u.fee_paid_until).toLocaleDateString("pt-MZ")+'</div>':'')
         +'</div>';
     });
@@ -1148,81 +1071,7 @@ function confirmDeleteUser(phone,name){
 function tgPin(ph,pin){var el=document.getElementById("pin-"+ph);if(el)el.textContent=el.textContent==="••••"?pin:"••••";}
 async function tgBlock(ph,block,name){var u=aU.find(function(x){return x.phone==ph;});if(!u)return;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:block?"🚫 Conta bloqueada.":"✅ Conta desbloqueada!",time:n2(),date:tod(),read:false}]);await DB.upd(ph,{blocked:block,notifications:nn});toast(block?"Bloqueado":"Desbloqueado! ✅",block?"e":"s");await loadAdmin();admTab("users");}
 function editBal(phone,name,cur){var nv=prompt("Editar saldo de "+name+"\nActual: "+ff(cur)+"\n\nNovo saldo (MT):");if(nv===null||nv==="")return;var val=parseFloat(nv);if(isNaN(val)||val<0){toast("Valor inválido","e");return;}showConfirm("Alterar saldo de "+name+" para "+ff(val)+"?",async function(){await DB.upd(phone,{balance:val});toast("Saldo actualizado! ✅");await loadAdmin();admTab("users");});}
-function admReports(){
-  var av=aU.filter(function(u){return u.vip_level;}).length;
-  var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);
-  var tw=aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);
-  // Calcular semanas (últimas 8)
-  function getWeekKey(dateStr){
-    var d=new Date(dateStr);
-    if(isNaN(d.getTime()))return null;
-    var jan1=new Date(d.getFullYear(),0,1);
-    var week=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
-    return d.getFullYear()+"-W"+String(week).padStart(2,"0");
-  }
-  function getLast8Weeks(){
-    var weeks=[];var d=new Date();
-    for(var i=7;i>=0;i--){
-      var dd=new Date(d);dd.setDate(dd.getDate()-i*7);
-      var jan1=new Date(dd.getFullYear(),0,1);
-      var week=Math.ceil(((dd-jan1)/86400000+jan1.getDay()+1)/7);
-      weeks.push(dd.getFullYear()+"-W"+String(week).padStart(2,"0"));
-    }
-    return weeks;
-  }
-  var weeks=getLast8Weeks();
-  var labels=weeks.map(function(w){return w.split("-W")[1]?"Sem "+w.split("-W")[1]:w;});
-  // Agregar dados por semana
-  function aggByWeek(arr,dateFn,valFn){
-    var map={};weeks.forEach(function(w){map[w]=0;});
-    arr.forEach(function(item){
-      var wk=getWeekKey(dateFn(item));
-      if(wk&&map[wk]!==undefined)map[wk]+=valFn(item);
-    });
-    return weeks.map(function(w){return map[w];});
-  }
-  var depData=aggByWeek(
-    aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}),
-    function(t){return t.created_at||t.approved_at||"";},
-    function(t){return parseFloat(t.amount||0);}
-  );
-  var wdData=aggByWeek(
-    aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="approved";}),
-    function(t){return t.created_at||t.approved_at||"";},
-    function(t){return parseFloat(t.amount||0);}
-  );
-  var usrData=aggByWeek(
-    aU,
-    function(u){return u.created_at||"";},
-    function(){return 1;}
-  );
-  document.getElementById("adm-reports").innerHTML=
-    '<div class="card" style="border-color:#9B59B644;margin-bottom:14px">'+
-    '<div class="ctit" style="color:#C8A0FF">📊 Relatório Geral</div>'+
-    '<div class="irow"><span class="ilbl">Total utilizadores</span><span class="ival" style="color:#C8A0FF">'+aU.length+'</span></div>'+
-    '<div class="irow"><span class="ilbl">Com VIP activo</span><span class="ival" style="color:#FFD700">'+av+'</span></div>'+
-    '<div class="irow"><span class="ilbl">Total depositado</span><span class="ival" style="color:#2ECC71">'+ff(td)+'</span></div>'+
-    '<div class="irow"><span class="ilbl">Total levantado</span><span class="ival" style="color:#FF6B6B">'+ff(tw)+'</span></div>'+
-    '<div class="irow" style="border:none"><span class="ilbl">Em plataforma</span><span class="ival" style="color:#FFD700">'+ff(td-tw)+'</span></div>'+
-    '</div>'+
-    '<div class="card" style="border-color:#2ECC7144;margin-bottom:14px">'+
-    '<div class="ctit" style="color:#2ECC71">📈 Depósitos por Semana (MT)</div>'+
-    '<canvas id="chart-deps" height="160"></canvas></div>'+
-    '<div class="card" style="border-color:#FF6B6B44;margin-bottom:14px">'+
-    '<div class="ctit" style="color:#FF6B6B">📉 Levantamentos por Semana (MT)</div>'+
-    '<canvas id="chart-wds" height="160"></canvas></div>'+
-    '<div class="card" style="border-color:#00B4D844">'+
-    '<div class="ctit" style="color:#00B4D8">👥 Novos Utilizadores por Semana</div>'+
-    '<canvas id="chart-usr" height="160"></canvas></div>';
-  // Renderizar gráficos com Chart.js
-  setTimeout(function(){
-    if(typeof Chart==="undefined")return;
-    var cfg=function(label,data,color){return{type:"bar",data:{labels:labels,datasets:[{label:label,data:data,backgroundColor:color+"88",borderColor:color,borderWidth:2,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#7090C0",font:{size:10}},grid:{color:"#1E3060"}},y:{ticks:{color:"#7090C0",font:{size:10}},grid:{color:"#1E3060"},beginAtZero:true}}}};};
-    new Chart(document.getElementById("chart-deps"),cfg("Depósitos",depData,"#2ECC71"));
-    new Chart(document.getElementById("chart-wds"),cfg("Levantamentos",wdData,"#FF6B6B"));
-    new Chart(document.getElementById("chart-usr"),cfg("Utilizadores",usrData,"#00B4D8"));
-  },100);
-}
+function admReports(){var av=aU.filter(function(u){return u.vip_level;}).length;var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);var tw=aTx.filter(function(t){return t.type==="withdrawal"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);document.getElementById("adm-reports").innerHTML='<div class="card" style="border-color:#9B59B644"><div class="ctit" style="color:#C8A0FF">📊 Relatório Geral</div><div class="irow"><span class="ilbl">Total utilizadores</span><span class="ival" style="color:#C8A0FF">'+aU.length+'</span></div><div class="irow"><span class="ilbl">Com VIP activo</span><span class="ival" style="color:#FFD700">'+av+'</span></div><div class="irow"><span class="ilbl">Total depositado</span><span class="ival" style="color:#2ECC71">'+ff(td)+'</span></div><div class="irow"><span class="ilbl">Total levantado</span><span class="ival" style="color:#FF6B6B">'+ff(tw)+'</span></div><div class="irow" style="border:none"><span class="ilbl">Em plataforma</span><span class="ival" style="color:#FFD700">'+ff(td-tw)+'</span></div></div>';}
 function admPromo(){
   var promos=JSON.parse(localStorage.getItem("mz-promos")||"{}"),list=Object.entries(promos);
   var html3='<div class="card" style="border-color:#FFD70044"><div class="ctit" style="color:#FFD700">🎁 Códigos Promocionais</div>'
@@ -1348,11 +1197,12 @@ function renderVipHist(){
 
 
 // ─── ADMIN FUNDOS ────────────────────────────────────────
-async function admFundos(){
+function admFundos(){
+  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
   var el=document.getElementById("adm-fundos");if(!el)return;
   el.innerHTML='<div class="card" style="border-color:#00D4FF44"><div class="ctit" style="color:#00D4FF">📈 Gerir Fundos de Investimento</div>'
-    +'<div style="color:#7090C0;font-size:13px;margin-bottom:16px">Abre ou fecha fundos. Fundos fechados desaparecem para utilizadores mas os investimentos activos mantêm-se.</div>'
-    +'<div id="fund-list-adm"><div style="color:#7090C0;text-align:center;padding:20px">A carregar...</div></div>'
+    +'<div style="color:#7090C0;font-size:13px;margin-bottom:16px">Edita os planos existentes ou cria novos fundos.</div>'
+    +'<div id="fund-list-adm"></div>'
     +'<div class="card" style="border-color:#2ECC7144;margin-top:16px"><div style="color:#2ECC71;font-weight:900;margin-bottom:12px">➕ Novo Fundo</div>'
     +'<div class="fld"><label>Nome (ex: 60 Dias)</label><input type="text" id="nf-label" placeholder="Ex: 45 Dias"/></div>'
     +'<div class="fld"><label>Duração (dias)</label><input type="number" id="nf-days" placeholder="Ex: 45"/></div>'
@@ -1361,68 +1211,76 @@ async function admFundos(){
     +'<div class="fld"><label>Descrição</label><input type="text" id="nf-desc" placeholder="Ex: Retorno médio"/></div>'
     +'<button style="width:100%;padding:13px;background:linear-gradient(135deg,#1A6B3A,#2ECC71);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:900;cursor:pointer" onclick="createFund()">✅ Criar Fundo</button>'
     +'</div></div>';
-  await renderAdmFundList();
+  renderAdmFundList(funds);
 }
 
-async function renderAdmFundList(){
+function renderAdmFundList(funds){
   var el=document.getElementById("fund-list-adm");if(!el)return;
-  var db2=getDb();if(!db2){el.innerHTML='<div style="color:#FF6B6B">Erro de ligação.</div>';return;}
-  var r=await db2.from("funds").select("*").order("days");
-  var funds=r.data||[];
-  if(funds.length===0){el.innerHTML='<div class="empty">Sem fundos criados.</div>';return;}
-  el.innerHTML=funds.map(function(f){
-    var isActive=f.active!==false;
-    return '<div class="card" style="border-color:'+(isActive?"#00D4FF33":"#FF6B6B33")+';margin-bottom:10px">'
+  el.innerHTML=funds.map(function(f,i){
+    return '<div class="card" style="border-color:#00D4FF33;margin-bottom:10px">'
       +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
-      +'<div style="font-size:28px">'+(f.icon||'💰')+'</div>'
-      +'<div style="flex:1"><div style="font-weight:900">'+f.label+'</div>'
-      +'<div style="color:#5070A0;font-size:13px">'+f.days+' dias · +'+f.rate+'%</div></div>'
-      +'<div style="color:'+(isActive?"#2ECC71":"#FF6B6B")+';font-size:13px;font-weight:900">'+(isActive?"● Aberto":"● Fechado")+'</div>'
+      +'<div style="font-size:28px">'+f.icon+'</div>'
+      +'<div style="flex:1"><div style="font-weight:900">'+f.label+'</div><div style="color:#5070A0;font-size:13px">ID: '+f.id+'</div></div>'
+      +'<div style="color:#2ECC71;font-size:20px;font-weight:900">+'+f.rate+'%</div>'
       +'</div>'
       +'<div style="display:flex;gap:8px">'
-      +(isActive
-        ?'<button onclick="closeFund(\''+f.id+'\')" style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C;border-radius:10px;color:#FF6B6B;font-size:13px;font-weight:900;cursor:pointer">🔒 Fechar Fundo</button>'
-        :'<button onclick="reopenFund(\''+f.id+'\')" style="flex:1;padding:10px;background:#0a2d0a;border:1px solid #2ECC71;border-radius:10px;color:#2ECC71;font-size:13px;font-weight:900;cursor:pointer">🔓 Reabrir Fundo</button>')
+      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:900">'+f.days+'d</div><div style="color:#5070A0;font-size:10px">Prazo</div></div>'
+      +'<div style="flex:1;background:#0D2040;border-radius:10px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:900;color:#00D4FF">+'+f.rate+'%</div><div style="color:#5070A0;font-size:10px">Retorno</div></div>'
       +'</div>'
-      +'</div>';
+      +'<div style="display:flex;gap:8px;margin-top:10px">'
+      +'<button style="flex:1;padding:10px;background:#0D2040;border:1px solid #00D4FF44;border-radius:10px;color:#00D4FF;font-size:13px;font-weight:900;cursor:pointer" onclick="editFund('+i+')">✏️ Editar</button>'
+      +'<button style="flex:1;padding:10px;background:#2d0a0a;border:1px solid #E74C3C44;border-radius:10px;color:#E74C3C;font-size:13px;font-weight:900;cursor:pointer" onclick="deleteFund(this.dataset.id)" data-id="'+f.id+'">Remover</button>'
+      +'</div></div>';
   }).join("");
 }
 
-async function closeFund(id){
-  showConfirm("Fechar este fundo? Deixará de aparecer para novos investidores. Os investimentos activos mantêm-se.",async function(){
-    var db2=getDb();if(!db2)return;
-    await db2.from("funds").update({active:false}).eq("id",id);
-    toast("Fundo fechado! ✅");await renderAdmFundList();
+function editFund(i){
+  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+  var f=funds[i];
+  var newRate=prompt("Editar retorno de "+f.label+". Actual: +"+f.rate+"%. Novo retorno (%): ");
+  if(newRate===null)return;
+  var newLabel=prompt("Novo nome (actual: "+f.label+"). Deixa vazio para manter:");
+  if(newLabel===null)return;
+  funds[i].rate=parseInt(newRate)||f.rate;
+  funds[i].label=newLabel||f.label;
+  localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
+  // Update global FP
+  FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
+  toast("Fundo actualizado! ✅");
+  admFundos();
+}
+
+function deleteFund(id){
+  showConfirm("Remover este fundo?",function(){
+    var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+    funds=funds.filter(function(f){return f.id!==id;});
+    localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
+    FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
+    toast("Fundo removido!","e");
+    admFundos();
   });
 }
 
-async function reopenFund(id){
-  showConfirm("Reabrir este fundo? Voltará a aparecer para todos os utilizadores.",async function(){
-    var db2=getDb();if(!db2)return;
-    await db2.from("funds").update({active:true}).eq("id",id);
-    toast("Fundo reaberto! ✅");await renderAdmFundList();
-  });
-}
-
-async function createFund(){
+function createFund(){
   var label=document.getElementById("nf-label").value.trim();
   var days=parseInt(document.getElementById("nf-days").value||0);
   var rate=parseInt(document.getElementById("nf-rate").value||0);
   var icon=document.getElementById("nf-icon").value.trim()||"💼";
   var desc=document.getElementById("nf-desc").value.trim()||"Novo plano";
   if(!label||!days||!rate){toast("Preenche todos os campos","e");return;}
-  var db2=getDb();if(!db2)return;
-  var newId="f"+days+"_"+Date.now();
-  await db2.from("funds").insert([{id:newId,days:days,label:label,rate:rate,icon:icon,description:desc,active:true}]);
+  var funds=JSON.parse(localStorage.getItem("mz-adm-funds")||JSON.stringify(FUNDS));
+  var newFund={id:"f"+days+"_"+Date.now(),days:days,label:label,rate:rate,icon:icon,desc:desc};
+  funds.push(newFund);
+  localStorage.setItem("mz-adm-funds",JSON.stringify(funds));
+  FP=funds.map(function(fd){return Object.assign({},fd,{cur:Math.floor(Math.random()*60+20)});});
   toast("Fundo '"+label+"' criado! ✅");
   document.getElementById("nf-label").value="";
   document.getElementById("nf-days").value="";
   document.getElementById("nf-rate").value="";
   document.getElementById("nf-icon").value="";
   document.getElementById("nf-desc").value="";
-  await renderAdmFundList();
+  admFundos();
 }
-
 
 
 // ─── PROFILE EXTRA FEATURES ──────────────────────────────

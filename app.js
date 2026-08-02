@@ -315,20 +315,23 @@ async function doRegister(){
   if(ref&&promos[ref]&&(promos[ref].used||0)<promos[ref].max)pb=promos[ref].bonus||0;
   var btn=document.getElementById("r-btn");btn.disabled=true;btn.textContent="A criar conta...";
   try{
-    var resp=await fetch(FN_REGISTER,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({phone:ph,pin:pi,name:nm,invited_by:ref||null,promo_balance:pb})
-    });
-    var result=await resp.json();
-    if(!result.ok){
-      err.textContent=result.error||"Erro ao criar conta.";err.style.display="block";
+    var db2=getDb();
+    if(!db2){err.textContent="Erro de ligação. Tenta novamente.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+    // Check if phone already exists
+    var existing=await db2.from("users").select("phone").eq("phone",ph).single();
+    if(existing.data){err.textContent="Este número já tem conta.";err.style.display="block";btn.disabled=false;btn.textContent="Criar Conta →";return;}
+    // Generate ref code
+    var rc="MZ"+ph.slice(-6);
+    var now=new Date().toISOString();
+    var newUser={phone:ph,pin:pi,name:nm,balance:pb,total_earned:pb,referrals:0,ref_code:rc,invited_by:ref||null,vip_level:null,activated_at:null,photo:"",lang:"pt",blocked:false,task_history:{},notifications:[],team_members:[],max_vip_level:0,fund_unlocked:false,last_login:now};
+    var ins=await db2.from("users").insert([newUser]).select().single();
+    if(ins.error){
+      err.textContent=ins.error.message||"Erro ao criar conta.";err.style.display="block";
       btn.disabled=false;btn.textContent="Criar Conta →";return;
     }
-    var sv=result.user;
+    var sv=ins.data;
     if(pb>0&&promos[ref]){promos[ref].used=(promos[ref].used||0)+1;localStorage.setItem("mz-promos",JSON.stringify(promos));}
     U=mapU(sv);done=[];
-    try{fetch(FN_RECORD_FP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:ph,deviceFp:getDeviceFp()})});}catch(e){}
     try{localStorage.removeItem("mz-pending-promo");}catch(e){}
     var vcode=Math.floor(1000+Math.random()*9000);
     localStorage.setItem("mz-vcode-"+ph,vcode);

@@ -1155,14 +1155,27 @@ function confirmDeleteUser(phone,name){
       var delCount=parseInt(localStorage.getItem("mz-del-count")||"0")+1;
       localStorage.setItem("mz-del-count",String(delCount));
       toast("Conta de "+name+" eliminada.","e");
-      await loadAdmin();admTab("users");
+      // Force refresh from Supabase
+      aU=aU.filter(function(x){return x.phone!==phone;});
+      admUsers();
     });
   });
 }
 
 function tgPin(ph,pin){var el=document.getElementById("pin-"+ph);if(el)el.textContent=el.textContent==="••••"?pin:"••••";}
-async function tgBlock(ph,block,name){var u=aU.find(function(x){return x.phone==ph;});if(!u)return;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:block?"🚫 Conta bloqueada.":"✅ Conta desbloqueada!",time:n2(),date:tod(),read:false}]);await DB.upd(ph,{blocked:block,notifications:nn});toast(block?"Bloqueado":"Desbloqueado! ✅",block?"e":"s");await loadAdmin();admTab("users");}
-function editBal(phone,name,cur){var nv=prompt("Editar saldo de "+name+"\nActual: "+ff(cur)+"\n\nNovo saldo (MT):");if(nv===null||nv==="")return;var val=parseFloat(nv);if(isNaN(val)||val<0){toast("Valor inválido","e");return;}showConfirm("Alterar saldo de "+name+" para "+ff(val)+"?",async function(){await DB.upd(phone,{balance:val});toast("Saldo actualizado! ✅");await loadAdmin();admTab("users");});}
+async function tgBlock(ph,block,name){var u=aU.find(function(x){return x.phone==ph;});if(!u)return;var nn=(u.notifications||[]).concat([{id:Date.now(),msg:block?"🚫 Conta bloqueada.":"✅ Conta desbloqueada!",time:n2(),date:tod(),read:false}]);await DB.upd(ph,{blocked:block,notifications:nn});
+  var u2=aU.find(function(x){return x.phone==ph;});
+  if(u2){u2.blocked=block;}
+  toast(block?"Bloqueado":"Desbloqueado! ✅",block?"e":"s");
+  admUsers();}
+function editBal(phone,name,cur){var nv=prompt("Editar saldo de "+name+"\nActual: "+ff(cur)+"\n\nNovo saldo (MT):");if(nv===null||nv==="")return;var val=parseFloat(nv);if(isNaN(val)||val<0){toast("Valor inválido","e");return;}showConfirm("Alterar saldo de "+name+" para "+ff(val)+"?",async function(){
+    await DB.upd(phone,{balance:val});
+    // Update local array immediately without full reload
+    var u=aU.find(function(x){return x.phone==phone;});
+    if(u)u.balance=val;
+    toast("Saldo actualizado! ✅");
+    admUsers();
+  });}
 function admReports(){
   var av=aU.filter(function(u){return u.vip_level;}).length;
   var td=aTx.filter(function(t){return t.type==="deposit"&&t.status==="approved";}).reduce(function(s,t){return s+parseFloat(t.amount||0);},0);
@@ -1428,14 +1441,15 @@ async function createFund(){
   if(!label||!days||!rate){toast("Preenche todos os campos","e");return;}
   var db2=getDb();if(!db2)return;
   var newId="f"+days+"_"+Date.now();
-  await db2.from("funds").insert([{id:newId,days:days,label:label,rate:rate,icon:icon,description:desc,active:true}]);
+  var insRes=await db2.from("funds").insert([{id:newId,days:days,label:label,rate:rate,icon:icon,description:desc,active:true}]);
+  if(insRes.error){toast("Erro: "+insRes.error.message,"e");return;}
   toast("Fundo '"+label+"' criado! ✅");
   document.getElementById("nf-label").value="";
   document.getElementById("nf-days").value="";
   document.getElementById("nf-rate").value="";
   document.getElementById("nf-icon").value="";
   document.getElementById("nf-desc").value="";
-  await renderAdmFundList();
+  await admFundos();
 }
 
 

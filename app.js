@@ -27,6 +27,21 @@ function getDb(){
   try{if(typeof supabase!=="undefined"){db=supabase.createClient(SU,SK);}}catch(e){}
   return db;
 }
+
+// ─── KEEP SUPABASE ALIVE (ping a cada 3 dias) ────────────
+(function keepSupabaseAlive(){
+  var PING_KEY="mz-last-ping";
+  var THREE_DAYS=3*24*60*60*1000;
+  function doPing(){
+    var db2=getDb();if(!db2)return;
+    db2.from("users").select("count").limit(1).then(function(){
+      localStorage.setItem(PING_KEY,Date.now().toString());
+    }).catch(function(){});
+  }
+  var lastPing=parseInt(localStorage.getItem(PING_KEY)||"0");
+  if(Date.now()-lastPing>THREE_DAYS){setTimeout(doPing,3000);}
+})();
+
 function urlB64ToUint8Array(b){var p=atob(b.replace(/-/g,'+').replace(/_/g,'/'));var a=new Uint8Array(p.length);for(var i=0;i<p.length;i++)a[i]=p.charCodeAt(i);return a;}
 async function registerPush(){
   try{

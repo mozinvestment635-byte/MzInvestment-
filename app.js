@@ -644,20 +644,19 @@ async function activVip(l){
   if(l<maxLvl){toast("Já tiveste um nível VIP superior. Só podes subir!","e");return;}
   if((U.balance||0)>=v.p){
     try{
-      var resp=await fetch(FN_ACTIVATE_VIP,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({phone:U.phone,pin:U.pin,vipLevel:l,deviceFp:getDeviceFp()})
-      });
-      var result=await resp.json();
-      if(!result.ok){
-        toast(result.error||"Não foi possível activar.","e");
-        return;
-      }
-      U.balance=result.newBalance;
+      var db2=getDb();
+      if(!db2){toast("Erro de ligação. Tenta novamente.","e");return;}
+      var newBal=(U.balance||0)-v.p;
+      var newMax=Math.max(maxLvl,l);
+      var due=new Date();due.setDate(due.getDate()+30);
+      var nn=(U.notifications||[]).concat([{id:Date.now(),msg:"💎 VIP "+v.l+" – "+v.n+" activado com sucesso!",time:n2(),date:tod(),read:false}]);
+      var upd=await db2.from("users").update({balance:newBal,vip_level:l,max_vip_level:newMax,activated_at:new Date().toISOString(),notifications:nn}).eq("phone",U.phone);
+      if(upd.error){toast(upd.error.message||"Não foi possível activar.","e");return;}
+      U.balance=newBal;
       U.vip=v;
-      U.max_vip_level=Math.max(maxLvl,l);
+      U.max_vip_level=newMax;
       earn.push({desc:"💎 VIP "+v.l+" – "+v.n+" activado",a:-v.p,date:tod()});
+      await creditReferrerOnVip(U.invited_by,U.name,v.l,v.p);
       toast("VIP "+v.l+" "+v.n+" activado! 🚀");renderVips();goTab("t-home","n-home");
     }catch(e){
       toast("Erro de ligação. Tenta novamente.","e");
@@ -752,29 +751,29 @@ function openVid(id){
         clearInterval(cdT);cdT=null;
         document.getElementById("cd-earn").textContent="A confirmar...";
         try{
-          var resp=await fetch(FN_COMPLETE_TASK,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({phone:U.phone,pin:U.pin,videoId:id})
-          });
-          var result=await resp.json();
-          if(!result.ok){
-            toast(result.error||"Não foi possível confirmar.","e");
-            document.getElementById("player").classList.remove("on");
-            return;
-          }
+          var db2=getDb();
+          if(!db2){toast("Erro de ligação. Tenta novamente.","e");document.getElementById("player").classList.remove("on");return;}
           done.push(id);
-          U.balance=result.newBalance;
-          U.totalEarned=(U.totalEarned||0)+result.reward;
-          earn.push({desc:"🎬 "+v.t,a:result.reward,date:tod()});
-          document.getElementById("done-amt").textContent="+"+ff(result.reward)+" MT creditados!";
+          try{localStorage.setItem("mzd-"+U.phone+"-"+tkey(),JSON.stringify(done));}catch(e){}
+          var rwd=Math.floor((U.vip?U.vip.d:0)/(U.vip?U.vip.v:1));
+          var newBal=(U.balance||0)+rwd;
+          var newTotal=(U.totalEarned||0)+rwd;
+          var th=Object.assign({},U.taskHistory||{});
+          th[tkey()]=(th[tkey()]||0)+rwd;
+          var nn=(U.notifications||[]).concat([{id:Date.now(),msg:"🎬 +"+ff(rwd)+" MT por "+v.t,time:n2(),date:tod(),read:false}]);
+          await db2.from("users").update({balance:newBal,total_earned:newTotal,task_history:th,notifications:nn}).eq("phone",U.phone);
+          U.balance=newBal;
+          U.totalEarned=newTotal;
+          U.taskHistory=th;
+          earn.push({desc:"🎬 "+v.t,a:rwd,date:tod()});
+          document.getElementById("done-amt").textContent="+"+ff(rwd)+" MT creditados!";
           document.getElementById("cd-card").style.display="none";
           document.getElementById("done-card").style.display="block";
           document.getElementById("pl-done").style.display="block";
-          document.getElementById("i-done").textContent=result.doneCount+"/"+result.limit;
-          document.getElementById("i-rem").textContent=Math.max(0,result.limit-result.doneCount);
+          document.getElementById("i-done").textContent=done.length+"/"+(U.vip?U.vip.v:0);
+          document.getElementById("i-rem").textContent=Math.max(0,(U.vip?U.vip.v:0)-done.length);
           renderVideos();
-          toast("+"+ff(result.reward)+" MT ganhos! 💰");
+          toast("+"+ff(rwd)+" MT ganhos! 💰");
         }catch(e){
           toast("Erro de ligação. Tenta novamente.","e");
           document.getElementById("player").classList.remove("on");
@@ -801,19 +800,17 @@ async function submitWd(){
   var net=Math.floor(wdAmt*0.9);
   showConfirm("Confirmas levantamento de "+ff(wdAmt)+"?\nTaxa 10% → Recebes "+ff(net),async function(){
     try{
-      var resp=await fetch(FN_REQUEST_WITHDRAWAL,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({phone:U.phone,pin:U.pin,amount:wdAmt})
-      });
-      var result=await resp.json();
-      if(!result.ok){
-        toast(result.error||"Não foi possível processar.","e");
-        return;
-      }
-      U.balance=result.newBalance;
-      earn.push({desc:"Levantamento",a:-wdAmt,date:tod()});
-      window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💸 PEDIDO DE LEVANTAMENTO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+wdAmt+" MT → receberá "+result.net+" MT\n🏦 e-Mola\n🕐 "+n2()),"_blank");
+      var db2=getDb();
+      if(!db2){toast("Erro de ligação. Tenta novamente.","e");return;}
+      var net=Math.floor(wdAmt*0.9);
+      var newBal=(U.balance||0)-wdAmt;
+      if(newBal<0){toast("Saldo insuficiente.","e");return;}
+      var txRes=await db2.from("transactions").insert([{user_id:U.phone,user_name:U.name,phone:U.phone,amount:wdAmt,type:"withdrawal",status:"pending",wallet:"e-Mola"}]);
+      if(txRes.error){toast(txRes.error.message||"Não foi possível processar.","e");return;}
+      await db2.from("users").update({balance:newBal}).eq("phone",U.phone);
+      U.balance=newBal;
+      earn.push({desc:"💸 Levantamento",a:-wdAmt,date:tod()});
+      window.open("https://wa.me/"+SUP+"?text="+encodeURIComponent("💸 PEDIDO DE LEVANTAMENTO\n👤 "+U.name+"\n📱 "+U.phone+"\n💰 "+wdAmt+" MT → receberá "+net+" MT\n🏦 e-Mola\n🕐 "+n2()),"_blank");
       toast("Pedido enviado! ✅");wdAmt=null;renderWd();
     }catch(e){
       toast("Erro de ligação. Tenta novamente.","e");
